@@ -4,18 +4,18 @@ Stuff learned to keep track of!
 
 ---
 
-fnm → p
+`~/.bashrc` → bash's startup script
 
-~/.bashrc → bash's startup script
+`npm create vite@latest` → init Vite project
 
-npm create vite@latest → init Vite project
+`npm run dev` → start local server
 
-npm run dev → start local server
+`npm run build` → compile, resolve imports, hashes, builds dist/
 
-npm run build → compile, resolve imports, hashes, builds dist/
+`npm run build && npm run preview` → serve production build
 
-npm run build && npm run preview → serve production build
+`npm run lint` / `npm run typecheck`
 
-.nvmrc → the desired node version
+`.nvmrc` → the desired node version
 
-fnm → node version manager
+`fnm` → node version manager
