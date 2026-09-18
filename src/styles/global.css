@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Class-based dark mode so the user's choice can override the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic colour tokens. Light values on :root, dark overrides on .dark.
+   Values are Tailwind's stone/teal palette in OKLCH. */
+:root {
+  color-scheme: light;
+  --surface: oklch(98.5% 0.001 106.423); /* stone-50 */
+  --surface-muted: oklch(97% 0.001 106.424); /* stone-100 */
+  --ink: oklch(21.6% 0.006 56.043); /* stone-900 */
+  --ink-muted: oklch(44.4% 0.011 73.639); /* stone-600 */
+  --line: oklch(92.3% 0.003 48.717); /* stone-200 */
+  --accent: oklch(51.1% 0.096 186.391); /* teal-700 */
+  --accent-hover: oklch(43.7% 0.078 188.216); /* teal-800 */
+  --accent-ink: oklch(100% 0 0);
+}
+
+.dark {
+  color-scheme: dark;
+  --surface: oklch(14.7% 0.004 49.25); /* stone-950 */
+  --surface-muted: oklch(21.6% 0.006 56.043); /* stone-900 */
+  --ink: oklch(97% 0.001 106.424); /* stone-100 */
+  --ink-muted: oklch(70.9% 0.01 56.259); /* stone-400 */
+  --line: oklch(26.8% 0.007 34.298); /* stone-800 */
+  --accent: oklch(77.7% 0.152 181.912); /* teal-400 */
+  --accent-hover: oklch(85.5% 0.138 181.071); /* teal-300 */
+  --accent-ink: oklch(14.7% 0.004 49.25);
+}
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* `inline` makes utilities like `bg-surface` compile to `var(--surface)` directly,
+   so they follow the light/dark switch above. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklch, var(--accent) 25%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Shiki emits `light-dark()` colours; the border keeps blocks legible on both themes. */
+.astro-code {
+  @apply border border-line;
+}

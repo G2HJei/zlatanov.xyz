@@ -1,0 +1,33 @@
+---
+import { formatDate, toIsoDate } from '../lib/dates';
+
+interface Props {
+  date: Date;
+  updated?: Date;
+  author?: string;
+  readingTime: string;
+  class?: string;
+}
+
+const { date, updated, author, readingTime, class: className } = Astro.props;
+---
+
+<p class:list={['flex flex-wrap items-center gap-x-2 text-sm text-ink-muted', className]}>
+  {author && (
+    <>
+      <span>{author}</span>
+      <span aria-hidden="true">·</span>
+    </>
+  )}
+  <time datetime={toIsoDate(date)}>{formatDate(date)}</time>
+  {updated && (
+    <>
+      <span aria-hidden="true">·</span>
+      <span>
+        Updated <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time>
+      </span>
+    </>
+  )}
+  <span aria-hidden="true">·</span>
+  <span>{readingTime}</span>
+</p>
