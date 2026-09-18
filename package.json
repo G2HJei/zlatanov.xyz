@@ -17,7 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "og:image": "node scripts/og-image.mjs"
+    "og:image": "node scripts/og-image.mjs",
+    "pretest:e2e": "astro build"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

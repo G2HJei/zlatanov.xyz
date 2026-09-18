@@ -5,16 +5,16 @@ plus a markdown blog. Fully static Astro site, self-hosted in Docker behind the 
 
 ## Commands
 
-| Command            | Purpose                                                            |
-| ------------------ | ------------------------------------------------------------------ |
-| `npm run dev`      | Dev server on http://localhost:4321/ (drafts visible)              |
-| `npm run build`    | Static build into `dist/` (drafts excluded)                        |
-| `npm run preview`  | Serve `dist/` on :4321, what Playwright runs against               |
-| `npm run check`    | `astro check`: type-checks `.astro` and `.ts`                      |
-| `npm run lint`     | oxlint (`.ts` files and `<script>` blocks in `.astro`)             |
-| `npm run format`   | Prettier with the astro + tailwind plugins                         |
-| `npm test`         | Vitest unit tests in `tests/unit/`                                 |
-| `npm run test:e2e` | Playwright smoke tests in `tests/e2e/` (run `npm run build` first) |
+| Command            | Purpose                                                             |
+| ------------------ | ------------------------------------------------------------------- |
+| `npm run dev`      | Dev server on http://localhost:4321/ (drafts visible)               |
+| `npm run build`    | Static build into `dist/` (drafts excluded)                         |
+| `npm run preview`  | Serve `dist/` on :4321, what Playwright runs against                |
+| `npm run check`    | `astro check`: type-checks `.astro` and `.ts`                       |
+| `npm run lint`     | oxlint (`.ts` files and `<script>` blocks in `.astro`)              |
+| `npm run format`   | Prettier with the astro + tailwind plugins                          |
+| `npm test`         | Vitest unit tests in `tests/unit/`                                  |
+| `npm run test:e2e` | Builds, serves `dist/`, runs Playwright smoke tests in `tests/e2e/` |
 
 CI runs lint → check → test → build → e2e → docker build. All must pass before merging.
 
