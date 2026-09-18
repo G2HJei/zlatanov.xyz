@@ -4,6 +4,8 @@ export interface Service {
   tagline: string;
   /** What the client walks away with. */
   outcomes: string[];
+  /** Situations where this offering is the right call. */
+  goodFitIf: string[];
   /** Typical shape of the engagement. */
   engagement: string;
 }
@@ -17,10 +19,15 @@ export const services: Service[] = [
       'Senior hands on the systems that matter, from greenfield services to legacy modernisation.',
     outcomes: [
       'Production-ready Spring Boot services with clear module boundaries',
-      'Legacy code brought under test and safely refactored',
-      'Architecture decisions documented and understood by the whole team',
+      'Legacy code brought under test and refactored without a big-bang rewrite',
+      'Architecture decisions written down and understood by the whole team',
     ],
-    engagement: 'Embedded in your team for a fixed scope or a rolling monthly retainer.',
+    goodFitIf: [
+      'Your Spring codebase has grown faster than its structure',
+      'Releases feel risky and refactoring keeps getting postponed',
+      'You need senior capacity now, without a long hiring cycle',
+    ],
+    engagement: 'Embedded in your team for a fixed scope or on a rolling monthly basis.',
   },
   {
     slug: 'tdd-ddd-coaching',
@@ -28,8 +35,13 @@ export const services: Service[] = [
     tagline: 'Turn testing and modelling from a chore into the way your team designs software.',
     outcomes: [
       'Fast, trustworthy test suites that make change cheap',
-      'A shared domain model and ubiquitous language across product and engineering',
-      'Engineers who can drive design from tests without a coach in the room',
+      'A shared domain model and language across product and engineering',
+      'Engineers who drive design from tests without a coach in the room',
+    ],
+    goodFitIf: [
+      'Tests exist but nobody trusts them, or they take too long to run',
+      'Business rules are scattered across services, controllers and SQL',
+      'You want the practices to stick after the consultant leaves',
     ],
     engagement: 'Pairing and mob sessions on your real codebase, plus short focused workshops.',
   },
@@ -42,7 +54,12 @@ export const services: Service[] = [
       'Repeatable builds, environments and releases as code',
       'Lead time and change-failure rate you can actually measure',
     ],
+    goodFitIf: [
+      'Deployments are manual, scheduled or something people dread',
+      'The pipeline is slow, flaky or understood by one person',
+      'You are moving to containers or the cloud and want to get delivery right first',
+    ],
     engagement:
-      'Assessment first, then hands-on implementation with your platform or delivery team.',
+      'A short assessment first, then hands-on implementation with your platform or delivery team.',
   },
 ];

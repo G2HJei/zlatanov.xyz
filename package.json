@@ -16,7 +16,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "og:image": "node scripts/og-image.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
