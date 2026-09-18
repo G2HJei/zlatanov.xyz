@@ -1,0 +1,47 @@
+---
+import { getPublishedPosts } from '../../collections';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout
+  title="Blog"
+  description="Notes on Java and Spring, test-driven development, domain-driven design and CI/CD, written from consulting engagements."
+>
+  <div class="mx-auto max-w-3xl">
+    <header>
+      <h1 class="text-4xl font-semibold tracking-tight">Blog</h1>
+      <p class="mt-4 text-lg text-ink-muted">
+        Practical notes on Java, TDD, DDD and CI/CD. Browse by{' '}
+        <a
+          href="/blog/tags/"
+          class="text-accent underline decoration-accent/40 hover:decoration-accent"
+        >
+          tag
+        </a>{' '}
+        or subscribe via{' '}
+        <a
+          href="/rss.xml"
+          class="text-accent underline decoration-accent/40 hover:decoration-accent"
+        >
+          RSS
+        </a>
+        .
+      </p>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="mt-12 text-ink-muted">No posts yet.</p>
+    ) : (
+      <ul class="mt-12 divide-y divide-line">
+        {posts.map((post) => (
+          <li class="py-8 first:pt-0 last:pb-0">
+            <PostCard post={post} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</BaseLayout>

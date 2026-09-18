@@ -1,0 +1,32 @@
+---
+import { SITE } from '../lib/site';
+
+const year = new Date().getFullYear();
+const links = [
+  { href: SITE.social.github, label: 'GitHub', external: true },
+  { href: SITE.social.linkedin, label: 'LinkedIn', external: true },
+  { href: `mailto:${SITE.email}`, label: 'Email', external: false },
+  { href: '/rss.xml', label: 'RSS', external: false },
+];
+---
+
+<footer class="mt-24 border-t border-line">
+  <div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-10 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <p>
+      © {year} {SITE.name}. Java consulting, TDD, DDD and CI/CD.
+    </p>
+    <ul class="flex flex-wrap gap-x-5 gap-y-1">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            rel={link.external ? 'me noopener' : undefined}
+            class="transition-colors hover:text-accent"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</footer>
