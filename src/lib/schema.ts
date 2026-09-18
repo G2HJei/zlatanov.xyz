@@ -25,7 +25,7 @@ export type PostFrontmatter = z.infer<typeof postSchema>;
 export const caseStudySchema = z.object({
   title: z.string().min(1),
   client: z.string().min(1).optional(),
-  period: z.string().min(1),
+  period: z.coerce.string().min(1),
   stack: z.array(z.string().min(1)).default([]),
   summary: z.string().min(1),
   outcome: z.string().min(1),
