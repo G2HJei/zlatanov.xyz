@@ -46,18 +46,34 @@
   const button = document.getElementById('theme-toggle');
   const media = matchMedia('(prefers-color-scheme: dark)');
 
+  // Storage can be blocked (privacy settings, some private modes); the toggle must still work.
+  const storedTheme = (): string | null => {
+    try {
+      return localStorage.getItem('theme');
+    } catch {
+      return null;
+    }
+  };
+  const storeTheme = (value: string): void => {
+    try {
+      localStorage.setItem('theme', value);
+    } catch {
+      /* not persisted this session */
+    }
+  };
+
   const reflect = () =>
     button?.setAttribute('aria-pressed', String(root.classList.contains('dark')));
 
   button?.addEventListener('click', () => {
     const dark = root.classList.toggle('dark');
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    storeTheme(dark ? 'dark' : 'light');
     reflect();
   });
 
   // Follow the OS while the visitor has not made an explicit choice.
   media.addEventListener('change', (event) => {
-    if (localStorage.getItem('theme') === null) {
+    if (storedTheme() === null) {
       root.classList.toggle('dark', event.matches);
       reflect();
     }

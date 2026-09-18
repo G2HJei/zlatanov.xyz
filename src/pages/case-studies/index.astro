@@ -1,5 +1,6 @@
 ---
 import { getCaseStudies } from '../../collections';
+import { caseStudyUrl } from '../../lib/posts';
 import CTA from '../../components/CTA.astro';
 import Section from '../../components/Section.astro';
 import Testimonial from '../../components/Testimonial.astro';
@@ -34,10 +35,7 @@ const studies = await getCaseStudies();
               <article>
                 {meta && <p class="font-mono text-sm text-ink-muted">{meta}</p>}
                 <h2 class="mt-1 text-2xl font-semibold tracking-tight">
-                  <a
-                    href={`/case-studies/${study.id}/`}
-                    class="transition-colors hover:text-accent"
-                  >
+                  <a href={caseStudyUrl(study.id)} class="transition-colors hover:text-accent">
                     {study.data.title}
                   </a>
                 </h2>

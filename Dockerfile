@@ -4,8 +4,8 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-# devDependencies are required here: Astro and Tailwind are build-time tools.
-RUN npm ci --no-audit --no-fund
+# Build inputs (Astro, Tailwind, fonts) are regular dependencies; dev tooling is not needed.
+RUN npm ci --omit=dev --no-audit --no-fund
 COPY . .
 RUN npm run build
 

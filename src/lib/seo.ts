@@ -1,6 +1,10 @@
-/** `Page · Site`, or just the site name on the home page. */
+/**
+ * `Page · Site` for inner pages; the bare site name when no title is given; and
+ * a title that already contains the site name (e.g. the home page) unchanged.
+ */
 export function pageTitle(title: string | undefined, siteName: string): string {
-  if (title === undefined || title === '' || title === siteName) return siteName;
+  if (title === undefined || title === '') return siteName;
+  if (title.includes(siteName)) return title;
   return `${title} · ${siteName}`;
 }
 

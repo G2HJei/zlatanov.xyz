@@ -1,5 +1,5 @@
 ---
-import { pageTitle } from '../lib/seo';
+import { canonicalUrl, pageTitle } from '../lib/seo';
 import { SITE } from '../lib/site';
 
 export interface Props {
@@ -26,7 +26,7 @@ const {
 } = Astro.props;
 
 const fullTitle = pageTitle(title, SITE.name);
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = canonicalUrl(Astro.url.pathname, Astro.site ?? SITE.url);
 const imageUrl = new URL(image, Astro.site).href;
 ---
 
