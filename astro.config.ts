@@ -7,7 +7,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap({ filter: (page) => !page.includes('/404') })],
+  integrations: [sitemap()],
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },

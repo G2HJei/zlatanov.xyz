@@ -7,13 +7,16 @@ describe('pageTitle', () => {
     expect(pageTitle('Blog', 'Boyan Zlatanov')).toBe('Blog · Boyan Zlatanov');
   });
 
-  it('uses the bare site name on the home page', () => {
+  it('uses the bare site name when no title is given', () => {
     expect(pageTitle(undefined, 'Boyan Zlatanov')).toBe('Boyan Zlatanov');
     expect(pageTitle('', 'Boyan Zlatanov')).toBe('Boyan Zlatanov');
   });
 
-  it('does not double the site name', () => {
+  it('keeps a title that already contains the site name', () => {
     expect(pageTitle('Boyan Zlatanov', 'Boyan Zlatanov')).toBe('Boyan Zlatanov');
+    expect(pageTitle('Boyan Zlatanov · Java consultant', 'Boyan Zlatanov')).toBe(
+      'Boyan Zlatanov · Java consultant',
+    );
   });
 });
 

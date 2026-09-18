@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  filterPublished,
+  caseStudyUrl,
   isPublished,
   type PostLike,
   postUrl,
@@ -27,13 +27,6 @@ describe('isPublished', () => {
   });
 });
 
-describe('filterPublished', () => {
-  it('removes drafts', () => {
-    const posts = [post('a', '2026-01-01'), post('b', '2026-01-02', true)];
-    expect(filterPublished(posts).map((p) => p.id)).toEqual(['a']);
-  });
-});
-
 describe('sortByDateDesc', () => {
   it('orders newest first and breaks ties by id', () => {
     const posts = [post('b', '2026-01-01'), post('c', '2026-03-01'), post('a', '2026-01-01')];
@@ -47,8 +40,9 @@ describe('sortByDateDesc', () => {
   });
 });
 
-describe('postUrl', () => {
-  it('builds a trailing-slash URL under /blog/', () => {
+describe('urls', () => {
+  it('build trailing-slash URLs', () => {
     expect(postUrl('hello-world')).toBe('/blog/hello-world/');
+    expect(caseStudyUrl('legacy-orders')).toBe('/case-studies/legacy-orders/');
   });
 });
