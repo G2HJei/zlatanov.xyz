@@ -1,32 +1,74 @@
-# React + TypeScript + Vite
+# zlatanov.xyz
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Personal site and blog of Boyan Zlatanov: Java and Spring consulting, TDD, DDD and CI/CD.
 
-Currently, two official plugins are available:
+A static [Astro](https://astro.build) site styled with Tailwind CSS v4, no UI framework, shipped as
+an nginx Docker image and served behind the owner's reverse proxy.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Develop
 
-## React Compiler
+Requires Node 24 (see `.nvmrc`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm ci
+npm run dev        # http://localhost:4321/ (drafts visible)
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+| Command            | Purpose                                                |
+| ------------------ | ------------------------------------------------------ |
+| `npm run build`    | Static build into `dist/` (drafts excluded)            |
+| `npm run preview`  | Serve `dist/` locally                                  |
+| `npm run check`    | `astro check`: type-checks `.astro` and `.ts`          |
+| `npm run lint`     | oxlint                                                 |
+| `npm run format`   | Prettier (astro + tailwind plugins)                    |
+| `npm test`         | Vitest unit tests (`tests/unit/`)                      |
+| `npm run test:e2e` | Builds, serves `dist/`, runs Playwright (`tests/e2e/`) |
+| `npm run og:image` | Regenerates `public/og-default.png`                    |
+
+First Playwright run on a machine: `npx playwright install chromium`.
+
+## Write a post
+
+1. Copy `content/posts/_template.md` to `content/posts/<slug>.md`. The file name is the URL:
+   `/blog/<slug>/`.
+2. Fill in the frontmatter: `title`, `description`, `date`, `tags`, optional `updated`, `author`
+   (defaults to the site owner) and `cover` (social preview image under `public/`).
+3. Keep `draft: true` while writing; drafts render in `npm run dev` only. Set `draft: false` to
+   publish.
+4. Commit, push, open a pull request. CI lints, type-checks, tests, builds and smoke-tests the
+   site, then builds the Docker image. Merging to `master` publishes the image.
+
+Invalid frontmatter fails both `npm test` and `npm run build` with the offending file named.
+Spell tags consistently: `ci/cd` and `ci-cd` would both route to `/blog/tags/ci-cd/`, and the
+tests flag that.
+
+## Site copy and case studies
+
+- Landing-page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/testimonials.ts`
+  (empty until real quotes exist).
+- Name, URL, email and social links: `src/lib/site.ts`.
+- Case studies: `content/case-studies/*.md`, same draft rules as posts. Start from `_template.md`.
+
+## Deploy
+
+Every push to `master` publishes `ghcr.io/g2hjei/zlatanov.xyz:latest` (plus a `sha-<commit>` tag).
+The container runs nginx as a non-root user on port 8080 and serves the static build with
+long-lived caching for hashed assets. TLS, HSTS and any CSP belong on the reverse proxy.
+
+```yaml
+services:
+  site:
+    image: ghcr.io/g2hjei/zlatanov.xyz:latest
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8080:8080'
+```
+
+Update: `docker compose pull && docker compose up -d`.
+
+Local check of the image:
+
+```sh
+docker build -t zlatanov.xyz .
+docker run --rm -p 8080:8080 zlatanov.xyz
+```
