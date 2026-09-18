@@ -1,5 +1,5 @@
 ---
-title: Fast Development Cycles Made Simple -
+title: Fast Development Cycles Made Simple
 date: 2026-09-02
 tags: [ article ]
 description: CI/CD and all around it

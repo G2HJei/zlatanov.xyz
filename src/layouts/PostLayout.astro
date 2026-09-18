@@ -1,0 +1,63 @@
+---
+import type { Post } from '../collections';
+import PostMeta from '../components/PostMeta.astro';
+import Prose from '../components/Prose.astro';
+import TagList from '../components/TagList.astro';
+import { postUrl } from '../lib/posts';
+import { readingTime } from '../lib/reading-time';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  entry: Post;
+  newer: Post | null;
+  older: Post | null;
+}
+
+const { entry, newer, older } = Astro.props;
+const { title, description, date, updated, tags, author, cover } = entry.data;
+const minutes = readingTime(entry.body ?? '').text;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  image={cover}
+  publishedTime={date}
+  modifiedTime={updated}
+  tags={tags}
+  author={author}
+>
+  <article class="mx-auto max-w-3xl">
+    <header class="mb-10">
+      <h1 class="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted">{description}</p>
+      <PostMeta author={author} date={date} updated={updated} readingTime={minutes} class="mt-5" />
+      <TagList tags={tags} class="mt-4" />
+    </header>
+
+    <Prose>
+      <slot />
+    </Prose>
+
+    {(older || newer) && (
+      <nav
+        aria-label="Adjacent posts"
+        class="mt-16 grid gap-4 border-t border-line pt-8 text-sm sm:grid-cols-2"
+      >
+        {older && (
+          <a href={postUrl(older.id)} rel="prev" class="group">
+            <span class="block text-ink-muted">← Older</span>
+            <span class="mt-1 block font-medium group-hover:text-accent">{older.data.title}</span>
+          </a>
+        )}
+        {newer && (
+          <a href={postUrl(newer.id)} rel="next" class="group sm:col-start-2 sm:text-right">
+            <span class="block text-ink-muted">Newer →</span>
+            <span class="mt-1 block font-medium group-hover:text-accent">{newer.data.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
+  </article>
+</BaseLayout>

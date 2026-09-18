@@ -1,0 +1,72 @@
+---
+import { pageTitle } from '../lib/seo';
+import { SITE } from '../lib/site';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  type?: 'website' | 'article';
+  /** Path under `public/` or absolute URL. */
+  image?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  tags?: string[];
+  author?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  type = 'website',
+  image = '/og-default.png',
+  publishedTime,
+  modifiedTime,
+  tags = [],
+  author,
+} = Astro.props;
+
+const fullTitle = pageTitle(title, SITE.name);
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = new URL(image, Astro.site).href;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{author && <meta name="author" content={author} />}
+<link rel="canonical" href={canonical} />
+<meta name="generator" content={Astro.generator} />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon/favicon-32.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="/favicon/favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafaf9" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0a09" />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{type === 'article' && (
+  <>
+    {publishedTime && (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    )}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+    {author && <meta property="article:author" content={author} />}
+    {tags.map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
+  </>
+)}

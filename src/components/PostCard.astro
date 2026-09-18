@@ -1,0 +1,25 @@
+---
+import type { Post } from '../collections';
+import { postUrl } from '../lib/posts';
+import { readingTime } from '../lib/reading-time';
+import PostMeta from './PostMeta.astro';
+import TagList from './TagList.astro';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, date, tags } = post.data;
+---
+
+<article>
+  <h2 class="text-xl font-semibold tracking-tight">
+    <a href={postUrl(post.id)} class="transition-colors hover:text-accent">
+      {title}
+    </a>
+  </h2>
+  <PostMeta date={date} readingTime={readingTime(post.body ?? '').text} class="mt-1" />
+  <p class="mt-3 text-ink-muted">{description}</p>
+  <TagList tags={tags} class="mt-4" />
+</article>

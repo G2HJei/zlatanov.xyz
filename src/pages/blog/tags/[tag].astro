@@ -1,0 +1,40 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+
+import { getPublishedPosts } from '../../../collections';
+import PostCard from '../../../components/PostCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { groupByTag } from '../../../lib/tags';
+
+export const getStaticPaths = (async () => {
+  const groups = groupByTag(await getPublishedPosts());
+  return groups.map((group) => ({ params: { tag: group.slug }, props: { group } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { group } = Astro.props;
+const noun = group.count === 1 ? 'post' : 'posts';
+---
+
+<BaseLayout title={`Tag: ${group.label}`} description={`Blog posts tagged “${group.label}”.`}>
+  <div class="mx-auto max-w-3xl">
+    <p class="text-sm text-ink-muted">
+      <a href="/blog/tags/" class="hover:text-accent">
+        All tags
+      </a>
+    </p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight">{group.label}</h1>
+    <p class="mt-4 text-lg text-ink-muted">
+      {group.count} {noun}
+    </p>
+
+    <ul class="mt-12 divide-y divide-line">
+      {group.posts.map((post) => (
+        <li class="py-8 first:pt-0 last:pb-0">
+          <PostCard post={post} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>
