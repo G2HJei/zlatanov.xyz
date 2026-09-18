@@ -3,7 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 const baseURL = 'http://localhost:4321/';
 
 /**
- * Smoke tests run against `astro preview`, i.e. the production build in `dist/`.
+ * Smoke tests run against the production build in `dist/`, served by scripts/serve-dist.mjs
+ * (plain Node, mirrors the nginx rules, no detached process to leak between runs).
  * `npm run test:e2e` builds first via the `pretest:e2e` script.
  */
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
   use: { baseURL, trace: 'on-first-retry' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'npx astro preview --ignore-lock',
+    command: 'node scripts/serve-dist.mjs 4321',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

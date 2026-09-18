@@ -7,14 +7,17 @@ interface Props {
 }
 
 const { tags, class: className } = Astro.props;
+
+// The schema rejects tags without a slug; the filter keeps the markup honest regardless.
+const linked = tags.map((tag) => ({ tag, slug: tagSlug(tag) })).filter(({ slug }) => slug !== '');
 ---
 
-{tags.length > 0 && (
+{linked.length > 0 && (
   <ul class:list={['flex flex-wrap gap-2', className]} aria-label="Tags">
-    {tags.map((tag) => (
+    {linked.map(({ tag, slug }) => (
       <li>
         <a
-          href={tagUrl(tagSlug(tag))}
+          href={tagUrl(slug)}
           class="inline-block rounded-full border border-line px-2.5 py-0.5 text-xs text-ink-muted transition-colors hover:border-accent hover:text-accent"
         >
           {tag}

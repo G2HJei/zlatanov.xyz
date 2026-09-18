@@ -12,7 +12,7 @@ updates:
       testing:
         patterns: ['vitest', '@playwright/*']
       tooling:
-        patterns: ['oxlint', 'prettier', 'prettier-plugin-astro', '@types/*', 'yaml']
+        patterns: ['oxlint', 'prettier', 'prettier-plugin-astro', '@types/*', 'js-yaml']
     ignore:
       # @astrojs/check supports TypeScript ^5 || ^6 only.
       - dependency-name: typescript

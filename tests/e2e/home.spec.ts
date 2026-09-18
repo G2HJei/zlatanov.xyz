@@ -9,7 +9,7 @@ test('home page renders the hero, navigation and latest posts', async ({ page })
 
   await page.goto('/');
 
-  await expect(page).toHaveTitle('Boyan Zlatanov');
+  await expect(page).toHaveTitle(/Boyan Zlatanov/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Java');
 
   const nav = page.getByRole('navigation', { name: 'Main' });

@@ -16,7 +16,7 @@ interface RawEntry {
   data: unknown;
 }
 
-/** Mirrors the content collection: `.md` files, underscore-prefixed ones excluded. */
+/** Mirrors the content collection: top-level `.md` files, underscore-prefixed ones excluded. */
 async function loadEntries(dir: string): Promise<RawEntry[]> {
   const files = (await readdir(dir)).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
   return Promise.all(
@@ -35,9 +35,11 @@ function describeIssues(result: { success: boolean; error?: { issues: unknown[] 
 }
 
 describe('content/posts', () => {
-  it('has at least one published post', async () => {
-    const entries = await loadEntries(postsDir);
-    expect(entries.length).toBeGreaterThan(0);
+  it('has at least one published (non-draft) post', async () => {
+    const published = (await loadEntries(postsDir))
+      .map((entry) => postSchema.parse(entry.data))
+      .filter((post) => !post.draft);
+    expect(published.length).toBeGreaterThan(0);
   });
 
   it('every post has frontmatter that satisfies the schema', async () => {
@@ -98,7 +100,24 @@ describe('postSchema', () => {
     expect(postSchema.safeParse({ title: 'T', date: '2026-09-02' }).success).toBe(false);
   });
 
-  it('rejects empty tags', () => {
+  it('rejects empty tags and tags that cannot form a URL', () => {
     expect(postSchema.safeParse({ ...minimal, tags: ['java', ''] }).success).toBe(false);
+    expect(postSchema.safeParse({ ...minimal, tags: ['!!!'] }).success).toBe(false);
+    expect(postSchema.safeParse({ ...minimal, tags: ['ci/cd'] }).success).toBe(true);
+  });
+});
+
+describe('caseStudySchema', () => {
+  const minimal = { title: 'T', period: 2025, summary: 'S', outcome: 'O' };
+
+  it('stores a bare-year period as a string', () => {
+    expect(caseStudySchema.parse(minimal).period).toBe('2025');
+    expect(caseStudySchema.parse({ ...minimal, period: '2024–2025' }).period).toBe('2024–2025');
+  });
+
+  it('rejects a missing period', () => {
+    const { period: _omitted, ...withoutPeriod } = minimal;
+    expect(caseStudySchema.safeParse(withoutPeriod).success).toBe(false);
+    expect(caseStudySchema.safeParse({ ...minimal, period: null }).success).toBe(false);
   });
 });

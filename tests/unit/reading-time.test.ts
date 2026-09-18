@@ -50,3 +50,14 @@ describe('readingTime', () => {
     expect(readingTime(words(100), 50)).toMatchObject({ words: 100, minutes: 2 });
   });
 });
+
+describe('stripMarkdown on code-heavy content', () => {
+  it('does not swallow text between < and > on different lines', () => {
+    const md = 'if (a < b) {\n  return;\n}\n\nsome words in between\n\nif (c > d) {\n}';
+    expect(countWords(stripMarkdown(md))).toBe(11);
+  });
+
+  it('keeps snake_case identifiers as single words', () => {
+    expect(countWords(stripMarkdown('snake_case MAX_VALUE'))).toBe(2);
+  });
+});

@@ -9,7 +9,7 @@ plus a markdown blog. Fully static Astro site, self-hosted in Docker behind the 
 | ------------------ | ------------------------------------------------------------------- |
 | `npm run dev`      | Dev server on http://localhost:4321/ (drafts visible)               |
 | `npm run build`    | Static build into `dist/` (drafts excluded)                         |
-| `npm run preview`  | Serve `dist/` on :4321, what Playwright runs against                |
+| `npm run preview`  | Serve `dist/` on :4321 for a manual look                            |
 | `npm run check`    | `astro check`: type-checks `.astro` and `.ts`                       |
 | `npm run lint`     | oxlint (`.ts` files and `<script>` blocks in `.astro`)              |
 | `npm run format`   | Prettier with the astro + tailwind plugins                          |

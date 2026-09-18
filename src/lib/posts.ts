@@ -29,13 +29,6 @@ export function isPublished(
   return includeDrafts || !entry.data.draft;
 }
 
-export function filterPublished<T extends Publishable>(
-  entries: T[],
-  options?: PublishOptions,
-): T[] {
-  return entries.filter((entry) => isPublished(entry, options));
-}
-
 /** Newest first; ties broken by id so ordering is deterministic. */
 export function sortByDateDesc<T extends PostLike>(posts: T[]): T[] {
   return [...posts].sort(
@@ -45,4 +38,8 @@ export function sortByDateDesc<T extends PostLike>(posts: T[]): T[] {
 
 export function postUrl(id: string): string {
   return `/blog/${id}/`;
+}
+
+export function caseStudyUrl(id: string): string {
+  return `/case-studies/${id}/`;
 }

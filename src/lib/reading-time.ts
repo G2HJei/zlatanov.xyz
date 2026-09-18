@@ -12,17 +12,20 @@ export function countWords(text: string): number {
   return text.split(/\s+/).filter((token) => WORD.test(token)).length;
 }
 
-/** Removes markdown syntax that would otherwise inflate the word count. */
+/**
+ * Removes markdown syntax that would otherwise inflate the word count.
+ * Deliberately rough: the goal is a stable estimate, not a parser.
+ */
 export function stripMarkdown(markdown: string): string {
   return markdown
     .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, ' ') // frontmatter, if present
-    .replace(/<[^>]+>/g, ' ') // inline html
+    .replace(/<\/?[a-zA-Z][^>\n]*>/g, ' ') // html tags on a single line; `a < b` in code survives
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → link text
     .replace(/^\s*(```|~~~).*$/gm, ' ') // fence markers
     .replace(/^\s*[-*_]{3,}\s*$/gm, ' ') // horizontal rules
     .replace(/^\s*\|?[\s:|-]+\|?\s*$/gm, ' ') // table separator rows
-    .replace(/[`*_>#|]/g, ' '); // remaining inline markup
+    .replace(/[`*>#|]/g, ' '); // remaining inline markup; underscores stay so snake_case is one word
 }
 
 export function readingTime(markdown: string, wordsPerMinute = 200): ReadingTime {

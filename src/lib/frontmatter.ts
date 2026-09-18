@@ -1,4 +1,4 @@
-import { parse as parseYaml } from 'yaml';
+import { load as parseYaml } from 'js-yaml';
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/;
 
@@ -11,7 +11,8 @@ export interface SplitResult {
  * Minimal frontmatter splitter used by the content-validation unit test.
  * Astro parses frontmatter itself at build time; this exists so the same zod
  * schema can be run against raw files from Vitest without booting Astro.
- * Tolerates a UTF-8 BOM and CRLF line endings.
+ * Uses js-yaml, the same YAML dialect Astro uses, so both agree on how a
+ * value such as `2026-09-02` is typed. Tolerates a UTF-8 BOM and CRLF.
  */
 export function splitFrontmatter(raw: string): SplitResult {
   const text = raw.startsWith('﻿') ? raw.slice(1) : raw;
