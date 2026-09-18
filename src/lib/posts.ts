@@ -1,8 +1,13 @@
+/** Anything with a `draft` flag: posts, case studies. */
+export interface Publishable {
+  data: { draft: boolean };
+}
+
 /**
  * Structural view of a post entry. `CollectionEntry<'posts'>` satisfies it,
  * and tests can build lightweight fixtures without Astro.
  */
-export interface PostLike {
+export interface PostLike extends Publishable {
   id: string;
   data: {
     title: string;
@@ -18,14 +23,17 @@ export interface PublishOptions {
 }
 
 export function isPublished(
-  post: PostLike,
+  entry: Publishable,
   { includeDrafts = false }: PublishOptions = {},
 ): boolean {
-  return includeDrafts || !post.data.draft;
+  return includeDrafts || !entry.data.draft;
 }
 
-export function filterPublished<T extends PostLike>(posts: T[], options?: PublishOptions): T[] {
-  return posts.filter((post) => isPublished(post, options));
+export function filterPublished<T extends Publishable>(
+  entries: T[],
+  options?: PublishOptions,
+): T[] {
+  return entries.filter((entry) => isPublished(entry, options));
 }
 
 /** Newest first; ties broken by id so ordering is deterministic. */

@@ -1,0 +1,22 @@
+---
+import type { Service } from '../data/services';
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const href = `/services/#${service.slug}`;
+---
+
+<article class="flex h-full flex-col rounded-lg border border-line p-6">
+  <h3 class="text-lg font-semibold">
+    <a href={href} class="transition-colors hover:text-accent">
+      {service.title}
+    </a>
+  </h3>
+  <p class="mt-2 flex-1 text-ink-muted">{service.tagline}</p>
+  <a href={href} class="mt-5 text-sm font-medium text-accent hover:underline">
+    Learn more →
+  </a>
+</article>

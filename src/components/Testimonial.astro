@@ -1,0 +1,20 @@
+---
+import type { Testimonial } from '../data/testimonials';
+
+interface Props {
+  testimonial: Testimonial;
+}
+
+const { quote, name, role, company } = Astro.props.testimonial;
+const attribution = [role, company].filter(Boolean).join(', ');
+---
+
+<figure class="flex h-full flex-col rounded-lg border border-line p-6">
+  <blockquote class="flex-1 text-ink">
+    <p>“{quote}”</p>
+  </blockquote>
+  <figcaption class="mt-4 text-sm text-ink-muted">
+    <span class="font-medium text-ink">{name}</span>
+    {attribution && `, ${attribution}`}
+  </figcaption>
+</figure>
