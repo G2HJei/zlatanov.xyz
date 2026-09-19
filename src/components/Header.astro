@@ -1,34 +1,41 @@
 ---
+/**
+ * Sticky, translucent site header. On small screens the navigation wraps onto a
+ * second, horizontally scrollable row; from `sm` it sits inline as pills.
+ */
+import { nav } from '../data/nav';
 import { SITE } from '../lib/site';
+import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
-
-const nav = [
-  { href: '/services/', label: 'Services' },
-  { href: '/case-studies/', label: 'Work' },
-  { href: '/blog/', label: 'Blog' },
-  { href: '/about/', label: 'About' },
-  { href: '/contact/', label: 'Contact' },
-];
 
 const path = Astro.url.pathname;
 const isActive = (href: string) => path.startsWith(href);
 ---
 
-<header class="border-b border-line">
-  <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-4 sm:px-6">
-    <a href="/" class="mr-auto font-semibold tracking-tight transition-colors hover:text-accent">
-      {SITE.name}
+<header class="sticky top-0 z-40 border-b border-line/70 bg-surface/80 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 px-5 sm:px-8">
+    <a
+      href="/"
+      class="mr-auto flex h-16 items-center gap-2.5 font-semibold tracking-tight transition-colors hover:text-accent sm:mr-0"
+    >
+      <Logo class="size-5" />
+      <span>{SITE.name}</span>
     </a>
-    <nav aria-label="Main" class="order-last w-full sm:order-none sm:w-auto">
-      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+    <nav
+      aria-label="Main"
+      class="order-last w-full overflow-x-auto pb-3 [scrollbar-width:none] sm:order-none sm:ml-auto sm:w-auto sm:overflow-visible sm:pb-0"
+    >
+      <ul class="flex items-center gap-x-5 text-sm sm:gap-x-1">
         {nav.map((item) => (
           <li>
             <a
               href={item.href}
               aria-current={isActive(item.href) ? 'page' : undefined}
               class:list={[
-                'transition-colors hover:text-accent',
-                isActive(item.href) ? 'font-medium text-accent' : 'text-ink-muted',
+                'inline-block py-1.5 whitespace-nowrap transition-colors sm:rounded-md sm:px-3',
+                isActive(item.href)
+                  ? 'font-medium text-ink sm:bg-surface-muted'
+                  : 'text-ink-muted hover:text-ink sm:hover:bg-surface-muted/60',
               ]}
             >
               {item.label}

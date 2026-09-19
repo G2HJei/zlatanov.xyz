@@ -27,6 +27,14 @@ CI runs lint → check → test → build → e2e → docker build. All must pas
   (`@theme` / `@theme inline`). Use the semantic colours `surface`, `surface-muted`, `ink`,
   `ink-muted`, `line`, `accent`, `accent-hover`, `accent-ink`, not raw palette classes, so dark
   mode stays consistent. Dark mode is the `.dark` class on `<html>`.
+- **Design language** (see `src/styles/global.css` and `src/components/`): IBM Plex Sans
+  (self-hosted via fontsource, variable weight) for all text, IBM Plex Mono for code. Cool slate
+  neutrals with one green accent that means "passing": use it for links, checks and active states,
+  never as decoration. Primary buttons are `bg-ink`; inline links use the `text-link` utility.
+  Sections use `Section.astro` (heading left, content right on `lg`) and lists are hairline rows
+  (`divide-y divide-line`), not card grids. Page titles go through `PageHeader.astro`. No eyebrow
+  labels, no all-caps labels, no `→` on links, no `·` separators (`PostMeta` draws hairlines).
+  The only page-load motion is the hero `Pipeline.astro`, CSS-only and reduced-motion safe.
 - **TypeScript stays on `~6.0`**: `@astrojs/check` does not support TS 7 yet.
 - Zod comes from `astro/zod`, never from `astro:content` (deprecated) or a separate `zod` package.
 - Astro 7 gotchas: `compressHTML` defaults to `'jsx'`, so a newline between inline elements renders
@@ -45,8 +53,8 @@ CI runs lint → check → test → build → e2e → docker build. All must pas
   `src/collections.ts#getPublishedPosts`; all lists, routes, tag pages and RSS go through it.
 - Tags display as written but route through `tagSlug()` (`ci/cd` → `/blog/tags/ci-cd/`). Keep tag
   spelling consistent across posts; the unit tests flag labels that collide on one slug.
-- Site-wide constants (name, URL, email, social links): `src/lib/site.ts`. Landing-page copy:
-  `src/data/`.
+- Site-wide constants (name, URL, email, social links): `src/lib/site.ts`. Landing-page copy and
+  the shared navigation: `src/data/`.
 
 ## Deployment
 

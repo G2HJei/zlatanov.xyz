@@ -1,5 +1,6 @@
 ---
 import { getPublishedPosts } from '../../../collections';
+import PageHeader from '../../../components/PageHeader.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { groupByTag, tagUrl } from '../../../lib/tags';
 
@@ -7,22 +8,25 @@ const groups = groupByTag(await getPublishedPosts());
 ---
 
 <BaseLayout title="Tags" description="All blog post tags.">
-  <div class="mx-auto max-w-3xl">
-    <h1 class="text-4xl font-semibold tracking-tight">Tags</h1>
-    <p class="mt-4 text-lg text-ink-muted">Posts grouped by topic.</p>
+  <div class="max-w-3xl pb-16 sm:pb-24">
+    <PageHeader
+      title="Tags"
+      lead="Posts grouped by topic."
+      back={{ href: '/blog/', label: 'Blog' }}
+    />
 
     {groups.length === 0 ? (
-      <p class="mt-12 text-ink-muted">No tags yet.</p>
+      <p class="text-ink-muted">No tags yet.</p>
     ) : (
-      <ul class="mt-12 flex flex-wrap gap-3">
+      <ul class="flex flex-wrap gap-2">
         {groups.map((group) => (
           <li>
             <a
               href={tagUrl(group.slug)}
-              class="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1 text-sm transition-colors hover:border-accent hover:text-accent"
+              class="inline-flex items-center gap-2 rounded-full bg-surface-muted px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-accent/10 hover:text-accent"
             >
               {group.label}
-              <span class="text-xs text-ink-muted">{group.count}</span>
+              <span class="text-xs font-normal text-ink-muted">{group.count}</span>
             </a>
           </li>
         ))}

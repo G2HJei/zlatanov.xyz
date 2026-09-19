@@ -1,5 +1,7 @@
 ---
+import CheckIcon from '../components/CheckIcon.astro';
 import CTA from '../components/CTA.astro';
+import PageHeader from '../components/PageHeader.astro';
 import Section from '../components/Section.astro';
 import { services } from '../data/services';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -9,38 +11,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   title="Services"
   description="Java and Spring delivery, TDD and DDD coaching, and CI/CD engineering for teams that want to ship with confidence."
 >
-  <header class="mx-auto max-w-3xl">
-    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Services</h1>
-    <p class="mt-4 text-lg text-ink-muted">
-      Three ways teams bring me in. Every engagement starts with a short conversation about what is
-      slowing you down, and ends with your team owning the result.
-    </p>
-    <nav aria-label="On this page" class="mt-6 flex flex-wrap gap-2 text-sm">
+  <PageHeader
+    title="Services"
+    lead="Three ways teams bring me in. Every engagement starts with a short conversation about what is slowing you down, and ends with your team owning the result."
+  >
+    <nav aria-label="On this page" class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
       {services.map((service) => (
-        <a
-          href={`#${service.slug}`}
-          class="rounded-full border border-line px-3 py-1 transition-colors hover:border-accent hover:text-accent"
-        >
+        <a href={`#${service.slug}`} class="text-ink-muted transition-colors hover:text-ink">
           {service.title}
         </a>
       ))}
     </nav>
-  </header>
+  </PageHeader>
 
-  {services.map((service, index) => (
-    <Section
-      id={service.slug}
-      eyebrow={`0${index + 1}`}
-      title={service.title}
-      lead={service.tagline}
-    >
-      <div class="grid gap-10 md:grid-cols-2">
+  {services.map((service) => (
+    <Section id={service.slug} title={service.title} lead={service.tagline}>
+      <div class="grid gap-10 sm:grid-cols-2">
         <div>
           <h3 class="font-semibold">You get</h3>
-          <ul class="mt-3 space-y-2 text-ink-muted">
+          <ul class="mt-4 space-y-3 text-ink-muted">
             {service.outcomes.map((outcome) => (
               <li class="flex gap-3">
-                <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                <CheckIcon class="mt-1.5 size-4 shrink-0 text-accent" />
                 <span>{outcome}</span>
               </li>
             ))}
@@ -48,19 +40,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
         <div>
           <h3 class="font-semibold">A good fit if</h3>
-          <ul class="mt-3 space-y-2 text-ink-muted">
+          <ul class="mt-4 space-y-3 text-ink-muted">
             {service.goodFitIf.map((reason) => (
               <li class="flex gap-3">
-                <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                <span
+                  class="mt-2.5 size-1.5 shrink-0 rounded-full bg-ink-muted/60"
+                  aria-hidden="true"
+                />
                 <span>{reason}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <p class="mt-8 text-ink-muted">
-        <span class="font-semibold text-ink">Engagement:</span> {service.engagement}
-      </p>
+      <dl class="mt-10 grid gap-y-1 border-t border-line pt-5 sm:grid-cols-[8rem_1fr] sm:gap-x-8">
+        <dt class="font-medium">Engagement</dt>
+        <dd class="text-ink-muted">{service.engagement}</dd>
+      </dl>
     </Section>
   ))}
 

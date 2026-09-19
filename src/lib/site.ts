@@ -8,12 +8,10 @@ export const SITE = {
     'Independent Java and Spring consultant helping teams ship faster with test-driven development, domain-driven design and reliable CI/CD pipelines.',
   url: 'https://zlatanov.xyz',
   author: 'Boyan Zlatanov',
-  // TODO: replace with the real address.
-  email: 'hello@zlatanov.xyz',
+  email: 'boyan@zlatanov.xyz',
   locale: 'en',
   social: {
     github: 'https://github.com/G2HJei',
-    // TODO: replace with the real LinkedIn profile URL.
     linkedin: 'https://www.linkedin.com/in/boyan-zlatanov/',
   },
 } as const;
