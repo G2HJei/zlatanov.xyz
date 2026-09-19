@@ -30,3 +30,6 @@ playwright/.cache/
 *.njsproj
 *.sln
 *.sw?
+
+# Browser screenshots taken by Claude Code while reviewing the design
+.playwright-mcp/

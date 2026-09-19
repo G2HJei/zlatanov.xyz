@@ -11,25 +11,28 @@ import { chromium } from '@playwright/test';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const font = readFileSync(
-  path.join(root, 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'),
+  path.join(
+    root,
+    'node_modules/@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2',
+  ),
 ).toString('base64');
 
 const html = `<!doctype html>
 <html><head><meta charset="utf-8"><style>
-  @font-face { font-family: Inter; src: url(data:font/woff2;base64,${font}) format('woff2'); font-weight: 100 900; }
+  @font-face { font-family: Plex; src: url(data:font/woff2;base64,${font}) format('woff2'); font-weight: 100 900; }
   * { box-sizing: border-box; }
-  body { margin: 0; width: 1200px; height: 630px; padding: 72px 80px; background: #0c0a09; color: #f5f5f4;
-         font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-  .bar { position: absolute; inset: 0 0 auto 0; height: 10px; background: #2dd4bf; }
-  .eyebrow { font-family: ui-monospace, Consolas, monospace; color: #2dd4bf; font-size: 26px; letter-spacing: 0.02em; }
+  body { margin: 0; width: 1200px; height: 630px; padding: 72px 80px; background: #0b0e15; color: #ebeff2;
+         font-family: Plex, system-ui, sans-serif; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+  .bar { position: absolute; inset: 0 0 auto 0; height: 10px; background: #48cd8c; }
+  .eyebrow { color: #48cd8c; font-size: 28px; font-weight: 500; }
   h1 { margin: 20px 0 0; font-size: 74px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 600; max-width: 1000px; text-wrap: balance; }
-  .footer { display: flex; justify-content: space-between; align-items: baseline; font-size: 28px; color: #a8a29e; }
-  .footer strong { color: #f5f5f4; font-weight: 600; }
+  .footer { display: flex; justify-content: space-between; align-items: baseline; font-size: 28px; color: #9199a5; }
+  .footer strong { color: #ebeff2; font-weight: 600; }
 </style></head>
 <body>
   <div class="bar"></div>
   <div>
-    <div class="eyebrow">Independent Java consultant · TDD · DDD · CI/CD</div>
+    <div class="eyebrow">Independent Java consultant for TDD, DDD and CI/CD</div>
     <h1>Ship Java systems you can change with confidence.</h1>
   </div>
   <div class="footer"><strong>Boyan Zlatanov</strong><span>zlatanov.xyz</span></div>

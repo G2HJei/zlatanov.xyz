@@ -9,8 +9,8 @@ const { quote, name, role, company } = Astro.props.testimonial;
 const attribution = [role, company].filter(Boolean).join(', ');
 ---
 
-<figure class="flex h-full flex-col rounded-lg border border-line p-6">
-  <blockquote class="flex-1 text-ink">
+<figure class="flex h-full flex-col border-l-2 border-accent pl-5">
+  <blockquote class="flex-1 text-lg leading-relaxed">
     <p>“{quote}”</p>
   </blockquote>
   <figcaption class="mt-4 text-sm text-ink-muted">

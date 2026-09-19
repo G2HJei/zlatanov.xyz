@@ -17,24 +17,24 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { entry } = Astro.props;
 const { title, client, period, stack, summary, outcome } = entry.data;
 const { Content } = await render(entry);
-const meta = [client, period].filter(Boolean).join(' · ');
+const meta = [client, period].filter(Boolean).join(', ');
 ---
 
 <BaseLayout title={title} description={summary} type="article">
-  <article class="mx-auto max-w-3xl">
-    <header class="mb-10">
-      <p class="text-sm text-ink-muted">
-        <a href="/case-studies/" class="hover:text-accent">
+  <article class="mx-auto max-w-2xl py-10 sm:py-16">
+    <header class="mb-10 sm:mb-12">
+      <p class="mb-5 text-sm">
+        <a href="/case-studies/" class="text-ink-muted transition-colors hover:text-ink">
           Work
         </a>
       </p>
-      <h1 class="mt-2 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{title}</h1>
-      {meta && <p class="mt-3 font-mono text-sm text-ink-muted">{meta}</p>}
-      <p class="mt-4 text-lg text-ink-muted">{summary}</p>
+      <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
+      {meta && <p class="mt-4 text-sm text-ink-muted">{meta}</p>}
+      <p class="mt-5 text-lg text-ink-muted sm:text-xl">{summary}</p>
       {stack.length > 0 && (
-        <ul class="mt-5 flex flex-wrap gap-2" aria-label="Stack">
+        <ul class="mt-6 flex flex-wrap gap-2" aria-label="Stack">
           {stack.map((item) => (
-            <li class="rounded-full border border-line px-2.5 py-0.5 text-xs text-ink-muted">
+            <li class="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-ink-muted">
               {item}
             </li>
           ))}
@@ -46,7 +46,7 @@ const meta = [client, period].filter(Boolean).join(' · ');
       <Content />
     </Prose>
 
-    <aside class="mt-12 rounded-lg border-l-4 border-accent bg-surface-muted p-6">
+    <aside class="mt-12 border-l-2 border-accent pl-5">
       <p class="font-semibold">Outcome</p>
       <p class="mt-2 text-ink-muted">{outcome}</p>
     </aside>

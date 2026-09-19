@@ -1,29 +1,21 @@
 ---
+import PageHeader from '../components/PageHeader.astro';
 import Section from '../components/Section.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../lib/site';
 
-const channels = [
-  {
-    label: 'Email',
-    value: SITE.email,
-    href: `mailto:${SITE.email}`,
-    note: 'Best for anything project-related.',
-    external: false,
-  },
+const elsewhere = [
   {
     label: 'LinkedIn',
     value: 'Connect or message',
     href: SITE.social.linkedin,
     note: 'Background, recommendations and updates.',
-    external: true,
   },
   {
     label: 'GitHub',
     value: 'G2HJei',
     href: SITE.social.github,
     note: 'Code, experiments and this site.',
-    external: true,
   },
 ];
 
@@ -39,40 +31,46 @@ const helpful = [
   title="Contact"
   description="Get in touch about Java consulting, TDD and DDD coaching or CI/CD work."
 >
-  <div class="mx-auto max-w-3xl">
-    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Contact</h1>
-    <p class="mt-4 text-lg text-ink-muted">
-      The quickest way to reach me is email. Tell me a little about your team and what you are
-      trying to change, and I will get back to you.
-    </p>
+  <PageHeader
+    title="Contact"
+    lead="The quickest way to reach me is email. Tell me a little about your team and what you are trying to change, and I will get back to you."
+  >
+    <a
+      href={`mailto:${SITE.email}`}
+      class="mt-8 inline-block text-2xl font-semibold underline decoration-line decoration-2 underline-offset-[10px] hover:decoration-accent tracking-tight break-all transition-colors hover:text-accent sm:text-3xl"
+    >
+      {SITE.email}
+    </a>
+  </PageHeader>
 
-    <ul class="mt-10 grid gap-4 sm:grid-cols-3">
-      {channels.map((channel) => (
-        <li>
-          <a
-            href={channel.href}
-            rel={channel.external ? 'me noopener' : undefined}
-            class="group block h-full rounded-lg border border-line p-5 transition-colors hover:border-accent"
-          >
-            <span class="block font-mono text-xs text-ink-muted">{channel.label}</span>
-            <span class="mt-1 block font-medium break-words group-hover:text-accent">
+  <Section title="Elsewhere">
+    <ul class="divide-y divide-line">
+      {elsewhere.map((channel) => (
+        <li class="grid gap-y-1 py-5 first:pt-0 last:pb-0 sm:grid-cols-[8rem_1fr] sm:gap-x-8">
+          <span class="text-sm text-ink-muted sm:pt-1">{channel.label}</span>
+          <div>
+            <a
+              href={channel.href}
+              rel="me noopener"
+              class="text-lg font-medium tracking-tight transition-colors hover:text-accent"
+            >
               {channel.value}
-            </span>
-            <span class="mt-2 block text-sm text-ink-muted">{channel.note}</span>
-          </a>
+            </a>
+            <p class="mt-1 text-sm text-ink-muted">{channel.note}</p>
+          </div>
         </li>
       ))}
     </ul>
+  </Section>
 
-    <Section title="What helps me reply well">
-      <ul class="space-y-2 text-ink-muted">
-        {helpful.map((item) => (
-          <li class="flex gap-3">
-            <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  </div>
+  <Section title="What helps me reply well">
+    <ul class="space-y-3 text-ink-muted">
+      {helpful.map((item) => (
+        <li class="flex gap-3">
+          <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-ink-muted/60" aria-hidden="true" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
 </BaseLayout>

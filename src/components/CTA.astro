@@ -13,13 +13,19 @@ const {
 } = Astro.props;
 ---
 
-<section class="mt-24 rounded-xl border border-line bg-surface-muted px-6 py-10 sm:px-10">
-  <h2 class="text-2xl font-semibold tracking-tight">{title}</h2>
-  <p class="mt-3 max-w-2xl text-ink-muted">{text}</p>
-  <div class="mt-6 flex flex-wrap gap-3">
-    <ButtonLink href="/contact/">Get in touch</ButtonLink>
-    <ButtonLink href={`mailto:${SITE.email}`} variant="secondary">
-      {SITE.email}
-    </ButtonLink>
+<section class="border-t border-line py-16 sm:py-20 lg:py-24" aria-labelledby="cta-heading">
+  <div class="grid gap-y-6 lg:grid-cols-12 lg:gap-x-12">
+    <h2 id="cta-heading" class="text-3xl font-semibold tracking-tight sm:text-4xl lg:col-span-5">
+      {title}
+    </h2>
+    <div class="lg:col-span-6 lg:col-start-7">
+      <p class="text-lg text-ink-muted">{text}</p>
+      <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <ButtonLink href="/contact/">Get in touch</ButtonLink>
+        <a href={`mailto:${SITE.email}`} class="text-link">
+          {SITE.email}
+        </a>
+      </div>
+    </div>
   </div>
 </section>

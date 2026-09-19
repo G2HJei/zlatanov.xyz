@@ -18,7 +18,7 @@ const linked = tags.map((tag) => ({ tag, slug: tagSlug(tag) })).filter(({ slug }
       <li>
         <a
           href={tagUrl(slug)}
-          class="inline-block rounded-full border border-line px-2.5 py-0.5 text-xs text-ink-muted transition-colors hover:border-accent hover:text-accent"
+          class="inline-block rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-ink-muted transition-colors hover:bg-accent/10 hover:text-accent"
         >
           {tag}
         </a>

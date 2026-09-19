@@ -1,0 +1,24 @@
+---
+/** Page-level heading block, shared by landing and content pages so titles line up. */
+interface Props {
+  title: string;
+  lead?: string;
+  /** Optional link back to the parent listing, shown above the title. */
+  back?: { href: string; label: string };
+}
+
+const { title, lead, back } = Astro.props;
+---
+
+<header class="pt-10 pb-12 sm:pt-16 sm:pb-16">
+  {back && (
+    <p class="mb-5 text-sm">
+      <a href={back.href} class="text-ink-muted transition-colors hover:text-ink">
+        {back.label}
+      </a>
+    </p>
+  )}
+  <h1 class="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
+  {lead && <p class="mt-5 max-w-2xl text-lg text-ink-muted sm:text-xl">{lead}</p>}
+  <slot />
+</header>

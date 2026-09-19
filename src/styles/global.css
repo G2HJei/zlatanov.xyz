@@ -5,34 +5,40 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Semantic colour tokens. Light values on :root, dark overrides on .dark.
-   Values are Tailwind's stone/teal palette in OKLCH. */
+   Cool slate neutrals with one "build green" accent. Green means "passing" on this
+   site, so it is reserved for links, checks and active states, never for decoration. */
 :root {
   color-scheme: light;
-  --surface: oklch(98.5% 0.001 106.423); /* stone-50 */
-  --surface-muted: oklch(97% 0.001 106.424); /* stone-100 */
-  --ink: oklch(21.6% 0.006 56.043); /* stone-900 */
-  --ink-muted: oklch(44.4% 0.011 73.639); /* stone-600 */
-  --line: oklch(92.3% 0.003 48.717); /* stone-200 */
-  --accent: oklch(51.1% 0.096 186.391); /* teal-700 */
-  --accent-hover: oklch(43.7% 0.078 188.216); /* teal-800 */
+  --surface: oklch(99.2% 0.002 250);
+  --surface-muted: oklch(96.6% 0.006 250);
+  --ink: oklch(23% 0.03 265);
+  --ink-muted: oklch(47% 0.025 262);
+  --line: oklch(90% 0.009 255);
+  --accent: oklch(50% 0.13 155);
+  --accent-hover: oklch(43% 0.12 155);
   --accent-ink: oklch(100% 0 0);
 }
 
 .dark {
   color-scheme: dark;
-  --surface: oklch(14.7% 0.004 49.25); /* stone-950 */
-  --surface-muted: oklch(21.6% 0.006 56.043); /* stone-900 */
-  --ink: oklch(97% 0.001 106.424); /* stone-100 */
-  --ink-muted: oklch(70.9% 0.01 56.259); /* stone-400 */
-  --line: oklch(26.8% 0.007 34.298); /* stone-800 */
-  --accent: oklch(77.7% 0.152 181.912); /* teal-400 */
-  --accent-hover: oklch(85.5% 0.138 181.071); /* teal-300 */
-  --accent-ink: oklch(14.7% 0.004 49.25);
+  --surface: oklch(16.5% 0.015 265);
+  --surface-muted: oklch(20.5% 0.016 265);
+  --ink: oklch(95% 0.006 250);
+  --ink-muted: oklch(68% 0.02 258);
+  --line: oklch(28% 0.018 262);
+  --accent: oklch(76% 0.15 158);
+  --accent-hover: oklch(83% 0.14 158);
+  --accent-ink: oklch(16.5% 0.015 265);
 }
 
 @theme {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Body copy is 17px; Tailwind's `text-base` follows it. */
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.6;
+  /* Display headlines are set tighter than `tracking-tight`. */
+  --tracking-display: -0.03em;
 }
 
 /* `inline` makes utilities like `bg-surface` compile to `var(--surface)` directly,
@@ -48,13 +54,24 @@
   --color-accent-ink: var(--accent-ink);
 }
 
+/* Inline text link: ink with a hairline underline, green on hover. */
+@utility text-link {
+  @apply font-medium text-ink underline decoration-line decoration-[1.5px] underline-offset-[5px] transition-colors hover:text-accent hover:decoration-accent;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-surface font-sans text-ink antialiased;
+    @apply bg-surface font-sans text-base text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 
   :focus-visible {
@@ -73,6 +90,7 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
       transition-duration: 0.01ms !important;
     }
   }
@@ -80,7 +98,12 @@
 
 /* Shiki emits `light-dark()` colours; the border keeps blocks legible on both themes. */
 .astro-code {
-  @apply border border-line;
+  @apply rounded-xl border border-line text-[0.9em];
+}
+
+/* Inline code sits on a tinted chip; code inside blocks is left to Shiki. */
+.prose :not(pre) > code {
+  @apply rounded-md bg-surface-muted px-1.5 py-0.5 text-[0.9em] font-normal;
 }
 
 /* Rendered markdown follows the same semantic tokens as the rest of the page,
@@ -95,7 +118,7 @@
   --tw-prose-bullets: var(--ink-muted);
   --tw-prose-hr: var(--line);
   --tw-prose-quotes: var(--ink);
-  --tw-prose-quote-borders: var(--line);
+  --tw-prose-quote-borders: var(--accent);
   --tw-prose-captions: var(--ink-muted);
   --tw-prose-kbd: var(--ink);
   --tw-prose-code: var(--ink);
