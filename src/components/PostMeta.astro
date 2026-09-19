@@ -12,22 +12,31 @@ interface Props {
 const { date, updated, author, readingTime, class: className } = Astro.props;
 ---
 
-<p class:list={['flex flex-wrap items-center gap-x-2 text-sm text-ink-muted', className]}>
-  {author && (
-    <>
-      <span>{author}</span>
-      <span aria-hidden="true">·</span>
-    </>
-  )}
+<p
+  class:list={[
+    'meta flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted',
+    className,
+  ]}
+>
+  {author && <span class="font-medium text-ink">{author}</span>}
   <time datetime={toIsoDate(date)}>{formatDate(date)}</time>
   {updated && (
-    <>
-      <span aria-hidden="true">·</span>
-      <span>
-        Updated <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time>
-      </span>
-    </>
+    <span>
+      Updated <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time>
+    </span>
   )}
-  <span aria-hidden="true">·</span>
   <span>{readingTime}</span>
 </p>
+
+<style>
+  /* A hairline between items instead of a middle dot. */
+  .meta > * + *::before {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 0.75em;
+    margin-right: 0.75rem;
+    background: var(--line);
+    vertical-align: -0.05em;
+  }
+</style>

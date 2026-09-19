@@ -2,6 +2,7 @@
 import { getPublishedPosts } from '../collections';
 import ButtonLink from '../components/ButtonLink.astro';
 import CTA from '../components/CTA.astro';
+import Pipeline from '../components/Pipeline.astro';
 import PostCard from '../components/PostCard.astro';
 import Section from '../components/Section.astro';
 import ServiceCard from '../components/ServiceCard.astro';
@@ -16,45 +17,46 @@ const latest = (await getPublishedPosts()).slice(0, 3);
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
-  <section class="mx-auto max-w-3xl py-8 sm:py-16">
-    <p class="font-mono text-sm text-accent">Independent Java consultant</p>
-    <h1 class="mt-3 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+  <section class="pt-12 pb-16 sm:pt-20 sm:pb-24" aria-labelledby="hero-heading">
+    <h1
+      id="hero-heading"
+      class="max-w-4xl text-[2.5rem] leading-[1.02] font-semibold tracking-display sm:text-6xl lg:text-7xl"
+    >
       Ship Java systems you can change with confidence.
     </h1>
-    <p class="mt-6 text-lg text-ink-muted sm:text-xl">
+    <p class="mt-7 max-w-2xl text-lg leading-relaxed text-ink-muted sm:text-xl">
       I help teams deliver faster and safer with test-driven development, domain-driven design and
       CI/CD that make every commit releasable.
     </p>
-    <div class="mt-8 flex flex-wrap gap-3">
+    <div class="mt-9 flex flex-wrap items-center gap-3">
       <ButtonLink href="/contact/">Book a conversation</ButtonLink>
       <ButtonLink href="/blog/" variant="secondary">
         Read the blog
       </ButtonLink>
     </div>
+    <Pipeline class="mt-16 sm:mt-24" />
   </section>
 
   <Section
     title="How I can help"
     lead="Three ways teams usually bring me in. Most engagements combine two of them."
   >
-    <ul class="grid gap-6 md:grid-cols-3">
+    <a slot="action" href="/services/" class="text-link">
+      All services
+    </a>
+    <ul class="divide-y divide-line">
       {services.map((service) => (
-        <li>
+        <li class="py-6 first:pt-0 last:pb-0">
           <ServiceCard service={service} />
         </li>
       ))}
     </ul>
-    <p class="mt-6 text-sm">
-      <a href="/services/" class="font-medium text-accent hover:underline">
-        All services →
-      </a>
-    </p>
   </Section>
 
   <Section title="How I work">
-    <dl class="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+    <dl class="grid gap-x-8 gap-y-8 sm:grid-cols-2">
       {principles.map((principle) => (
-        <div>
+        <div class="border-t border-line pt-4">
           <dt class="font-semibold">{principle.title}</dt>
           <dd class="mt-2 text-ink-muted">{principle.text}</dd>
         </div>
@@ -64,7 +66,7 @@ const latest = (await getPublishedPosts()).slice(0, 3);
 
   {testimonials.length > 0 && (
     <Section title="What clients say">
-      <ul class="grid gap-6 md:grid-cols-2">
+      <ul class="grid gap-8 md:grid-cols-2">
         {testimonials.map((testimonial) => (
           <li>
             <Testimonial testimonial={testimonial} />
@@ -76,8 +78,8 @@ const latest = (await getPublishedPosts()).slice(0, 3);
 
   {latest.length > 0 && (
     <Section title="Latest writing">
-      <a slot="action" href="/blog/" class="text-sm font-medium text-accent hover:underline">
-        All posts →
+      <a slot="action" href="/blog/" class="text-link">
+        All posts
       </a>
       <ul class="divide-y divide-line">
         {latest.map((post) => (

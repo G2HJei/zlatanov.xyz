@@ -1,8 +1,10 @@
 ---
+import { nav } from '../data/nav';
 import { SITE } from '../lib/site';
+import Logo from './Logo.astro';
 
 const year = new Date().getFullYear();
-const links = [
+const elsewhere = [
   { href: SITE.social.github, label: 'GitHub', external: true },
   { href: SITE.social.linkedin, label: 'LinkedIn', external: true },
   { href: `mailto:${SITE.email}`, label: 'Email', external: false },
@@ -10,23 +12,47 @@ const links = [
 ];
 ---
 
-<footer class="mt-24 border-t border-line">
-  <div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-10 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
-    <p>
-      © {year} {SITE.name}. Java consulting, TDD, DDD and CI/CD.
+<footer class="border-t border-line">
+  <div class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
+    <div class="grid grid-cols-2 gap-10 sm:grid-cols-12">
+      <div class="col-span-2 sm:col-span-6 lg:col-span-5">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2.5 font-semibold tracking-tight transition-colors hover:text-accent"
+        >
+          <Logo class="size-5" />
+          <span>{SITE.name}</span>
+        </a>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-ink-muted">
+          Independent Java and Spring consultant. Test-driven development, domain-driven design and
+          CI/CD for teams that want to ship with confidence.
+        </p>
+      </div>
+      <ul class="space-y-2.5 text-sm sm:col-span-3 lg:col-span-2 lg:col-start-8">
+        {nav.map((link) => (
+          <li>
+            <a href={link.href} class="text-ink-muted transition-colors hover:text-ink">
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <ul class="space-y-2.5 text-sm sm:col-span-3 lg:col-span-2">
+        {elsewhere.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              rel={link.external ? 'me noopener' : undefined}
+              class="text-ink-muted transition-colors hover:text-ink"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <p class="mt-12 text-xs text-ink-muted">
+      © {year} {SITE.name}
     </p>
-    <ul class="flex flex-wrap gap-x-5 gap-y-1">
-      {links.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            rel={link.external ? 'me noopener' : undefined}
-            class="transition-colors hover:text-accent"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-    </ul>
   </div>
 </footer>

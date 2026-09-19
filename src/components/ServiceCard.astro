@@ -1,6 +1,7 @@
 ---
 import type { Service } from '../data/services';
 
+/** One row in the services list: title on the left, tagline on the right. */
 interface Props {
   service: Service;
 }
@@ -9,14 +10,11 @@ const { service } = Astro.props;
 const href = `/services/#${service.slug}`;
 ---
 
-<article class="flex h-full flex-col rounded-lg border border-line p-6">
-  <h3 class="text-lg font-semibold">
+<article class="grid gap-y-1.5 sm:grid-cols-[15rem_1fr] sm:gap-x-8">
+  <h3 class="text-lg font-semibold tracking-tight">
     <a href={href} class="transition-colors hover:text-accent">
       {service.title}
     </a>
   </h3>
-  <p class="mt-2 flex-1 text-ink-muted">{service.tagline}</p>
-  <a href={href} class="mt-5 text-sm font-medium text-accent hover:underline">
-    Learn more →
-  </a>
+  <p class="text-ink-muted">{service.tagline}</p>
 </article>

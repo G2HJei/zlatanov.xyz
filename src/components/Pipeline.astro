@@ -1,0 +1,86 @@
+---
+/**
+ * The hero device: a commit passing through the pipeline and coming out green.
+ * Purely visual (role="img"); the headline and lead carry the message in text.
+ * One CSS-only animation runs on page load; reduced-motion users see the end state.
+ */
+import CheckIcon from './CheckIcon.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const stages = ['commit', 'tests', 'build', 'deploy'];
+const last = stages.length - 1;
+
+const labelPosition = (index: number) =>
+  index === 0 ? 'left-0' : index === last ? 'right-0' : 'left-1/2 -translate-x-1/2';
+---
+
+<div
+  role="img"
+  aria-label="A commit passing tests, build and deploy"
+  class:list={['pipeline flex items-start pb-8', className]}
+>
+  {stages.map((stage, index) => (
+    <>
+      {index > 0 && (
+        <span class="relative mt-3.5 h-px flex-1 overflow-hidden bg-line" style={`--i: ${index}`}>
+          <span class="fill absolute inset-0 origin-left bg-accent"></span>
+        </span>
+      )}
+      <span class="relative" style={`--i: ${index}`}>
+        <span class="node grid size-7 place-items-center rounded-full bg-accent text-accent-ink">
+          <CheckIcon class="size-3.5" />
+        </span>
+        <span
+          class:list={[
+            'absolute top-full mt-2.5 text-xs whitespace-nowrap text-ink-muted sm:text-sm',
+            labelPosition(index),
+          ]}
+        >
+          {stage}
+        </span>
+      </span>
+    </>
+  ))}
+</div>
+
+<style>
+  .pipeline {
+    --step: 420ms;
+    --lead: 120ms;
+  }
+
+  /* Node i pops when the line reaching it has finished filling. */
+  .node {
+    animation: node-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i) * var(--step));
+  }
+
+  .fill {
+    animation: fill-in calc(var(--step) - var(--lead)) linear both;
+    animation-delay: calc((var(--i) - 1) * var(--step) + var(--lead));
+  }
+
+  @keyframes node-in {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fill-in {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>

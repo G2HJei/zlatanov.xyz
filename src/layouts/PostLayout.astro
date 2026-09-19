@@ -28,11 +28,16 @@ const minutes = readingTime(entry.body ?? '').text;
   tags={tags}
   author={author}
 >
-  <article class="mx-auto max-w-3xl">
-    <header class="mb-10">
-      <h1 class="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{title}</h1>
-      <p class="mt-4 text-lg text-ink-muted">{description}</p>
-      <PostMeta author={author} date={date} updated={updated} readingTime={minutes} class="mt-5" />
+  <article class="mx-auto max-w-2xl py-10 sm:py-16">
+    <header class="mb-10 sm:mb-12">
+      <p class="mb-5 text-sm">
+        <a href="/blog/" class="text-ink-muted transition-colors hover:text-ink">
+          Blog
+        </a>
+      </p>
+      <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
+      <p class="mt-5 text-lg text-ink-muted sm:text-xl">{description}</p>
+      <PostMeta author={author} date={date} updated={updated} readingTime={minutes} class="mt-6" />
       <TagList tags={tags} class="mt-4" />
     </header>
 
@@ -43,18 +48,22 @@ const minutes = readingTime(entry.body ?? '').text;
     {(older || newer) && (
       <nav
         aria-label="Adjacent posts"
-        class="mt-16 grid gap-4 border-t border-line pt-8 text-sm sm:grid-cols-2"
+        class="mt-16 grid gap-6 border-t border-line pt-8 text-sm sm:grid-cols-2"
       >
         {older && (
           <a href={postUrl(older.id)} rel="prev" class="group">
-            <span class="block text-ink-muted">← Older</span>
-            <span class="mt-1 block font-medium group-hover:text-accent">{older.data.title}</span>
+            <span class="block text-ink-muted">Older</span>
+            <span class="mt-1 block text-base font-medium transition-colors group-hover:text-accent">
+              {older.data.title}
+            </span>
           </a>
         )}
         {newer && (
           <a href={postUrl(newer.id)} rel="next" class="group sm:col-start-2 sm:text-right">
-            <span class="block text-ink-muted">Newer →</span>
-            <span class="mt-1 block font-medium group-hover:text-accent">{newer.data.title}</span>
+            <span class="block text-ink-muted">Newer</span>
+            <span class="mt-1 block text-base font-medium transition-colors group-hover:text-accent">
+              {newer.data.title}
+            </span>
           </a>
         )}
       </nav>

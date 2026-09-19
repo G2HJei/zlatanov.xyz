@@ -9,10 +9,11 @@ const { class: className } = Astro.props;
 
 <div
   class:list={[
-    'prose max-w-none',
+    'prose prose-lg max-w-none',
     'prose-headings:font-semibold prose-headings:tracking-tight',
-    'prose-a:text-accent prose-a:decoration-accent/40 hover:prose-a:decoration-accent',
+    'prose-a:decoration-accent/40 prose-a:underline-offset-[3px] hover:prose-a:decoration-accent',
     'prose-code:before:content-none prose-code:after:content-none',
+    'prose-img:rounded-xl',
     className,
   ]}
 >

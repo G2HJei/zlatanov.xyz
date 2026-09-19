@@ -1,8 +1,8 @@
 ---
 import type { Post } from '../collections';
+import { formatDate, toIsoDate } from '../lib/dates';
 import { postUrl } from '../lib/posts';
 import { readingTime } from '../lib/reading-time';
-import PostMeta from './PostMeta.astro';
 import TagList from './TagList.astro';
 
 interface Props {
@@ -11,15 +11,23 @@ interface Props {
 
 const { post } = Astro.props;
 const { title, description, date, tags } = post.data;
+const minutes = readingTime(post.body ?? '').text;
 ---
 
-<article>
-  <h2 class="text-xl font-semibold tracking-tight">
-    <a href={postUrl(post.id)} class="transition-colors hover:text-accent">
-      {title}
-    </a>
-  </h2>
-  <PostMeta date={date} readingTime={readingTime(post.body ?? '').text} class="mt-1" />
-  <p class="mt-3 text-ink-muted">{description}</p>
-  <TagList tags={tags} class="mt-4" />
+<article class="grid gap-y-2 sm:grid-cols-[8.5rem_1fr] sm:gap-x-8">
+  <p class="flex gap-x-3 text-sm text-ink-muted sm:block sm:pt-1">
+    <time datetime={toIsoDate(date)} class="sm:block">
+      {formatDate(date)}
+    </time>
+    <span class="sm:mt-1 sm:block">{minutes}</span>
+  </p>
+  <div>
+    <h2 class="text-xl font-semibold tracking-tight">
+      <a href={postUrl(post.id)} class="transition-colors hover:text-accent">
+        {title}
+      </a>
+    </h2>
+    <p class="mt-2 text-ink-muted">{description}</p>
+    <TagList tags={tags} class="mt-4" />
+  </div>
 </article>
