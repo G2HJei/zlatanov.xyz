@@ -9,11 +9,8 @@ export default defineConfig({
   build: { format: 'directory' },
   integrations: [sitemap()],
   markdown: {
-    shikiConfig: {
-      themes: { light: 'github-light', dark: 'github-dark' },
-      defaultColor: 'light-dark()',
-      wrap: true,
-    },
+    // One dark theme, black-backed to sit on the site's surfaces.
+    shikiConfig: { theme: 'vitesse-black', wrap: true },
   },
   vite: { plugins: [tailwindcss()] },
 });

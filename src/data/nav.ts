@@ -1,8 +1,5 @@
-/** Primary navigation, shared by the header and the footer. */
+/** Primary navigation: two pages, lower-case like shell commands. */
 export const nav = [
-  { href: '/services/', label: 'Services' },
-  { href: '/case-studies/', label: 'Work' },
-  { href: '/blog/', label: 'Blog' },
-  { href: '/about/', label: 'About' },
-  { href: '/contact/', label: 'Contact' },
+  { href: '/', label: 'home' },
+  { href: '/blog/', label: 'blog' },
 ] as const;

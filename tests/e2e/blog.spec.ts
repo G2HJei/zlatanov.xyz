@@ -1,15 +1,19 @@
 import { expect, test } from '@playwright/test';
 
+// Post cards on the blog page live under the "posts" heading, so a published case
+// study in the "work" card above them never gets mistaken for a post.
+const firstPostLink = 'main #posts article h3 a';
+
 test('blog index lists posts and links through to a post page', async ({ page }) => {
   await page.goto('/blog/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog');
 
-  const cards = page.locator('main article');
+  const cards = page.locator('main #posts article');
   await expect(cards).not.toHaveCount(0);
 
-  const firstLink = cards.first().locator('h2 a');
-  const title = (await firstLink.textContent())?.trim();
-  await firstLink.click();
+  const link = page.locator(firstPostLink).first();
+  const title = (await link.textContent())?.trim();
+  await link.click();
 
   await expect(page).toHaveURL(/\/blog\/[a-z0-9-]+\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(title ?? '');
@@ -17,7 +21,7 @@ test('blog index lists posts and links through to a post page', async ({ page })
 
 test('a post shows author, date, reading time and tags', async ({ page }) => {
   await page.goto('/blog/');
-  await page.locator('main article h2 a').first().click();
+  await page.locator(firstPostLink).first().click();
 
   const article = page.locator('main article');
   await expect(article.getByText('Boyan Zlatanov').first()).toBeVisible();
@@ -38,7 +42,7 @@ test('a post shows author, date, reading time and tags', async ({ page }) => {
 
 test('post pages expose article metadata for social previews', async ({ page }) => {
   await page.goto('/blog/');
-  await page.locator('main article h2 a').first().click();
+  await page.locator(firstPostLink).first().click();
 
   await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(

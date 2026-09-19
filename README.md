@@ -2,8 +2,10 @@
 
 Personal site and blog of Boyan Zlatanov: Java and Spring consulting, TDD, DDD and CI/CD.
 
-A static [Astro](https://astro.build) site styled with Tailwind CSS v4, no UI framework, shipped as
-an nginx Docker image and served behind the owner's reverse proxy.
+A static [Astro](https://astro.build) site styled with Tailwind CSS v4 in a dark, terminal-inspired
+look (phosphor green on near-black, no client JavaScript), shipped as an nginx Docker image and
+served behind the owner's reverse proxy. Two pages: `/` (profile, about, services, how I work,
+contact) and `/blog/` (subscribe, work, posts), plus the post, tag and case-study pages behind them.
 
 ## Develop
 
@@ -14,18 +16,19 @@ npm ci
 npm run dev        # http://localhost:4321/ (drafts visible)
 ```
 
-| Command            | Purpose                                                |
-| ------------------ | ------------------------------------------------------ |
-| `npm run build`    | Static build into `dist/` (drafts excluded)            |
-| `npm run preview`  | Serve `dist/` locally                                  |
-| `npm run check`    | `astro check`: type-checks `.astro` and `.ts`          |
-| `npm run lint`     | oxlint                                                 |
-| `npm run format`   | Prettier (astro + tailwind plugins)                    |
-| `npm test`         | Vitest unit tests (`tests/unit/`)                      |
-| `npm run test:e2e` | Builds, serves `dist/`, runs Playwright (`tests/e2e/`) |
-| `npm run og:image` | Regenerates `public/og-default.png`                    |
+| Command            | Purpose                                                  |
+| ------------------ | -------------------------------------------------------- |
+| `npm run build`    | Static build into `dist/` (drafts excluded)              |
+| `npm run preview`  | Serve `dist/` locally                                    |
+| `npm run check`    | `astro check`: type-checks `.astro` and `.ts`            |
+| `npm run lint`     | oxlint                                                   |
+| `npm run format`   | Prettier (astro + tailwind plugins)                      |
+| `npm test`         | Vitest unit tests (`tests/unit/`)                        |
+| `npm run test:e2e` | Builds, serves `dist/`, runs Playwright (`tests/e2e/`)   |
+| `npm run og:image` | Regenerates `public/og-default.png` and the favicon PNGs |
 
-First Playwright run on a machine: `npx playwright install chromium`.
+First Playwright run on a machine: `npx playwright install chromium`. If port 4321 is busy, run
+`PORT=4399 npm run test:e2e`.
 
 ## Write a post
 
@@ -44,10 +47,14 @@ tests flag that.
 
 ## Site copy and case studies
 
-- Landing-page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/testimonials.ts`
-  (empty until real quotes exist).
-- Name, URL, email and social links: `src/lib/site.ts`.
+- Home page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/profile.ts`
+  (tagline, tool list, contact tips) and `src/data/testimonials.ts` (empty until real quotes exist).
+  The bio paragraphs live in `src/pages/index.astro`.
+- Name, domain, slogan, URL, email and social links: `src/lib/site.ts`.
 - Case studies: `content/case-studies/*.md`, same draft rules as posts. Start from `_template.md`.
+  Published ones appear in the `work` card on `/blog/`.
+- Colours and fonts: `src/styles/global.css`. After changing the green or the slogan, run
+  `npm run og:image` so the social preview and favicons match.
 
 ## Deploy
 

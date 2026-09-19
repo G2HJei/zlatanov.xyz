@@ -1,41 +1,101 @@
 ---
-import { getPublishedPosts } from '../../collections';
-import PageHeader from '../../components/PageHeader.astro';
+import { getCaseStudies, getPublishedPosts } from '../../collections';
+import ButtonLink from '../../components/ButtonLink.astro';
+import Card from '../../components/Card.astro';
+import Hero from '../../components/Hero.astro';
+import Icon from '../../components/Icon.astro';
 import PostCard from '../../components/PostCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { caseStudyUrl } from '../../lib/posts';
 
 const posts = await getPublishedPosts();
+const studies = await getCaseStudies();
 ---
 
 <BaseLayout
   title="Blog"
   description="Notes on Java and Spring, test-driven development, domain-driven design and CI/CD, written from consulting engagements."
 >
-  <div class="max-w-3xl pb-16 sm:pb-24">
-    <PageHeader title="Blog">
-      <p class="mt-5 max-w-2xl text-lg text-ink-muted sm:text-xl">
-        Practical notes on Java, TDD, DDD and CI/CD. Browse by{' '}
-        <a href="/blog/tags/" class="text-link">
-          tag
-        </a>{' '}
-        or subscribe via{' '}
-        <a href="/rss.xml" class="text-link">
-          RSS
-        </a>
-        .
-      </p>
-    </PageHeader>
+  <Hero title="Blog" subtitle="notes on Java, TDD, DDD and CI/CD" />
 
-    {posts.length === 0 ? (
-      <p class="text-ink-muted">No posts yet.</p>
-    ) : (
-      <ul class="divide-y divide-line border-t border-line">
-        {posts.map((post) => (
-          <li class="py-8">
-            <PostCard post={post} />
-          </li>
-        ))}
-      </ul>
-    )}
+  <div class="space-y-8">
+    <Card id="subscribe" title="subscribe" class="text-center">
+      <p class="mx-auto max-w-2xl text-[1.1rem] text-ink-muted">
+        Practical notes from real engagements, a few times a year. Browse by tag or point your feed
+        reader at the RSS feed.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <ButtonLink href="/rss.xml">
+          <Icon name="rss" class="size-5" />
+          RSS feed
+        </ButtonLink>
+        <ButtonLink href="/blog/tags/" variant="dim">
+          <Icon name="tag" class="size-5" />
+          Browse tags
+        </ButtonLink>
+      </div>
+    </Card>
+
+    <Card id="work" title="work">
+      <p class="text-ink-muted">
+        Selected engagements, described in terms of the problem, the approach and what changed for
+        the team.
+      </p>
+      {studies.length === 0 ? (
+        <p class="mt-6 rounded-xl border border-line bg-surface-raised p-5 font-mono text-sm text-ink-muted before:text-accent before:content-['$_']">
+          Detailed write-ups are on their way. In the meantime I am happy to walk you through
+          relevant engagements in a call.
+        </p>
+      ) : (
+        <ul class="mt-8 divide-y divide-line">
+          {studies.map((study) => {
+            const meta = [study.data.client, study.data.period].filter(Boolean).join(', ');
+            return (
+              <li class="py-8 first:pt-0 last:pb-0">
+                <article>
+                  {meta && <p class="font-mono text-sm text-ink-faint">{meta}</p>}
+                  <h3 class="mt-2 text-2xl font-semibold text-accent">
+                    <a href={caseStudyUrl(study.id)} class="transition hover:glow-text">
+                      {study.data.title}
+                    </a>
+                  </h3>
+                  <p class="mt-3 text-ink-muted">{study.data.summary}</p>
+                  <p class="mt-4 rounded-r-lg border-l-4 border-accent bg-surface-raised px-4 py-3">
+                    {study.data.outcome}
+                  </p>
+                  {study.data.stack.length > 0 && (
+                    <ul class="mt-5 flex flex-wrap gap-2" aria-label="Stack">
+                      {study.data.stack.map((item) => (
+                        <li class="rounded-full border border-line bg-surface-raised px-3 py-1 font-mono text-xs text-ink-muted">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Card>
+
+    <section id="posts" aria-labelledby="posts-heading">
+      <h2
+        id="posts-heading"
+        class="mb-6 font-mono text-2xl font-semibold text-accent before:text-ink-faint before:content-['#_']"
+      >
+        posts
+      </h2>
+      {posts.length === 0 ? (
+        <p class="font-mono text-ink-faint">No posts yet.</p>
+      ) : (
+        <div class="grid gap-8">
+          {posts.map((post) => (
+            <PostCard post={post} headingLevel="h3" />
+          ))}
+        </div>
+      )}
+    </section>
   </div>
 </BaseLayout>

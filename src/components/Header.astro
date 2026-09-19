@@ -1,42 +1,32 @@
 ---
 /**
- * Sticky, translucent site header. On small screens the navigation wraps onto a
- * second, horizontally scrollable row; from `sm` it sits inline as pills.
+ * Sticky, translucent header: a blinking prompt before the domain on the left and
+ * the two-item navigation on the right. Hovering a link draws a green underline;
+ * the current page keeps it.
  */
 import { nav } from '../data/nav';
 import { SITE } from '../lib/site';
-import Logo from './Logo.astro';
-import ThemeToggle from './ThemeToggle.astro';
 
 const path = Astro.url.pathname;
-const isActive = (href: string) => path.startsWith(href);
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
 
-<header class="sticky top-0 z-40 border-b border-line/70 bg-surface/80 backdrop-blur-md">
-  <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 px-5 sm:px-8">
+<header class="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-[10px]">
+  <div class="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 sm:px-8">
     <a
       href="/"
-      class="mr-auto flex h-16 items-center gap-2.5 font-semibold tracking-tight transition-colors hover:text-accent sm:mr-0"
+      class="flex items-center gap-2 font-mono text-[1.2rem] font-bold text-ink transition hover:text-accent before:animate-blink before:text-2xl before:text-accent before:content-['>']"
     >
-      <Logo class="size-5" />
-      <span>{SITE.name}</span>
+      {SITE.domain}
     </a>
-    <nav
-      aria-label="Main"
-      class="order-last w-full overflow-x-auto pb-3 [scrollbar-width:none] sm:order-none sm:ml-auto sm:w-auto sm:overflow-visible sm:pb-0"
-    >
-      <ul class="flex items-center gap-x-5 text-sm sm:gap-x-1">
+    <nav aria-label="Main">
+      <ul class="flex items-center gap-8">
         {nav.map((item) => (
           <li>
             <a
               href={item.href}
               aria-current={isActive(item.href) ? 'page' : undefined}
-              class:list={[
-                'inline-block py-1.5 whitespace-nowrap transition-colors sm:rounded-md sm:px-3',
-                isActive(item.href)
-                  ? 'font-medium text-ink sm:bg-surface-muted'
-                  : 'text-ink-muted hover:text-ink sm:hover:bg-surface-muted/60',
-              ]}
+              class="relative inline-block py-2 font-medium text-ink-muted transition after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-gradient-accent after:transition-[width] after:duration-300 hover:text-accent hover:glow-text hover:after:w-full aria-[current=page]:text-ink aria-[current=page]:after:w-full"
             >
               {item.label}
             </a>
@@ -44,6 +34,5 @@ const isActive = (href: string) => path.startsWith(href);
         ))}
       </ul>
     </nav>
-    <ThemeToggle />
   </div>
 </header>

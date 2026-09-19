@@ -43,8 +43,9 @@ const imageUrl = new URL(image, Astro.site).href;
 <link rel="icon" href="/favicon/favicon-16.png" type="image/png" sizes="16x16" />
 <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfcfe" />
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e15" />
+<!-- The site has one theme; keep these in step with --color-surface in global.css. -->
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0a0a0a" />
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={SITE.name} />

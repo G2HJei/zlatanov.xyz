@@ -1,5 +1,7 @@
 ---
 import type { Post } from '../collections';
+import Card from '../components/Card.astro';
+import Hero from '../components/Hero.astro';
 import PostMeta from '../components/PostMeta.astro';
 import Prose from '../components/Prose.astro';
 import TagList from '../components/TagList.astro';
@@ -16,6 +18,9 @@ interface Props {
 const { entry, newer, older } = Astro.props;
 const { title, description, date, updated, tags, author, cover } = entry.data;
 const minutes = readingTime(entry.body ?? '').text;
+
+const adjacentCard =
+  'group block rounded-xl border border-line bg-surface-muted p-5 transition duration-300 hover:border-accent';
 ---
 
 <BaseLayout
@@ -28,45 +33,55 @@ const minutes = readingTime(entry.body ?? '').text;
   tags={tags}
   author={author}
 >
-  <article class="mx-auto max-w-2xl py-10 sm:py-16">
-    <header class="mb-10 sm:mb-12">
-      <p class="mb-5 text-sm">
-        <a href="/blog/" class="text-ink-muted transition-colors hover:text-ink">
-          Blog
-        </a>
-      </p>
-      <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
-      <p class="mt-5 text-lg text-ink-muted sm:text-xl">{description}</p>
-      <PostMeta author={author} date={date} updated={updated} readingTime={minutes} class="mt-6" />
-      <TagList tags={tags} class="mt-4" />
-    </header>
+  <article class="mx-auto max-w-4xl">
+    <Hero as="header" title={title}>
+      <p class="mx-auto mt-5 max-w-2xl text-lg text-ink-muted">{description}</p>
+      <PostMeta
+        variant="pills"
+        author={author}
+        date={date}
+        updated={updated}
+        readingTime={minutes}
+        class="mt-6 justify-center"
+      />
+      <TagList tags={tags} class="mt-4 justify-center" />
+    </Hero>
 
-    <Prose>
-      <slot />
-    </Prose>
+    <Card as="div">
+      <Prose>
+        <slot />
+      </Prose>
+    </Card>
 
     {(older || newer) && (
-      <nav
-        aria-label="Adjacent posts"
-        class="mt-16 grid gap-6 border-t border-line pt-8 text-sm sm:grid-cols-2"
-      >
+      <nav aria-label="Adjacent posts" class="mt-8 grid gap-4 sm:grid-cols-2">
         {older && (
-          <a href={postUrl(older.id)} rel="prev" class="group">
-            <span class="block text-ink-muted">Older</span>
-            <span class="mt-1 block text-base font-medium transition-colors group-hover:text-accent">
+          <a href={postUrl(older.id)} rel="prev" class={adjacentCard}>
+            <span class="block font-mono text-xs text-ink-faint">&lt; older</span>
+            <span class="mt-1 block font-medium text-ink transition group-hover:text-accent">
               {older.data.title}
             </span>
           </a>
         )}
         {newer && (
-          <a href={postUrl(newer.id)} rel="next" class="group sm:col-start-2 sm:text-right">
-            <span class="block text-ink-muted">Newer</span>
-            <span class="mt-1 block text-base font-medium transition-colors group-hover:text-accent">
+          <a
+            href={postUrl(newer.id)}
+            rel="next"
+            class:list={[adjacentCard, 'text-right sm:col-start-2']}
+          >
+            <span class="block font-mono text-xs text-ink-faint">newer &gt;</span>
+            <span class="mt-1 block font-medium text-ink transition group-hover:text-accent">
               {newer.data.title}
             </span>
           </a>
         )}
       </nav>
     )}
+
+    <p class="mt-10 text-center font-mono text-sm">
+      <a href="/blog/" class="text-ink-faint transition hover:text-accent">
+        $ cd /blog/
+      </a>
+    </p>
   </article>
 </BaseLayout>

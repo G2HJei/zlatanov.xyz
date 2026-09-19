@@ -3,7 +3,8 @@ import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { render } from 'astro:content';
 
 import { getCaseStudies } from '../../collections';
-import CTA from '../../components/CTA.astro';
+import Card from '../../components/Card.astro';
+import Hero from '../../components/Hero.astro';
 import Prose from '../../components/Prose.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
@@ -17,40 +18,49 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { entry } = Astro.props;
 const { title, client, period, stack, summary, outcome } = entry.data;
 const { Content } = await render(entry);
-const meta = [client, period].filter(Boolean).join(', ');
+const meta = [client, period].filter((item) => item !== undefined);
 ---
 
 <BaseLayout title={title} description={summary} type="article">
-  <article class="mx-auto max-w-2xl py-10 sm:py-16">
-    <header class="mb-10 sm:mb-12">
-      <p class="mb-5 text-sm">
-        <a href="/case-studies/" class="text-ink-muted transition-colors hover:text-ink">
-          Work
-        </a>
-      </p>
-      <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
-      {meta && <p class="mt-4 text-sm text-ink-muted">{meta}</p>}
-      <p class="mt-5 text-lg text-ink-muted sm:text-xl">{summary}</p>
-      {stack.length > 0 && (
-        <ul class="mt-6 flex flex-wrap gap-2" aria-label="Stack">
-          {stack.map((item) => (
-            <li class="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-ink-muted">
+  <article class="mx-auto max-w-4xl">
+    <Hero as="header" title={title}>
+      <p class="mx-auto mt-5 max-w-2xl text-lg text-ink-muted">{summary}</p>
+      {meta.length > 0 && (
+        <ul class="mt-6 flex flex-wrap justify-center gap-3 font-mono text-sm text-ink-faint">
+          {meta.map((item) => (
+            <li class="inline-flex items-center rounded-full border border-line bg-surface-raised px-4 py-2">
               {item}
             </li>
           ))}
         </ul>
       )}
-    </header>
+      {stack.length > 0 && (
+        <ul class="mt-4 flex flex-wrap justify-center gap-2" aria-label="Stack">
+          {stack.map((item) => (
+            <li class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs text-accent">
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Hero>
 
-    <Prose>
-      <Content />
-    </Prose>
+    <Card as="div">
+      <Prose>
+        <Content />
+      </Prose>
+      <aside class="mt-10 rounded-r-lg border-l-4 border-accent bg-surface-raised px-6 py-5">
+        <p class="font-mono text-sm text-ink-faint before:text-accent before:content-['>_']">
+          outcome
+        </p>
+        <p class="mt-2 text-ink">{outcome}</p>
+      </aside>
+    </Card>
 
-    <aside class="mt-12 border-l-2 border-accent pl-5">
-      <p class="font-semibold">Outcome</p>
-      <p class="mt-2 text-ink-muted">{outcome}</p>
-    </aside>
+    <p class="mt-10 text-center font-mono text-sm">
+      <a href="/blog/#work" class="text-ink-faint transition hover:text-accent">
+        $ cd /blog/#work
+      </a>
+    </p>
   </article>
-
-  <CTA />
 </BaseLayout>

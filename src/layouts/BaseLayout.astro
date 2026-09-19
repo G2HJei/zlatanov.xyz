@@ -1,8 +1,7 @@
 ---
-import '@fontsource-variable/ibm-plex-sans/wght.css';
-import '@fontsource-variable/ibm-plex-sans/wght-italic.css';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter/wght-italic.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
 
 import type { ComponentProps } from 'astro/types';
@@ -20,31 +19,19 @@ const props = Astro.props;
 <!doctype html>
 <html lang={SITE.locale} class="h-full">
   <head>
-    <!-- Runs before first paint so the stored theme never flashes. -->
-    <script is:inline>
-      (() => {
-        try {
-          const stored = localStorage.getItem('theme');
-          const dark =
-            stored === 'dark' ||
-            (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
-          document.documentElement.classList.toggle('dark', dark);
-        } catch {
-          /* storage unavailable: fall back to the light theme */
-        }
-      })();
-    </script>
     <Head {...props} />
   </head>
   <body class="flex min-h-full flex-col">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-ink"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:font-mono focus:text-surface"
     >
       Skip to content
     </a>
+    <!-- CRT scanlines over the page. Decorative only; clicks pass through. -->
+    <div class="scanlines pointer-events-none fixed inset-0 z-50" aria-hidden="true"></div>
     <Header />
-    <main id="main" class="mx-auto w-full max-w-6xl flex-1 px-5 sm:px-8">
+    <main id="main" class="mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-8">
       <slot />
     </main>
     <Footer />

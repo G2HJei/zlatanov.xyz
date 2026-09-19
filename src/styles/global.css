@@ -1,71 +1,102 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
-/* Class-based dark mode so the user's choice can override the OS preference. */
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* Semantic colour tokens. Light values on :root, dark overrides on .dark.
-   Cool slate neutrals with one "build green" accent. Green means "passing" on this
-   site, so it is reserved for links, checks and active states, never for decoration. */
-:root {
-  color-scheme: light;
-  --surface: oklch(99.2% 0.002 250);
-  --surface-muted: oklch(96.6% 0.006 250);
-  --ink: oklch(23% 0.03 265);
-  --ink-muted: oklch(47% 0.025 262);
-  --line: oklch(90% 0.009 255);
-  --accent: oklch(50% 0.13 155);
-  --accent-hover: oklch(43% 0.12 155);
-  --accent-ink: oklch(100% 0 0);
-}
-
-.dark {
-  color-scheme: dark;
-  --surface: oklch(16.5% 0.015 265);
-  --surface-muted: oklch(20.5% 0.016 265);
-  --ink: oklch(95% 0.006 250);
-  --ink-muted: oklch(68% 0.02 258);
-  --line: oklch(28% 0.018 262);
-  --accent: oklch(76% 0.15 158);
-  --accent-hover: oklch(83% 0.14 158);
-  --accent-ink: oklch(16.5% 0.015 265);
-}
-
+/*
+ * One theme, modelled on an old monochrome monitor: near-black surfaces, grey text
+ * and a single phosphor green. Green carries links, headings, prompts and glows.
+ * Values are hex on purpose so they can be compared with the reference design.
+ */
 @theme {
-  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  /* Body copy is 17px; Tailwind's `text-base` follows it. */
-  --text-base: 1.0625rem;
-  --text-base--line-height: 1.6;
-  /* Display headlines are set tighter than `tracking-tight`. */
-  --tracking-display: -0.03em;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-surface: #0a0a0a;
+  --color-surface-muted: #111111;
+  --color-surface-raised: #1a1a1a;
+  --color-ink: #ffffff;
+  --color-ink-muted: #b0b0b0;
+  --color-ink-faint: #666666;
+  --color-line: #333333;
+  /* P1-phosphor green, dimmed: a little darker and warmer than "Matrix" green. */
+  --color-accent: #20c20e;
+  --color-accent-dim: #1a9b0b;
+  --color-accent-deep: #0f6b07;
+  --color-glow: rgb(32 194 14 / 0.3);
+
+  --shadow-card: 0 4px 20px rgb(0 0 0 / 0.5);
+  --shadow-card-hover: 0 12px 40px rgb(0 0 0 / 0.6);
+
+  --animate-blink: blink 2s linear infinite;
+  --animate-pulse-line: pulse-line 2s ease-in-out infinite;
+
+  @keyframes blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    51%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-line {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: translateX(-50%) scaleX(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(-50%) scaleX(1.5);
+    }
+  }
 }
 
-/* `inline` makes utilities like `bg-surface` compile to `var(--surface)` directly,
-   so they follow the light/dark switch above. */
-@theme inline {
-  --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-ink: var(--ink);
-  --color-ink-muted: var(--ink-muted);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-ink: var(--accent-ink);
+/* Phosphor glow on text: hover states, the slogan. */
+@utility glow-text {
+  text-shadow: 0 0 10px var(--color-glow);
 }
 
-/* Inline text link: ink with a hairline underline, green on hover. */
+@utility glow-text-lg {
+  text-shadow: 0 0 20px var(--color-glow);
+}
+
+/* Green gradient headline, as on the reference profile and blog heroes. */
+@utility text-gradient {
+  background-image: linear-gradient(135deg, var(--color-accent), var(--color-accent-dim));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Horizontal green-to-dim gradient: card top bars, the nav underline. */
+@utility bg-gradient-accent {
+  background-image: linear-gradient(90deg, var(--color-accent), var(--color-accent-dim));
+}
+
+/* Inline text link: green, underlined and glowing on hover. */
 @utility text-link {
-  @apply font-medium text-ink underline decoration-line decoration-[1.5px] underline-offset-[5px] transition-colors hover:text-accent hover:decoration-accent;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: text-shadow 0.3s ease;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-shadow: 0 0 10px var(--color-glow);
+  }
 }
 
 @layer base {
   html {
+    color-scheme: dark;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-surface font-sans text-base text-ink antialiased;
+    @apply bg-surface font-sans text-ink antialiased;
+    line-height: 1.6;
   }
 
   h1,
@@ -79,7 +110,8 @@
   }
 
   ::selection {
-    background-color: color-mix(in oklch, var(--accent) 25%, transparent);
+    background-color: color-mix(in oklch, var(--color-accent) 35%, transparent);
+    color: var(--color-ink);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -91,37 +123,92 @@
     *::after {
       animation-duration: 0.01ms !important;
       animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
   }
 }
 
-/* Shiki emits `light-dark()` colours; the border keeps blocks legible on both themes. */
-.astro-code {
-  @apply rounded-xl border border-line text-[0.9em];
+/* CRT scanlines and a faint vignette over the whole page. Decorative only:
+   pointer events are off and the lines are light enough that text stays crisp. */
+.scanlines {
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.14) 2px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.25) 100%);
 }
 
-/* Inline code sits on a tinted chip; code inside blocks is left to Shiki. */
-.prose :not(pre) > code {
-  @apply rounded-md bg-surface-muted px-1.5 py-0.5 text-[0.9em] font-normal;
-}
-
-/* Rendered markdown follows the same semantic tokens as the rest of the page,
-   so it switches theme with them and never needs `prose-invert`. */
+/* Rendered markdown. Headings and links take the green; code sits on the darkest surface. */
 .prose {
-  --tw-prose-body: var(--ink);
-  --tw-prose-headings: var(--ink);
-  --tw-prose-lead: var(--ink-muted);
-  --tw-prose-links: var(--accent);
-  --tw-prose-bold: var(--ink);
-  --tw-prose-counters: var(--ink-muted);
-  --tw-prose-bullets: var(--ink-muted);
-  --tw-prose-hr: var(--line);
-  --tw-prose-quotes: var(--ink);
-  --tw-prose-quote-borders: var(--accent);
-  --tw-prose-captions: var(--ink-muted);
-  --tw-prose-kbd: var(--ink);
-  --tw-prose-code: var(--ink);
-  --tw-prose-th-borders: var(--line);
-  --tw-prose-td-borders: var(--line);
+  --tw-prose-body: var(--color-ink);
+  --tw-prose-headings: var(--color-accent);
+  --tw-prose-lead: var(--color-ink-muted);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: var(--color-accent);
+  --tw-prose-bullets: var(--color-accent);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: var(--color-ink-muted);
+  --tw-prose-quote-borders: var(--color-accent);
+  --tw-prose-captions: var(--color-ink-faint);
+  --tw-prose-kbd: var(--color-ink);
+  --tw-prose-code: var(--color-accent);
+  --tw-prose-pre-code: var(--color-ink-muted);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: var(--color-line);
+  --tw-prose-td-borders: var(--color-line);
+}
+
+.prose h2 {
+  border-bottom: 2px solid var(--color-line);
+  padding-bottom: 0.5rem;
+}
+
+.prose a {
+  text-decoration: none;
+  transition: text-shadow 0.3s ease;
+}
+
+.prose a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-shadow: 0 0 10px var(--color-glow);
+}
+
+/* Inline code: a bordered chip on the darkest surface. Code inside blocks is left to Shiki. */
+.prose :not(pre) > code {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.prose blockquote {
+  background: var(--color-surface-raised);
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 1rem 1.5rem;
+}
+
+/* Shiki blocks become a terminal window whose title bar names the language. */
+.prose .astro-code {
+  position: relative;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  padding-top: 3.25rem;
+  font-size: 0.85em;
+}
+
+.prose .astro-code::before {
+  content: '$ ' attr(data-language);
+  position: absolute;
+  inset: 0 0 auto 0;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: var(--color-surface-raised);
+  color: var(--color-ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
