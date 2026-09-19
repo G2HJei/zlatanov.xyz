@@ -1,0 +1,50 @@
+---
+/**
+ * The building block of every page: a dark panel with a hairline border, a green
+ * gradient bar along the top and an optional `# title` heading in mono.
+ */
+interface Props {
+  id?: string;
+  /** Rendered as an h2 prefixed with `#`, like a shell comment. */
+  title?: string;
+  as?: 'section' | 'article' | 'div';
+  padding?: 'default' | 'compact';
+  /** Lift the card and outline it in green on hover; for cards that lead somewhere. */
+  hover?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  as: Tag = 'section',
+  padding = 'default',
+  hover = false,
+  class: className,
+} = Astro.props;
+
+const headingId = title !== undefined && id !== undefined ? `${id}-heading` : undefined;
+---
+
+<Tag
+  id={id}
+  aria-labelledby={headingId}
+  class:list={[
+    'relative rounded-2xl border border-line bg-surface-muted shadow-card',
+    'before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-accent',
+    padding === 'compact' ? 'p-6 sm:p-8' : 'p-6 sm:p-10',
+    hover &&
+      'transition duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-card-hover',
+    className,
+  ]}
+>
+  {title !== undefined && (
+    <h2
+      id={headingId}
+      class="mb-6 font-mono text-2xl font-semibold text-accent before:text-ink-faint before:content-['#_']"
+    >
+      {title}
+    </h2>
+  )}
+  <slot />
+</Tag>

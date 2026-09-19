@@ -1,23 +1,25 @@
 ---
+/** Primary action: an outlined terminal-style button in mono. `dim` is its quieter twin. */
 interface Props {
   href: string;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'dim';
+  external?: boolean;
   class?: string;
 }
 
-const { href, variant = 'primary', class: className } = Astro.props;
+const { href, variant = 'primary', external = false, class: className } = Astro.props;
 
 const variants = {
-  primary: 'bg-ink text-surface hover:bg-ink/85',
-  secondary:
-    'border border-line bg-surface text-ink hover:border-ink-muted/50 hover:bg-surface-muted',
+  primary: 'border-accent text-accent hover:bg-accent/10',
+  dim: 'border-accent-dim text-accent-dim hover:bg-accent-dim/10',
 };
 ---
 
 <a
   href={href}
+  rel={external ? 'me noopener' : undefined}
   class:list={[
-    'inline-flex items-center justify-center rounded-lg px-4.5 py-2.5 text-[0.95rem] font-medium transition-colors',
+    'inline-flex items-center justify-center gap-3 rounded-lg border-2 bg-surface px-8 py-4 font-mono text-[0.95rem] font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-glow)]',
     variants[variant],
     className,
   ]}
