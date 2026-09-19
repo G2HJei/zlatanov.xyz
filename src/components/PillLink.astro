@@ -1,0 +1,21 @@
+---
+/** Rounded "social" pill: icon plus label in mono, outlined in green on hover. */
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, external = false, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  rel={external ? 'me noopener' : undefined}
+  class:list={[
+    'inline-flex items-center gap-2 rounded-full border border-line bg-surface-raised px-6 py-3 font-mono text-sm text-ink-muted transition duration-300 hover:-translate-y-0.5 hover:border-accent hover:text-accent hover:shadow-card hover:glow-text',
+    className,
+  ]}
+>
+  <slot />
+</a>

@@ -3,9 +3,13 @@
  */
 export const SITE = {
   name: 'Boyan Zlatanov',
+  /** Shown as the logo text in the header and on the social preview image. */
+  domain: 'zlatanov.xyz',
   title: 'Boyan Zlatanov · Java consultant for TDD, DDD and CI/CD',
   description:
     'Independent Java and Spring consultant helping teams ship faster with test-driven development, domain-driven design and reliable CI/CD pipelines.',
+  /** The hero prompt on the home page and the social preview image. */
+  slogan: 'Ship Java systems you can change with confidence.',
   url: 'https://zlatanov.xyz',
   author: 'Boyan Zlatanov',
   email: 'boyan@zlatanov.xyz',

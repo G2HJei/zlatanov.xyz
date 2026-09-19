@@ -1,95 +1,199 @@
 ---
-import { getPublishedPosts } from '../collections';
 import ButtonLink from '../components/ButtonLink.astro';
-import CTA from '../components/CTA.astro';
-import Pipeline from '../components/Pipeline.astro';
-import PostCard from '../components/PostCard.astro';
-import Section from '../components/Section.astro';
-import ServiceCard from '../components/ServiceCard.astro';
+import Card from '../components/Card.astro';
+import Hero from '../components/Hero.astro';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import PillLink from '../components/PillLink.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { principles } from '../data/principles';
+import { profile } from '../data/profile';
 import { services } from '../data/services';
 import { testimonials } from '../data/testimonials';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../lib/site';
 
-const latest = (await getPublishedPosts()).slice(0, 3);
+const socials = [
+  { href: SITE.social.github, label: 'GitHub', icon: 'github', external: true },
+  { href: SITE.social.linkedin, label: 'LinkedIn', icon: 'linkedin', external: true },
+  { href: `mailto:${SITE.email}`, label: 'Email', icon: 'mail', external: false },
+  { href: '/rss.xml', label: 'RSS', icon: 'rss', external: false },
+] as const;
+
+const subheading = "font-mono text-sm text-ink-faint before:text-accent before:content-['>_']";
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
-  <section class="pt-12 pb-16 sm:pt-20 sm:pb-24" aria-labelledby="hero-heading">
-    <h1
-      id="hero-heading"
-      class="max-w-4xl text-[2.5rem] leading-[1.02] font-semibold tracking-display sm:text-6xl lg:text-7xl"
-    >
-      Ship Java systems you can change with confidence.
-    </h1>
-    <p class="mt-7 max-w-2xl text-lg leading-relaxed text-ink-muted sm:text-xl">
-      I help teams deliver faster and safer with test-driven development, domain-driven design and
-      CI/CD that make every commit releasable.
-    </p>
-    <div class="mt-9 flex flex-wrap items-center gap-3">
-      <ButtonLink href="/contact/">Book a conversation</ButtonLink>
-      <ButtonLink href="/blog/" variant="secondary">
-        Read the blog
-      </ButtonLink>
+  <Hero>
+    <!-- The slogan is a shell prompt with the pitch as the command. -->
+    <div class="rounded-xl border border-line bg-surface-muted p-6 sm:p-8">
+      <p class="glow-text-lg font-mono text-[clamp(1.25rem,3.5vw,2.25rem)] leading-tight font-semibold text-accent before:text-ink-faint before:content-['$_']">
+        {SITE.slogan}
+      </p>
     </div>
-    <Pipeline class="mt-16 sm:mt-24" />
-  </section>
+  </Hero>
 
-  <Section
-    title="How I can help"
-    lead="Three ways teams usually bring me in. Most engagements combine two of them."
-  >
-    <a slot="action" href="/services/" class="text-link">
-      All services
-    </a>
-    <ul class="divide-y divide-line">
-      {services.map((service) => (
-        <li class="py-6 first:pt-0 last:pb-0">
-          <ServiceCard service={service} />
-        </li>
-      ))}
-    </ul>
-  </Section>
+  <div class="space-y-8">
+    <Card class="flex flex-col items-center gap-8 text-center md:flex-row md:gap-12 md:text-left">
+      <!-- TODO: replace the brand mark with a photo, e.g. <img src="/avatar.jpg" alt="" class="size-[150px] rounded-full object-cover ..."> -->
+      <div class="grid size-[150px] shrink-0 place-items-center rounded-full border-4 border-accent bg-surface-raised text-accent shadow-[0_0_30px_var(--color-glow)]">
+        <Logo class="size-16" />
+      </div>
+      <div>
+        <h1 class="text-gradient text-4xl font-bold sm:text-5xl">{SITE.name}</h1>
+        <p class="mt-4 max-w-[600px] text-[1.1rem] text-ink-muted">{profile.tagline}</p>
+        <ul
+          class="mt-8 flex flex-wrap justify-center gap-4 md:justify-start"
+          aria-label="Elsewhere"
+        >
+          {socials.map((social) => (
+            <li>
+              <PillLink href={social.href} external={social.external}>
+                <Icon name={social.icon} class="size-4" />
+                {social.label}
+              </PillLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
 
-  <Section title="How I work">
-    <dl class="grid gap-x-8 gap-y-8 sm:grid-cols-2">
-      {principles.map((principle) => (
-        <div class="border-t border-line pt-4">
-          <dt class="font-semibold">{principle.title}</dt>
-          <dd class="mt-2 text-ink-muted">{principle.text}</dd>
-        </div>
-      ))}
-    </dl>
-  </Section>
-
-  {testimonials.length > 0 && (
-    <Section title="What clients say">
-      <ul class="grid gap-8 md:grid-cols-2">
-        {testimonials.map((testimonial) => (
-          <li>
-            <Testimonial testimonial={testimonial} />
+    <Card id="about" title="about me">
+      <!-- TODO: personalise the bio (years of experience, industries, notable systems, location). -->
+      <div class="space-y-4 leading-[1.7] text-ink-muted">
+        <p>
+          I'm {SITE.name}, an independent software consultant. I work with teams that build and run
+          Java systems, usually ones that have been in production for years and have to keep
+          changing.
+        </p>
+        <p>
+          Most of my career has been spent inside long-lived Spring codebases: adding features under
+          pressure, untangling what earlier pressure left behind, and putting in place the tests and
+          pipelines that stop the cycle from repeating. That is where my focus on test-driven
+          development, domain-driven design and continuous delivery comes from. They are not ideals
+          I read about; they are the practices that made the difference on real systems.
+        </p>
+        <p>
+          As a consultant I do the work alongside your engineers rather than from the sidelines. I
+          pair, I review, I write code, and I make sure the team can carry on without me.
+        </p>
+        <p>
+          I write about these topics on the{' '}
+          <a href="/blog/" class="text-link">
+            blog
+          </a>{' '}
+          and share code on{' '}
+          <a href={SITE.social.github} rel="me noopener" class="text-link">
+            GitHub
+          </a>
+          .
+        </p>
+      </div>
+      <h3 class:list={['mt-8', subheading]}>stack</h3>
+      <ul class="mt-3 flex flex-wrap gap-2" aria-label="Tools">
+        {profile.tools.map((tool) => (
+          <li class="rounded-full border border-line bg-surface-raised px-3 py-1 font-mono text-xs text-ink-muted">
+            {tool}
           </li>
         ))}
       </ul>
-    </Section>
-  )}
+    </Card>
 
-  {latest.length > 0 && (
-    <Section title="Latest writing">
-      <a slot="action" href="/blog/" class="text-link">
-        All posts
-      </a>
-      <ul class="divide-y divide-line">
-        {latest.map((post) => (
-          <li class="py-6 first:pt-0 last:pb-0">
-            <PostCard post={post} />
-          </li>
+    <Card id="services" title="services">
+      <p class="text-ink-muted">
+        Three ways teams bring me in. Every engagement starts with a short conversation about what
+        is slowing you down, and ends with your team owning the result.
+      </p>
+      <div class="mt-8 divide-y divide-line">
+        {services.map((service) => (
+          <article id={service.slug} class="scroll-mt-28 py-8 first:pt-0 last:pb-0">
+            <h3 class="font-mono text-xl font-semibold text-ink before:text-accent before:content-['>_']">
+              {service.title}
+            </h3>
+            <p class="mt-2 text-ink-muted">{service.tagline}</p>
+            <div class="mt-6 grid gap-8 sm:grid-cols-2">
+              <div>
+                <h4 class="font-mono text-sm text-ink-faint">you get</h4>
+                <ul class="mt-3 space-y-2 text-ink-muted">
+                  {service.outcomes.map((outcome) => (
+                    <li class="flex gap-3">
+                      <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
+                      <span>{outcome}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-mono text-sm text-ink-faint">a good fit if</h4>
+                <ul class="mt-3 space-y-2 text-ink-muted">
+                  {service.goodFitIf.map((reason) => (
+                    <li class="flex gap-3">
+                      <span class="font-mono text-accent" aria-hidden="true">
+                        &gt;
+                      </span>
+                      <span>{reason}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p class="mt-6 text-sm text-ink-muted">
+              <span class="font-mono text-ink-faint">engagement:</span> {service.engagement}
+            </p>
+          </article>
         ))}
-      </ul>
-    </Section>
-  )}
+      </div>
+    </Card>
 
-  <CTA />
+    <Card id="how-i-work" title="how I work">
+      <dl class="grid gap-4 sm:grid-cols-2">
+        {principles.map((principle) => (
+          <div class="rounded-xl border border-line bg-surface-raised p-5">
+            <dt class="font-mono font-semibold text-accent">{principle.title}</dt>
+            <dd class="mt-2 text-ink-muted">{principle.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+
+    {testimonials.length > 0 && (
+      <Card id="testimonials" title="what clients say">
+        <ul class="grid gap-6 md:grid-cols-2">
+          {testimonials.map((testimonial) => (
+            <li>
+              <Testimonial testimonial={testimonial} />
+            </li>
+          ))}
+        </ul>
+      </Card>
+    )}
+
+    <Card id="contact" title="contact" class="text-center">
+      <p class="mx-auto max-w-2xl text-[1.1rem] text-ink-muted">
+        The quickest way to reach me is email. Tell me a little about your team and what you are
+        trying to change, and I will get back to you.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <ButtonLink href={`mailto:${SITE.email}`}>
+          <Icon name="mail" class="size-5" />
+          {SITE.email}
+        </ButtonLink>
+        <ButtonLink href={SITE.social.linkedin} variant="dim" external>
+          <Icon name="linkedin" class="size-5" />
+          LinkedIn
+        </ButtonLink>
+      </div>
+      <div class="mx-auto mt-10 max-w-2xl rounded-xl border border-line bg-surface-raised p-5 text-left">
+        <h3 class={subheading}>what helps me reply well</h3>
+        <ul class="mt-3 space-y-2 text-ink-muted">
+          {profile.contactTips.map((tip) => (
+            <li class="flex gap-3">
+              <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
+              <span>{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
+  </div>
 </BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import { getPublishedPosts } from '../../../collections';
-import PageHeader from '../../../components/PageHeader.astro';
+import Card from '../../../components/Card.astro';
+import Hero from '../../../components/Hero.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { groupByTag, tagUrl } from '../../../lib/tags';
 
@@ -8,29 +9,30 @@ const groups = groupByTag(await getPublishedPosts());
 ---
 
 <BaseLayout title="Tags" description="All blog post tags.">
-  <div class="max-w-3xl pb-16 sm:pb-24">
-    <PageHeader
-      title="Tags"
-      lead="Posts grouped by topic."
-      back={{ href: '/blog/', label: 'Blog' }}
-    />
+  <Hero title="Tags" subtitle="posts grouped by topic" />
 
+  <Card id="tags" title="tags" class="mx-auto max-w-3xl">
     {groups.length === 0 ? (
-      <p class="text-ink-muted">No tags yet.</p>
+      <p class="font-mono text-ink-faint">No tags yet.</p>
     ) : (
-      <ul class="flex flex-wrap gap-2">
+      <ul class="flex flex-wrap gap-3">
         {groups.map((group) => (
           <li>
             <a
               href={tagUrl(group.slug)}
-              class="inline-flex items-center gap-2 rounded-full bg-surface-muted px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-accent/10 hover:text-accent"
+              class="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2 font-mono text-sm text-accent transition duration-300 before:content-['#'] hover:border-accent hover:bg-accent/20 hover:shadow-[0_0_10px_var(--color-glow)]"
             >
               {group.label}
-              <span class="text-xs font-normal text-ink-muted">{group.count}</span>
+              <span class="text-xs text-ink-faint">{group.count}</span>
             </a>
           </li>
         ))}
       </ul>
     )}
-  </div>
+    <p class="mt-8 font-mono text-sm">
+      <a href="/blog/" class="text-ink-faint transition hover:text-accent">
+        $ cd /blog/
+      </a>
+    </p>
+  </Card>
 </BaseLayout>

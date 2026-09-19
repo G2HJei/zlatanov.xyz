@@ -1,7 +1,9 @@
 # zlatanov.xyz
 
-Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD): a few landing pages
-plus a markdown blog. Fully static Astro site, self-hosted in Docker behind the owner's nginx.
+Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
+(profile, about, services, how I work, contact) and `blog` (subscribe, work, posts), plus the
+markdown posts, tag pages and case studies behind them. Fully static Astro site, self-hosted in
+Docker behind the owner's nginx.
 
 ## Commands
 
@@ -15,26 +17,35 @@ plus a markdown blog. Fully static Astro site, self-hosted in Docker behind the 
 | `npm run format`   | Prettier with the astro + tailwind plugins                          |
 | `npm test`         | Vitest unit tests in `tests/unit/`                                  |
 | `npm run test:e2e` | Builds, serves `dist/`, runs Playwright smoke tests in `tests/e2e/` |
+| `npm run og:image` | Re-renders `public/og-default.png` and `public/favicon/*.png`       |
 
-CI runs lint → check → test → build → e2e → docker build. All must pass before merging.
+CI runs lint → check → test → build → e2e → docker build. All must pass before merging. When port
+4321 is busy (a dev server, say), run the smoke tests with `PORT=4399 npm run test:e2e`.
 
 ## Stack and hard rules
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
   except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`).
-- **No UI framework.** Plain `.astro` components only; the only client JS is the theme toggle.
-- **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css`
-  (`@theme` / `@theme inline`). Use the semantic colours `surface`, `surface-muted`, `ink`,
-  `ink-muted`, `line`, `accent`, `accent-hover`, `accent-ink`, not raw palette classes, so dark
-  mode stays consistent. Dark mode is the `.dark` class on `<html>`.
-- **Design language** (see `src/styles/global.css` and `src/components/`): IBM Plex Sans
-  (self-hosted via fontsource, variable weight) for all text, IBM Plex Mono for code. Cool slate
-  neutrals with one green accent that means "passing": use it for links, checks and active states,
-  never as decoration. Primary buttons are `bg-ink`; inline links use the `text-link` utility.
-  Sections use `Section.astro` (heading left, content right on `lg`) and lists are hairline rows
-  (`divide-y divide-line`), not card grids. Page titles go through `PageHeader.astro`. No eyebrow
-  labels, no all-caps labels, no `→` on links, no `·` separators (`PostMeta` draws hairlines).
-  The only page-load motion is the hero `Pipeline.astro`, CSS-only and reduced-motion safe.
+- **No UI framework, no client JavaScript.** Plain `.astro` components only; every effect
+  (blinking prompt, pulsing rule, hover glows, scanlines) is CSS.
+- **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css` (`@theme`). Use
+  the semantic colours `surface`, `surface-muted`, `surface-raised`, `ink`, `ink-muted`,
+  `ink-faint`, `line`, `accent`, `accent-dim`, `accent-deep`, `glow`, never raw palette classes.
+  There is **one theme** (dark); no `.dark` class, no toggle, `color-scheme: dark`.
+- **Design language** (see `src/styles/global.css` and `src/components/`), modelled on
+  bobdahacker.com with an old-monochrome-monitor palette: near-black surfaces, grey text and one
+  phosphor green (`#20c20e`) for links, card headings, prompts and glows. Inter (fontsource,
+  variable) for body copy; JetBrains Mono for the logo, nav, card titles, meta, buttons, tags and
+  prompts. Every content block is a `Card.astro`: bordered panel, green gradient bar on top,
+  optional `# title` heading. Pages open with `Hero.astro` under a pulsing rule: gradient h1 plus
+  a `$ ` subtitle, or the slogan panel on the home page. `ButtonLink.astro` is the outlined green
+  mono button, `PillLink.astro` the rounded social pill. Prompt glyphs carry meaning: blinking `>`
+  before the logo and `> ` before sub-headings, `$ ` before slogans and subtitles, `# ` before card
+  titles and tags. Post lists are stacked `PostCard.astro` panels that lift on hover; markdown
+  code blocks get a `$ <language>` title bar. Keep motion to what exists and reduced-motion safe.
+- **Brand values are duplicated on purpose** in `scripts/og-image.mjs`, `public/favicon.svg` and
+  the `theme-color` in `Head.astro`; change them together with the tokens and run
+  `npm run og:image`.
 - **TypeScript stays on `~6.0`**: `@astrojs/check` does not support TS 7 yet.
 - Zod comes from `astro/zod`, never from `astro:content` (deprecated) or a separate `zod` package.
 - Astro 7 gotchas: `compressHTML` defaults to `'jsx'`, so a newline between inline elements renders
@@ -53,8 +64,11 @@ CI runs lint → check → test → build → e2e → docker build. All must pas
   `src/collections.ts#getPublishedPosts`; all lists, routes, tag pages and RSS go through it.
 - Tags display as written but route through `tagSlug()` (`ci/cd` → `/blog/tags/ci-cd/`). Keep tag
   spelling consistent across posts; the unit tests flag labels that collide on one slug.
-- Site-wide constants (name, URL, email, social links): `src/lib/site.ts`. Landing-page copy and
-  the shared navigation: `src/data/`.
+- Site-wide constants (name, domain, slogan, URL, email, social links): `src/lib/site.ts`. Home
+  page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the tagline, tool list
+  and contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
+- Case studies: `content/case-studies/<slug>.md`, same draft rules as posts. Published ones list in
+  the `work` card on `/blog/` and render at `/case-studies/<slug>/`.
 
 ## Deployment
 
