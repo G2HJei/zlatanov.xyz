@@ -38,8 +38,8 @@ First Playwright run on a machine: `npx playwright install chromium`. If port 43
    (defaults to the site owner) and `cover` (social preview image under `public/`).
 3. Keep `draft: true` while writing; drafts render in `npm run dev` only. Set `draft: false` to
    publish.
-4. Commit, push, open a pull request. CI lints, type-checks, tests, builds and smoke-tests the
-   site, then builds the Docker image. Merging to `master` publishes the image.
+4. Run the checks locally, commit and merge into `master`. Pushing `master` makes CI lint,
+   type-check, test, build and smoke-test the site, then build the Docker image and deploy it.
 
 Invalid frontmatter fails both `npm test` and `npm run build` with the offending file named.
 Spell tags consistently: `ci/cd` and `ci-cd` would both route to `/blog/tags/ci-cd/`, and the
@@ -58,20 +58,28 @@ tests flag that.
 
 ## Deploy
 
-Every push to `master` publishes `ghcr.io/g2hjei/zlatanov.xyz:latest` (plus a `sha-<commit>` tag).
+The workflow runs only on pushes to `master` (nothing runs for other branches or pull requests).
+It runs the checks, builds the image and, once both pass, deploys it:
+
+1. `image` pushes `<DOCKER_USERNAME>/zlatanov-xyz:<run number>` and `:latest` to Docker Hub.
+2. `deploy` SSHes into the VPS as root, pulls that tag, replaces the `zlatanov-xyz` container
+   (published on `127.0.0.1:8080`, `--restart unless-stopped`) and prunes unused images.
+
 The container runs nginx as a non-root user on port 8080 and serves the static build with
-long-lived caching for hashed assets. TLS, HSTS and any CSP belong on the reverse proxy.
+long-lived caching for hashed assets. TLS, HSTS and any CSP belong on the reverse proxy on the
+VPS, which proxies to `127.0.0.1:8080`.
 
-```yaml
-services:
-  site:
-    image: ghcr.io/g2hjei/zlatanov.xyz:latest
-    restart: unless-stopped
-    ports:
-      - '127.0.0.1:8080:8080'
-```
+Repository secrets the workflow expects (Settings → Secrets and variables → Actions):
 
-Update: `docker compose pull && docker compose up -d`.
+| Secret            | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `DOCKER_USERNAME` | Docker Hub account; also the image namespace            |
+| `DOCKER_PASSWORD` | Docker Hub access token with read and write scope       |
+| `VPS_IP`          | Host the site runs on                                   |
+| `VPS_PASS`        | Root password for that host (the runner uses `sshpass`) |
+
+The VPS needs Docker and must be able to pull the image: keep the Docker Hub repository public,
+or run `docker login` once as root on the VPS.
 
 Local check of the image:
 
