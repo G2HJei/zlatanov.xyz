@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
 
 # Runs queue instead of cancelling each other, so a deploy is never cut off half-way.
 concurrency:
@@ -18,7 +18,7 @@ env:
   IMAGE_NAME: zlatanov-xyz
   BUILD_NUMBER: ${{ github.run_number }}
   # Loopback port the container is published on; the VPS nginx proxies to it.
-  HOST_PORT: 8080
+  HOST_PORT: 8085
 
 jobs:
   verify:
