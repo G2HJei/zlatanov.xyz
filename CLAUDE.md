@@ -19,7 +19,8 @@ Docker behind the owner's nginx.
 | `npm run test:e2e` | Builds, serves `dist/`, runs Playwright smoke tests in `tests/e2e/` |
 | `npm run og:image` | Re-renders `public/og-default.png` and `public/favicon/*.png`       |
 
-CI runs lint → check → test → build → e2e → docker build. All must pass before merging. When port
+CI runs only on pushes to `master`: lint → check → test → build → e2e → docker build → deploy.
+Nothing runs for branches or pull requests, so run the checks locally before merging. When port
 4321 is busy (a dev server, say), run the smoke tests with `PORT=4399 npm run test:e2e`.
 
 ## Stack and hard rules
@@ -72,5 +73,8 @@ CI runs lint → check → test → build → e2e → docker build. All must pas
 
 ## Deployment
 
-The owner deploys. CI publishes `ghcr.io/g2hjei/zlatanov.xyz:latest` (nginx serving `dist/` on
-port 8080); the VPS pulls it and its own nginx terminates TLS. See `Dockerfile` and `docker/`.
+CI deploys every push to `master`: the `image` job pushes `<DOCKER_USERNAME>/zlatanov-xyz:<run
+number>` (and `latest`) to Docker Hub, then the `deploy` job SSHes into the VPS, pulls that tag and
+replaces the `zlatanov-xyz` container on `127.0.0.1:8080`, where the VPS's own nginx terminates
+TLS. The owner sets the secrets (`DOCKER_USERNAME`, `DOCKER_PASSWORD`, `VPS_IP`, `VPS_PASS`) in
+GitHub. See `.github/workflows/ci.yml`, `Dockerfile` and `docker/`.
