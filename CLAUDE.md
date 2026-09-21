@@ -27,8 +27,12 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
   except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`).
-- **No UI framework, no client JavaScript.** Plain `.astro` components only; every effect
-  (blinking prompt, pulsing rule, hover glows, scanlines) is CSS.
+- **No UI framework, one client script.** Plain `.astro` components only; every effect (blinking
+  prompt, pulsing rule, hover glows, scanlines) is CSS. The single exception is the particle
+  background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
+  non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
+  `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
+  canvas `opacity` in the component. Add no other client JavaScript.
 - **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css` (`@theme`). Use
   the semantic colours `surface`, `surface-muted`, `surface-raised`, `ink`, `ink-muted`,
   `ink-faint`, `line`, `accent`, `accent-dim`, `accent-deep`, `glow`, never raw palette classes.
