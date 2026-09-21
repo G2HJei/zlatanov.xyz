@@ -1,0 +1,39 @@
+---
+/**
+ * Drifting particles joined by hairlines behind the whole page, the site's one client
+ * script (canvasparticles-js on a fixed canvas). It is decoration only: pointer events
+ * are off, the cursor never moves a particle, and nothing runs when the visitor prefers
+ * reduced motion. Colour comes from the `accent` token through `text-accent`; intensity
+ * is the `opacity` utility; everything else is tuned in `src/lib/particles.ts`.
+ */
+---
+
+<canvas
+  class="particles pointer-events-none fixed inset-0 -z-10 size-full text-accent opacity-25 motion-reduce:hidden"
+  aria-hidden="true"
+></canvas>
+
+<script>
+  import CanvasParticles from 'canvasparticles-js';
+
+  import { MOTION_QUERY, particleOptions } from '../lib/particles';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('canvas.particles');
+  const motion = window.matchMedia(MOTION_QUERY);
+
+  if (canvas) {
+    let particles: CanvasParticles | undefined;
+
+    const sync = () => {
+      if (motion.matches) {
+        particles ??= new CanvasParticles(canvas, particleOptions(getComputedStyle(canvas).color));
+        particles.start();
+      } else {
+        particles?.stop();
+      }
+    };
+
+    sync();
+    motion.addEventListener('change', sync);
+  }
+</script>
