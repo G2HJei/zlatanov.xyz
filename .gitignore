@@ -33,3 +33,6 @@ playwright/.cache/
 
 # Browser screenshots taken by Claude Code while reviewing the design
 .playwright-mcp/
+
+# Git worktrees created by Claude Code; each holds a .git file and would stage as a bogus submodule
+.claude/worktrees/
