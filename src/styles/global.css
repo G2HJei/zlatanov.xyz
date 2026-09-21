@@ -129,12 +129,11 @@
   }
 }
 
-/* CRT scanlines and a faint vignette over the whole page. Decorative only:
-   pointer events are off and the lines are light enough that text stays crisp. */
+/* CRT scanlines over the whole page. Decorative only: pointer events are off and the
+   lines are light enough that text stays crisp. Deliberately no radial vignette: on a
+   near-black surface it bands into visible concentric rings. */
 .scanlines {
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.14) 2px 3px),
-    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.25) 100%);
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.14) 2px 3px);
 }
 
 /* Rendered markdown. Headings and links take the green; code sits on the darkest surface. */
