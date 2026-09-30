@@ -1,17 +1,16 @@
 /**
- * Renders the committed brand images with Playwright's Chromium:
- *   public/og-default.png         1200x630 social preview
- *   public/favicon/favicon-*.png  16, 32 and 64 px rasters of public/favicon.svg
- * Run with `npm run og:image` after changing the slogan, the colours or the SVG mark;
- * the PNGs are committed so builds stay dependency-free.
+ * Renders public/og-default.png, the 1200x630 social preview, with Playwright's Chromium.
+ * Run with `npm run og:image` after changing the slogan or the colours; the PNG is
+ * committed so builds stay dependency-free. The favicons are not rendered here: they
+ * come ready-made from the brand kit.
  */
-import { readFileSync } from 'node:fs';
+import {readFileSync} from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 
-import { chromium } from '@playwright/test';
+import {chromium} from '@playwright/test';
 
-import { SITE } from '../src/lib/site.ts';
+import {SITE} from '../src/lib/site.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -34,7 +33,7 @@ const colour = {
 };
 
 const og = `<!doctype html>
-<html><head><meta charset="utf-8"><style>
+<html lang="en"><head><meta charset="utf-8"><style>
   @font-face { font-family: Inter; src: url(data:font/woff2;base64,${inter}) format('woff2'); font-weight: 100 900; }
   @font-face { font-family: Mono; src: url(data:font/woff2;base64,${mono}) format('woff2'); font-weight: 100 800; }
   * { box-sizing: border-box; }
@@ -58,29 +57,13 @@ const og = `<!doctype html>
   <div class="footer"><strong>${SITE.name}</strong><span>Java consultant for TDD, DDD and CI/CD</span></div>
 </body></html>`;
 
-const svg = readFileSync(path.join(root, 'public', 'favicon.svg')).toString('base64');
-const favicon = (size) => `<!doctype html>
-<html><head><meta charset="utf-8"><style>
-  html, body { margin: 0; background: transparent; }
-  img { display: block; width: ${size}px; height: ${size}px; }
-</style></head>
-<body><img src="data:image/svg+xml;base64,${svg}" alt=""></body></html>`;
-
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+const page = await browser.newPage({viewport: {width: 1200, height: 630}});
 
-await page.setContent(og, { waitUntil: 'load' });
+await page.setContent(og, {waitUntil: 'load'});
 await page.evaluate(() => document.fonts.ready);
 const out = path.join(root, 'public', 'og-default.png');
-await page.screenshot({ path: out });
+await page.screenshot({path: out});
 console.log(`wrote ${path.relative(root, out)}`);
-
-for (const size of [16, 32, 64]) {
-  await page.setViewportSize({ width: size, height: size });
-  await page.setContent(favicon(size), { waitUntil: 'load' });
-  const file = path.join(root, 'public', 'favicon', `favicon-${size}.png`);
-  await page.screenshot({ path: file, omitBackground: true });
-  console.log(`wrote ${path.relative(root, file)}`);
-}
 
 await browser.close();

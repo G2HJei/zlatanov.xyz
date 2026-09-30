@@ -38,9 +38,11 @@ const imageUrl = new URL(image, Astro.site).href;
 <link rel="canonical" href={canonical} />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Icon set from the brand kit, copied as-is into public/. -->
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="icon" href="/favicon/favicon-32.png" type="image/png" sizes="32x32" />
-<link rel="icon" href="/favicon/favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
 <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <!-- The site has one theme; keep these in step with --color-surface in global.css. -->

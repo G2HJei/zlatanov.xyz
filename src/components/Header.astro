@@ -1,8 +1,9 @@
 ---
 /**
- * Sticky, translucent header: a blinking prompt before the domain on the left and
- * the two-item navigation on the right. Hovering a link draws a green underline;
- * the current page keeps it.
+ * Sticky, translucent header: on the left the logo as a shell prompt, `> zlatanov`
+ * with a blinking block cursor, and the subtitle beside it from `sm` up; on the right
+ * the two-item navigation. Hovering a link draws a green underline; the current page
+ * keeps it.
  */
 import { nav } from '../data/nav';
 import { SITE } from '../lib/site';
@@ -15,9 +16,16 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   <div class="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 sm:px-8">
     <a
       href="/"
-      class="flex items-center gap-2 font-mono text-[1.2rem] font-bold text-ink transition hover:text-accent before:animate-blink before:text-2xl before:text-accent before:content-['>']"
+      class="flex items-center gap-2 font-mono text-[1.2rem] font-bold text-ink transition hover:text-accent"
     >
-      {SITE.logo}
+      <span aria-hidden="true" class="text-2xl text-accent">
+        &gt;
+      </span>
+      <span>{SITE.logo}</span>
+      <span aria-hidden="true" class="h-[1.2em] w-[0.55em] animate-blink bg-accent"></span>
+      <span class="ml-2 hidden border-l border-line pl-3 text-xs font-normal tracking-wide text-ink-muted sm:inline">
+        {SITE.logoSubtitle}
+      </span>
     </a>
     <nav aria-label="Main">
       <ul class="flex items-center gap-8">
