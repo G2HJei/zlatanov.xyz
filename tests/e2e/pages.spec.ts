@@ -42,6 +42,7 @@ test('the icons in the head and in the web manifest all resolve', async ({ page,
   expect(hrefs).not.toHaveLength(0);
 
   const manifest = await request.get('/site.webmanifest');
+  expect(manifest.status()).toBe(200);
   expect(manifest.headers()['content-type']).toBe('application/manifest+json');
   const { icons } = (await manifest.json()) as { icons: { src: string }[] };
   expect(icons).not.toHaveLength(0);
