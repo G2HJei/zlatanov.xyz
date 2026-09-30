@@ -17,7 +17,7 @@ Docker behind the owner's nginx.
 | `npm run format`   | Prettier with the astro + tailwind plugins                          |
 | `npm test`         | Vitest unit tests in `tests/unit/`                                  |
 | `npm run test:e2e` | Builds, serves `dist/`, runs Playwright smoke tests in `tests/e2e/` |
-| `npm run og:image` | Re-renders `public/og-default.png` and `public/favicon/*.png`       |
+| `npm run og:image` | Re-renders `public/og-default.png` (the social preview)             |
 
 CI runs only on pushes to `master`: lint → check → test → build → e2e → docker build → deploy.
 Nothing runs for branches or pull requests, so run the checks locally before merging. When port
@@ -26,9 +26,9 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
 ## Stack and hard rules
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
-  except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`).
+  except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`, `/site.webmanifest`).
 - **No UI framework, one client script.** Plain `.astro` components only; every effect (blinking
-  prompt, pulsing rule, hover glows, scanlines) is CSS. The single exception is the particle
+  cursor, pulsing rule, hover glows, scanlines) is CSS. The single exception is the particle
   background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
   non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
   `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
@@ -44,13 +44,17 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   prompts. Every content block is a `Card.astro`: bordered panel, green gradient bar on top,
   optional `# title` heading. Pages open with `Hero.astro` under a pulsing rule: gradient h1 plus
   a `$ ` subtitle, or the slogan panel on the home page. `ButtonLink.astro` is the outlined green
-  mono button, `PillLink.astro` the rounded social pill. Prompt glyphs carry meaning: blinking `>`
-  before the logo and `> ` before sub-headings, `$ ` before slogans and subtitles, `# ` before card
-  titles and tags. Post lists are stacked `PostCard.astro` panels that lift on hover; markdown
+  mono button, `PillLink.astro` the rounded social pill. The header logo is `> zlatanov` plus a
+  blinking green block cursor, with `SITE.logoSubtitle` beside it from `sm` up. Prompt glyphs
+  carry meaning: `>` before the logo and `> ` before sub-headings, `$ ` before slogans and
+  subtitles, `# ` before card titles and tags. Post lists are stacked `PostCard.astro` panels that lift on hover; markdown
   code blocks get a `$ <language>` title bar. Keep motion to what exists and reduced-motion safe.
-- **Brand values are duplicated on purpose** in `scripts/og-image.mjs`, `public/favicon.svg` and
-  the `theme-color` in `Head.astro`; change them together with the tokens and run
-  `npm run og:image`.
+- **Brand values are duplicated on purpose** in `scripts/og-image.mjs` and the `theme-color` in
+  `Head.astro`; change them together with the tokens and run `npm run og:image`.
+- **Favicons come from the owner's brand kit** and sit in `public/` as-is: `favicon.ico`,
+  `favicon.svg`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`,
+  `android-chrome-*.png`, `maskable-icon-512x512.png` and `site.webmanifest`. Replace them as a set
+  and don't generate them. `Logo.astro` inlines the same mark without its tile.
 - **TypeScript stays on `~6.0`**: `@astrojs/check` does not support TS 7 yet.
 - Zod comes from `astro/zod`, never from `astro:content` (deprecated) or a separate `zod` package.
 - Astro 7 gotchas: `compressHTML` defaults to `'jsx'`, so a newline between inline elements renders
