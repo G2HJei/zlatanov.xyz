@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import type { PostLike } from '../../src/lib/posts';
-import { findTagCollisions, groupByTag, tagSlug, tagUrl } from '../../src/lib/tags';
+import {
+  findTagCollisions,
+  groupByTag,
+  tagFilterCss,
+  tagFilterId,
+  tagSlug,
+  tagUrl,
+} from '../../src/lib/tags';
 
 const post = (id: string, tags: string[], date = '2026-01-01'): PostLike => ({
   id,
@@ -24,8 +31,24 @@ describe('tagSlug', () => {
 });
 
 describe('tagUrl', () => {
-  it('builds a trailing-slash URL under /blog/tags/', () => {
-    expect(tagUrl('ci-cd')).toBe('/blog/tags/ci-cd/');
+  it('points at the tag filter on the blog page', () => {
+    expect(tagFilterId('ci-cd')).toBe('tag-ci-cd');
+    expect(tagUrl('ci-cd')).toBe('/blog/#tag-ci-cd');
+  });
+});
+
+describe('tagFilterCss', () => {
+  it('hides posts without the tag while its filter is the URL fragment', () => {
+    expect(tagFilterCss(['java', 'ci-cd'])).toBe(
+      [
+        'main:has(#tag-java:target) [data-tags]:not([data-tags~="java"]) { display: none; }',
+        'main:has(#tag-ci-cd:target) [data-tags]:not([data-tags~="ci-cd"]) { display: none; }',
+      ].join('\n'),
+    );
+  });
+
+  it('is empty without tags', () => {
+    expect(tagFilterCss([])).toBe('');
   });
 });
 

@@ -1,17 +1,43 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
 
-test('tag index lists tags with counts and each tag page lists posts', async ({ page }) => {
-  await page.goto('/blog/tags/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tags');
+const background = (link: Locator) =>
+  link.evaluate((element) => getComputedStyle(element).backgroundColor);
 
-  const tagLinks = page.locator('main ul a');
-  await expect(tagLinks).not.toHaveCount(0);
+test('each tag filter shows exactly the posts carrying that tag', async ({ page }) => {
+  await page.goto('/blog/');
+  const filters = page.locator('main #subscribe').getByRole('list', { name: 'filter by tag' });
+  const all = filters.locator('#all');
+  const posts = page.locator('main #posts li[data-tags]');
+  const total = await posts.count();
 
-  const href = await tagLinks.first().getAttribute('href');
-  expect(href).toMatch(/^\/blog\/tags\/[a-z0-9-]+\/$/);
+  // No fragment: every post shows and `all` is the solid pill.
+  await expect(posts.filter({ visible: true })).toHaveCount(total);
+  const active = await background(all);
 
-  await tagLinks.first().click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  await expect(page.locator('main article')).not.toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'All tags' })).toBeVisible();
+  const tags = filters.locator('a[id^="tag-"]');
+  await expect(tags).not.toHaveCount(0);
+  for (const tag of await tags.all()) {
+    const id = (await tag.getAttribute('id')) ?? '';
+    const slug = id.replace(/^tag-/, '');
+    const tagged = await page.locator(`main #posts li[data-tags~="${slug}"]`).count();
+
+    await tag.click();
+    await expect(page).toHaveURL(new RegExp(`/blog/#${id}$`));
+    await expect(posts.filter({ visible: true })).toHaveCount(tagged);
+    await expect(tag).toContainText(String(tagged));
+    // The pills fade between states, so wait for the colours to settle.
+    await expect.poll(() => background(tag)).toBe(active);
+    await expect.poll(() => background(all)).not.toBe(active);
+  }
+
+  await all.click();
+  await expect(posts.filter({ visible: true })).toHaveCount(total);
+
+  // Back to the last tag: the fragment, and with it the filter, comes back.
+  await page.goBack();
+  await expect(page).toHaveURL(/\/blog\/#tag-[a-z0-9-]+$/);
+  const slug = new URL(page.url()).hash.replace(/^#tag-/, '');
+  await expect(posts.filter({ visible: true })).toHaveCount(
+    await page.locator(`main #posts li[data-tags~="${slug}"]`).count(),
+  );
 });

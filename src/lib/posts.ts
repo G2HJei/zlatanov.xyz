@@ -1,4 +1,4 @@
-/** Anything with a `draft` flag: posts, case studies. */
+/** Anything with a `draft` flag. */
 export interface Publishable {
   data: { draft: boolean };
 }
@@ -38,8 +38,4 @@ export function sortByDateDesc<T extends PostLike>(posts: T[]): T[] {
 
 export function postUrl(id: string): string {
   return `/blog/${id}/`;
-}
-
-export function caseStudyUrl(id: string): string {
-  return `/case-studies/${id}/`;
 }

@@ -13,8 +13,28 @@ export function tagSlug(tag: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/** Fragment id of a tag's filter link on the blog page: `java` → `tag-java`. */
+export function tagFilterId(slug: string): string {
+  return `tag-${slug}`;
+}
+
+/** A tag links to the blog page with its filter applied: `/blog/#tag-java`. */
 export function tagUrl(slug: string): string {
-  return `/blog/tags/${slug}/`;
+  return `/blog/#${tagFilterId(slug)}`;
+}
+
+/**
+ * The blog page filters its posts without JavaScript. Each filter link targets itself, and
+ * while it is the URL fragment, its rule hides every post whose `data-tags` lacks the slug.
+ * CSS cannot compare a fragment with an attribute, hence one rule per tag.
+ */
+export function tagFilterCss(slugs: string[]): string {
+  return slugs
+    .map(
+      (slug) =>
+        `main:has(#${tagFilterId(slug)}:target) [data-tags]:not([data-tags~="${slug}"]) { display: none; }`,
+    )
+    .join('\n');
 }
 
 export interface TagGroup<T extends PostLike> {

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+/# syntax=docker/dockerfile:1
 
 # ---- build: compile the static site --------------------------------------
 FROM node:24-alpine AS build

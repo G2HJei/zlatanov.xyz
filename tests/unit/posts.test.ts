@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  caseStudyUrl,
-  isPublished,
-  type PostLike,
-  postUrl,
-  sortByDateDesc,
-} from '../../src/lib/posts';
+import { isPublished, type PostLike, postUrl, sortByDateDesc } from '../../src/lib/posts';
 
 const post = (id: string, date: string, draft = false): PostLike => ({
   id,
@@ -40,9 +34,8 @@ describe('sortByDateDesc', () => {
   });
 });
 
-describe('urls', () => {
-  it('build trailing-slash URLs', () => {
+describe('postUrl', () => {
+  it('builds a trailing-slash URL under /blog/', () => {
     expect(postUrl('hello-world')).toBe('/blog/hello-world/');
-    expect(caseStudyUrl('legacy-orders')).toBe('/case-studies/legacy-orders/');
   });
 });

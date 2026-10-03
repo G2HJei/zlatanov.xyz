@@ -5,7 +5,7 @@ Personal site and blog of Boyan Zlatanov: Java and Spring consulting, TDD, DDD a
 A static [Astro](https://astro.build) site styled with Tailwind CSS v4 in a dark, terminal-inspired
 look (phosphor green on near-black, no client JavaScript), shipped as an nginx Docker image and
 served behind the owner's reverse proxy. Two pages: `/` (profile, about, services, how I work,
-contact) and `/blog/` (subscribe, work, posts), plus the post, tag and case-study pages behind them.
+contact) and `/blog/` (subscribe with a tag filter, posts), plus the post pages behind them.
 
 ## Develop
 
@@ -35,24 +35,24 @@ First Playwright run on a machine: `npx playwright install chromium`. If port 43
 1. Copy `content/posts/_template.md` to `content/posts/<slug>.md`. The file name is the URL:
    `/blog/<slug>/`.
 2. Fill in the frontmatter: `title`, `description`, `date`, `tags`, optional `updated`, `author`
-   (defaults to the site owner) and `cover` (social preview image under `public/`).
+   (defaults to the site owner) and `cover` (social preview image under `public/`). Start the
+   tags with `article` or `case study`; that tag is all that sets a case study apart.
 3. Keep `draft: true` while writing; drafts render in `npm run dev` only. Set `draft: false` to
    publish.
 4. Run the checks locally, commit and merge into `master`. Pushing `master` makes CI lint,
    type-check, test, build and smoke-test the site, then build the Docker image and deploy it.
 
 Invalid frontmatter fails both `npm test` and `npm run build` with the offending file named.
-Spell tags consistently: `ci/cd` and `ci-cd` would both route to `/blog/tags/ci-cd/`, and the
-tests flag that.
+The tag filter on `/blog/` lists every tag of the published posts; a tag links to the blog with
+its filter applied (`/blog/#tag-ci-cd`). Spell tags consistently: `ci/cd` and `ci-cd` would share
+that filter, and the tests flag that.
 
-## Site copy and case studies
+## Site copy
 
 - Home page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/profile.ts`
   (tagline, tool list, contact tips) and `src/data/testimonials.ts` (empty until real quotes exist).
   The bio paragraphs live in `src/pages/index.astro`.
 - Name, domain, slogan, URL, email and social links: `src/lib/site.ts`.
-- Case studies: `content/case-studies/*.md`, same draft rules as posts. Start from `_template.md`.
-  Published ones appear in the `work` card on `/blog/`.
 - Colours: `src/styles/global.css`. After changing the green or the slogan, run
   `npm run og:image` so the social preview and favicons match.
 - Fonts: the `fonts` block in `astro.config.ts` (the fontsource files, preloaded by `<Font>` in

@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-// Post cards on the blog page live under the "posts" heading, so a published case
-// study in the "work" card above them never gets mistaken for a post.
 const firstPostLink = 'main #posts article h3 a';
 
 test('blog index lists posts and links through to a post page', async ({ page }) => {
@@ -36,8 +34,8 @@ test('the whole post card links to the post while its tags keep their own links'
   const tag = card.getByRole('list', { name: 'Tags' }).getByRole('link').first();
   const tagLabel = (await tag.textContent())?.trim() ?? '';
   await tag.click();
-  await expect(page).toHaveURL(/\/blog\/tags\/[a-z0-9-]+\/$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(tagLabel);
+  await expect(page).toHaveURL(/\/blog\/#tag-[a-z0-9-]+$/);
+  await expect(page.locator('main a:target')).toContainText(tagLabel);
 });
 
 test('a post shows author, date, reading time and tags', async ({ page }) => {
@@ -57,8 +55,9 @@ test('a post shows author, date, reading time and tags', async ({ page }) => {
 
   const tagLabel = (await tags.first().textContent())?.trim() ?? '';
   await tags.first().click();
-  await expect(page).toHaveURL(/\/blog\/tags\/[a-z0-9-]+\/$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(tagLabel);
+  await expect(page).toHaveURL(/\/blog\/#tag-[a-z0-9-]+$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog');
+  await expect(page.locator('main a:target')).toContainText(tagLabel);
 });
 
 test('post pages expose article metadata for social previews', async ({ page }) => {

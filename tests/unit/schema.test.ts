@@ -4,11 +4,10 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { splitFrontmatter } from '../../src/lib/frontmatter';
-import { caseStudySchema, postSchema } from '../../src/lib/schema';
+import { postSchema } from '../../src/lib/schema';
 import { findTagCollisions } from '../../src/lib/tags';
 
 const postsDir = path.resolve(process.cwd(), 'content/posts');
-const caseStudiesDir = path.resolve(process.cwd(), 'content/case-studies');
 const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 
 interface RawEntry {
@@ -64,21 +63,6 @@ describe('content/posts', () => {
   });
 });
 
-describe('content/case-studies', () => {
-  it('every case study has frontmatter that satisfies the schema', async () => {
-    for (const entry of await loadEntries(caseStudiesDir)) {
-      const result = caseStudySchema.safeParse(entry.data);
-      expect(result.success, `${entry.file} → ${describeIssues(result)}`).toBe(true);
-    }
-  });
-
-  it('file names are kebab-case slugs', async () => {
-    for (const entry of await loadEntries(caseStudiesDir)) {
-      expect(entry.file, `${entry.file} is not kebab-case`).toMatch(KEBAB_CASE);
-    }
-  });
-});
-
 describe('postSchema', () => {
   const minimal = { title: 'T', description: 'D', date: '2026-09-02' };
 
@@ -104,20 +88,5 @@ describe('postSchema', () => {
     expect(postSchema.safeParse({ ...minimal, tags: ['java', ''] }).success).toBe(false);
     expect(postSchema.safeParse({ ...minimal, tags: ['!!!'] }).success).toBe(false);
     expect(postSchema.safeParse({ ...minimal, tags: ['ci/cd'] }).success).toBe(true);
-  });
-});
-
-describe('caseStudySchema', () => {
-  const minimal = { title: 'T', period: 2025, summary: 'S', outcome: 'O' };
-
-  it('stores a bare-year period as a string', () => {
-    expect(caseStudySchema.parse(minimal).period).toBe('2025');
-    expect(caseStudySchema.parse({ ...minimal, period: '2024–2025' }).period).toBe('2024–2025');
-  });
-
-  it('rejects a missing period', () => {
-    const { period: _omitted, ...withoutPeriod } = minimal;
-    expect(caseStudySchema.safeParse(withoutPeriod).success).toBe(false);
-    expect(caseStudySchema.safeParse({ ...minimal, period: null }).success).toBe(false);
   });
 });

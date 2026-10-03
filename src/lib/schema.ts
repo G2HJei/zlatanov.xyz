@@ -29,20 +29,3 @@ export const postSchema = z.object({
 });
 
 export type PostFrontmatter = z.infer<typeof postSchema>;
-
-/** YAML turns a bare year like `2025` into a number; accept both, store a string. */
-const period = z.union([z.string(), z.number()]).transform(String).pipe(z.string().min(1));
-
-/** Frontmatter contract for `content/case-studies/*.md`. */
-export const caseStudySchema = z.object({
-  title: z.string().min(1),
-  client: z.string().min(1).optional(),
-  period,
-  stack: z.array(z.string().min(1)).default([]),
-  summary: z.string().min(1),
-  outcome: z.string().min(1),
-  order: z.number().int().default(0),
-  draft: z.boolean().default(false),
-});
-
-export type CaseStudyFrontmatter = z.infer<typeof caseStudySchema>;

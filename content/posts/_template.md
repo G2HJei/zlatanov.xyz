@@ -3,7 +3,7 @@ title: Post Title
 description: One or two sentences shown in lists, search results and social previews.
 date: 2026-09-02
 # updated: 2026-09-10
-tags: [article, java, spring, tdd, ci/cd]
+tags: [article, java, spring, tdd, ci/cd] # `article` or `case study` first, then topics
 # author: Boyan Zlatanov          # defaults to the site owner
 # cover: /images/post-cover.png   # optional, used as the social preview image
 draft: true

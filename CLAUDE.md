@@ -1,9 +1,9 @@
 # zlatanov.xyz
 
 Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
-(profile, about, services, how I work, contact) and `blog` (subscribe, work, posts), plus the
-markdown posts, tag pages and case studies behind them. Fully static Astro site, self-hosted in
-Docker behind the owner's nginx.
+(profile, about, services, how I work, contact) and `blog` (subscribe with the tag filter, posts),
+plus the markdown posts behind them. Fully static Astro site, self-hosted in Docker behind the
+owner's nginx.
 
 ## Commands
 
@@ -32,7 +32,9 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
   non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
   `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
-  canvas `opacity` in the component. Add no other client JavaScript.
+  canvas `opacity` in the component. Add no other client JavaScript. The blog's tag filter is CSS
+  too (`TagFilter.astro`): each pill links to itself (`#tag-java`), and while it is `:target`, a
+  rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose `data-tags` lack the slug.
 - **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css` (`@theme`). Use
   the semantic colours `surface`, `surface-muted`, `surface-raised`, `ink`, `ink-muted`,
   `ink-faint`, `line`, `accent`, `accent-dim`, `accent-deep`, `glow`, never raw palette classes.
@@ -76,14 +78,16 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   `tags`, `draft`, `author` defaults to the owner, optional `cover`). Invalid frontmatter fails
   both `npm test` and `npm run build`.
 - Drafts (`draft: true`) render only in `astro dev`. Filtering happens once in
-  `src/collections.ts#getPublishedPosts`; all lists, routes, tag pages and RSS go through it.
-- Tags display as written but route through `tagSlug()` (`ci/cd` → `/blog/tags/ci-cd/`). Keep tag
-  spelling consistent across posts; the unit tests flag labels that collide on one slug.
+  `src/collections.ts#getPublishedPosts`; all lists, routes, the tag filter and RSS go through it.
+- Tags are the only way posts differ in kind: articles carry `article`, case studies
+  `case study`, followed by topic tags. The filter on `/blog/` is built from the tags of the
+  published posts, with counts.
+- Tags display as written but route through `tagSlug()` (`ci/cd` → `/blog/#tag-ci-cd`, the blog
+  with that filter applied); there are no tag pages. Keep tag spelling consistent across posts;
+  the unit tests flag labels that collide on one slug.
 - Site-wide constants (name, domain, slogan, URL, email, social links): `src/lib/site.ts`. Home
   page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the tagline, tool list
   and contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
-- Case studies: `content/case-studies/<slug>.md`, same draft rules as posts. Published ones list in
-  the `work` card on `/blog/` and render at `/case-studies/<slug>/`.
 
 ## Deployment
 
