@@ -51,6 +51,12 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   code blocks get a `$ <language>` title bar. Keep motion to what exists and reduced-motion safe.
 - **Brand values are duplicated on purpose** in `scripts/og-image.mjs` and the `theme-color` in
   `Head.astro`; change them together with the tokens and run `npm run og:image`.
+- **Fonts load through Astro's Fonts API**: the `fonts` block in `astro.config.ts` points the
+  `local` provider at the fontsource latin `.woff2` files, and `<Font>` in `Head.astro` preloads the
+  upright faces and emits size-matched Arial / Courier New fallbacks (`--font-inter`,
+  `--font-jetbrains-mono`, mapped to `--font-sans` / `--font-mono`). Don't import the fontsource
+  CSS directly: without preloads and adjusted fallbacks, text renders small and then jumps on every
+  page load.
 - **Favicons come from the owner's brand kit** and sit in `public/` as-is: `favicon.ico`,
   `favicon.svg`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`,
   `android-chrome-*.png`, `maskable-icon-512x512.png` and `site.webmanifest`. Replace them as a set

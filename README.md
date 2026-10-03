@@ -53,8 +53,10 @@ tests flag that.
 - Name, domain, slogan, URL, email and social links: `src/lib/site.ts`.
 - Case studies: `content/case-studies/*.md`, same draft rules as posts. Start from `_template.md`.
   Published ones appear in the `work` card on `/blog/`.
-- Colours and fonts: `src/styles/global.css`. After changing the green or the slogan, run
+- Colours: `src/styles/global.css`. After changing the green or the slogan, run
   `npm run og:image` so the social preview and favicons match.
+- Fonts: the `fonts` block in `astro.config.ts` (the fontsource files, preloaded by `<Font>` in
+  `src/components/Head.astro`, with size-matched fallbacks so text doesn't jump on load).
 
 ## Deploy
 

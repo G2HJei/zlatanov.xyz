@@ -7,8 +7,9 @@
  * Values are hex on purpose so they can be compared with the reference design.
  */
 @theme {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Set by <Font> in Head.astro; each includes its metric-matched fallback. */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 
   --color-surface: #0a0a0a;
   --color-surface-muted: #111111;
