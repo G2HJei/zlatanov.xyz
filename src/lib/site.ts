@@ -10,8 +10,10 @@ export const SITE = {
   title: 'Boyan Zlatanov · Java consultant for TDD, DDD and CI/CD',
   description:
     'Independent Java and Spring consultant helping teams ship faster with test-driven development, domain-driven design and reliable CI/CD pipelines.',
-  /** The hero prompt on the home page and the social preview image. */
-  slogan: 'Ship systems you can change with confidence.',
+  /** The home page title and the social preview image. */
+  slogan: 'Tested. Shipped. Changeable.',
+  /** The `$ ` line under the slogan on the home page. */
+  sloganSubtitle: 'Engineering habits for boring deploys.',
   url: 'https://zlatanov.xyz',
   author: 'Boyan Zlatanov',
   email: 'boyan@zlatanov.xyz',

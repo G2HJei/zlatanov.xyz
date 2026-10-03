@@ -12,7 +12,7 @@ test('home page renders the profile, the navigation and the three cards', async 
   await page.goto('/');
 
   await expect(page).toHaveTitle(/Boyan Zlatanov/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(SITE.name);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(SITE.slogan);
 
   const nav = page.getByRole('navigation', { name: 'Main' });
   for (const label of ['home', 'blog']) {

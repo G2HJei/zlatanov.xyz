@@ -54,13 +54,9 @@
   }
 }
 
-/* Phosphor glow on text: hover states, the slogan. */
+/* Phosphor glow on text: hover states. */
 @utility glow-text {
   text-shadow: 0 0 10px var(--color-glow);
-}
-
-@utility glow-text-lg {
-  text-shadow: 0 0 20px var(--color-glow);
 }
 
 /* Green gradient headline, as on the reference profile and blog heroes. */

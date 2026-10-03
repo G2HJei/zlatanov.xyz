@@ -24,14 +24,7 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
-  <Hero>
-    <!-- The slogan is a shell prompt with the pitch as the command. -->
-    <div class="rounded-xl border border-line bg-surface-muted p-6 sm:p-8">
-      <p class="glow-text-lg font-mono text-[clamp(1.25rem,3.5vw,2.25rem)] leading-tight font-semibold text-accent before:text-ink-faint before:content-['$_']">
-        {SITE.slogan}
-      </p>
-    </div>
-  </Hero>
+  <Hero title={SITE.slogan} subtitle={SITE.sloganSubtitle} />
 
   <div class="space-y-8">
     <Card class="flex flex-col items-center gap-8 text-center md:flex-row md:gap-12 md:text-left">
@@ -40,7 +33,7 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
         <Logo class="size-16" />
       </div>
       <div>
-        <h1 class="text-gradient text-4xl font-bold sm:text-5xl">{SITE.name}</h1>
+        <h2 class="text-gradient text-4xl font-bold sm:text-5xl">{SITE.name}</h2>
         <p class="mt-4 max-w-[600px] text-[1.1rem] text-ink-muted">{profile.tagline}</p>
         <ul
           class="mt-8 flex flex-wrap justify-center gap-4 md:justify-start"
