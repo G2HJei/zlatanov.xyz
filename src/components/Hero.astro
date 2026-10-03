@@ -14,12 +14,7 @@ interface Props {
 const { title, subtitle, as: Tag = 'section', class: className } = Astro.props;
 ---
 
-<Tag
-  class:list={[
-    'relative mb-8 py-12 text-center sm:py-12',
-    className,
-  ]}
->
+<Tag class:list={['relative mb-8 py-12 text-center', className]}>
   {title !== undefined && (
     <h1 class="text-gradient text-4xl leading-[1.15] font-bold sm:text-5xl lg:text-[3.5rem]">
       {title}

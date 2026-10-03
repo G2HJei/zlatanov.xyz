@@ -34,17 +34,17 @@ const adjacentCard =
   author={author}
 >
   <article class="mx-auto max-w-4xl">
-    <Hero as="header" title={title}>
-      <p class="mx-auto mt-5 max-w-2xl text-lg text-ink-muted">{description}</p>
-      <PostMeta
-        variant="pills"
-        author={author}
-        date={date}
-        updated={updated}
-        readingTime={minutes}
-        class="mt-6 justify-center"
-      />
-      <TagList tags={tags} class="mt-4 justify-center" />
+    <Hero as="header" title={title} class="pb-0">
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+        <PostMeta
+          author={author}
+          date={date}
+          updated={updated}
+          readingTime={minutes}
+          class="justify-center"
+        />
+        <TagList tags={tags} class="justify-center" />
+      </div>
     </Hero>
 
     <Card as="div">
