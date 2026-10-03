@@ -1,4 +1,6 @@
 ---
+import { Font } from 'astro:assets';
+
 import { canonicalUrl, pageTitle } from '../lib/seo';
 import { SITE } from '../lib/site';
 
@@ -37,6 +39,11 @@ const imageUrl = new URL(image, Astro.site).href;
 {author && <meta name="author" content={author} />}
 <link rel="canonical" href={canonical} />
 <meta name="generator" content={Astro.generator} />
+
+<!-- Fonts are configured in astro.config.ts. Preload the upright faces so they are ready
+     before first paint; italic is rare enough to load on demand. -->
+<Font cssVariable="--font-inter" preload={[{ style: 'normal' }]} />
+<Font cssVariable="--font-jetbrains-mono" preload />
 
 <!-- Icon set from the brand kit, copied as-is into public/. -->
 <link rel="icon" href="/favicon.ico" sizes="48x48" />
