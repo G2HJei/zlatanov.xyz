@@ -33,8 +33,10 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
   `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
   canvas `opacity` in the component. Add no other client JavaScript. The blog's tag filter is CSS
-  too (`TagFilter.astro`): each pill links to itself (`#tag-java`), and while it is `:target`, a
-  rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose `data-tags` lack the slug.
+  too (`TagFilter.astro`): each pill links to an empty marker beside it (`#tag-java`), and while
+  it is `:target`, a rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose
+  `data-tags` lack the slug. The markers are `position: fixed` at the top of the viewport so that
+  following a filter never scrolls the page; don't move the ids back onto the pills.
 - **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css` (`@theme`). Use
   the semantic colours `surface`, `surface-muted`, `surface-raised`, `ink`, `ink-muted`,
   `ink-faint`, `line`, `accent`, `accent-dim`, `accent-deep`, `glow`, never raw palette classes.

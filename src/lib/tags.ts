@@ -24,9 +24,9 @@ export function tagUrl(slug: string): string {
 }
 
 /**
- * The blog page filters its posts without JavaScript. Each filter link targets itself, and
- * while it is the URL fragment, its rule hides every post whose `data-tags` lacks the slug.
- * CSS cannot compare a fragment with an attribute, hence one rule per tag.
+ * The blog page filters its posts without JavaScript. Each filter link targets a marker beside
+ * it, and while that is the URL fragment, its rule hides every post whose `data-tags` lacks the
+ * slug. CSS cannot compare a fragment with an attribute, hence one rule per tag.
  */
 export function tagFilterCss(slugs: string[]): string {
   return slugs

@@ -35,7 +35,7 @@ test('the whole post card links to the post while its tags keep their own links'
   const tagLabel = (await tag.textContent())?.trim() ?? '';
   await tag.click();
   await expect(page).toHaveURL(/\/blog\/#tag-[a-z0-9-]+$/);
-  await expect(page.locator('main a:target')).toContainText(tagLabel);
+  await expect(page.locator('main li:has(:target) > a')).toContainText(tagLabel);
 });
 
 test('a post shows author, date, reading time and tags', async ({ page }) => {
@@ -57,7 +57,7 @@ test('a post shows author, date, reading time and tags', async ({ page }) => {
   await tags.first().click();
   await expect(page).toHaveURL(/\/blog\/#tag-[a-z0-9-]+$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog');
-  await expect(page.locator('main a:target')).toContainText(tagLabel);
+  await expect(page.locator('main li:has(:target) > a')).toContainText(tagLabel);
 });
 
 test('post pages expose article metadata for social previews', async ({ page }) => {
