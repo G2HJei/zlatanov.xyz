@@ -5,7 +5,7 @@ const background = (link: Locator) =>
 
 test('each tag filter shows exactly the posts carrying that tag', async ({ page }) => {
   await page.goto('/blog/');
-  const filters = page.locator('main #subscribe').getByRole('list', { name: 'filter by tag' });
+  const filters = page.locator('main').getByRole('list', { name: 'filter by tag' });
   const all = filters.locator('#all');
   const posts = page.locator('main #posts li[data-tags]');
   const total = await posts.count();

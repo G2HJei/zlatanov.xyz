@@ -1,19 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-test('blog page has the subscribe and posts sections', async ({ page }) => {
+test('blog page has the tag filter under the title and the RSS link by the posts', async ({
+  page,
+}) => {
   const response = await page.goto('/blog/');
   expect(response?.status()).toBe(200);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog');
 
-  for (const id of ['subscribe', 'posts']) {
-    await expect(page.locator(`main #${id}`)).toBeVisible();
-  }
-  const subscribe = page.locator('main #subscribe');
-  await expect(subscribe.getByRole('link', { name: 'RSS feed' })).toHaveAttribute(
-    'href',
-    '/rss.xml',
-  );
-  await expect(subscribe.getByRole('list', { name: 'filter by tag' })).toBeVisible();
+  await expect(page.locator('main').getByRole('list', { name: 'filter by tag' })).toBeVisible();
+  const posts = page.locator('main #posts');
+  await expect(posts).toBeVisible();
+  await expect(posts.getByRole('link', { name: 'RSS feed' })).toHaveAttribute('href', '/rss.xml');
 });
 
 const pages = [

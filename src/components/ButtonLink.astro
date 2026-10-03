@@ -1,17 +1,32 @@
 ---
-/** Primary action: an outlined terminal-style button in mono. `dim` is its quieter twin. */
+/**
+ * Primary action: an outlined terminal-style button in mono. `dim` is its quieter twin;
+ * `compact` sizes it to sit beside a heading.
+ */
 interface Props {
   href: string;
   variant?: 'primary' | 'dim';
+  size?: 'default' | 'compact';
   external?: boolean;
   class?: string;
 }
 
-const { href, variant = 'primary', external = false, class: className } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  size = 'default',
+  external = false,
+  class: className,
+} = Astro.props;
 
 const variants = {
   primary: 'border-accent text-accent hover:bg-accent/10',
   dim: 'border-accent-dim text-accent-dim hover:bg-accent-dim/10',
+};
+
+const sizes = {
+  default: 'gap-3 px-8 py-4 text-[0.95rem]',
+  compact: 'gap-2 px-4 py-2 text-sm',
 };
 ---
 
@@ -19,8 +34,9 @@ const variants = {
   href={href}
   rel={external ? 'me noopener' : undefined}
   class:list={[
-    'inline-flex items-center justify-center gap-3 rounded-lg border-2 bg-surface px-8 py-4 font-mono text-[0.95rem] font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-glow)]',
+    'inline-flex items-center justify-center rounded-lg border-2 bg-surface font-mono font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-glow)]',
     variants[variant],
+    sizes[size],
     className,
   ]}
 >

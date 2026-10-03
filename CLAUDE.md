@@ -1,9 +1,9 @@
 # zlatanov.xyz
 
 Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
-(profile, about, services, how I work, contact) and `blog` (subscribe with the tag filter, posts),
-plus the markdown posts behind them. Fully static Astro site, self-hosted in Docker behind the
-owner's nginx.
+(profile, about, services, how I work, contact) and `blog` (tag filter under the title, posts with
+the RSS link), plus the markdown posts behind them. Fully static Astro site, self-hosted in Docker
+behind the owner's nginx.
 
 ## Commands
 
