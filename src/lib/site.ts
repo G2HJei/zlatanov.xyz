@@ -5,7 +5,7 @@ export const SITE = {
   name: 'Boyan Zlatanov',
   logo: 'zlatanov',
   /** Shown beside the logo in the header. */
-  logoSubtitle: 'CI/CD·TDD·Java',
+  logoSubtitle: 'CI/CD·TDD·Clean Code',
   domain: 'zlatanov.xyz',
   title: 'Boyan Zlatanov · Java consultant for TDD, DDD and CI/CD',
   description:
