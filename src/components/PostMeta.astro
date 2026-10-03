@@ -1,8 +1,5 @@
 ---
-/**
- * Date, author and reading time in mono. `inline` is one line with bullet
- * separators (post lists); `pills` puts each item in its own chip (post header).
- */
+/** Date, author and reading time on one mono line with bullet separators. */
 import { formatDate, toIsoDate } from '../lib/dates';
 import Icon from './Icon.astro';
 
@@ -11,57 +8,34 @@ interface Props {
   updated?: Date;
   author?: string;
   readingTime: string;
-  variant?: 'inline' | 'pills';
   class?: string;
 }
 
-const { date, updated, author, readingTime, variant = 'inline', class: className } = Astro.props;
-
-const pill =
-  'inline-flex items-center gap-2 rounded-full border border-line bg-surface-raised px-4 py-2';
+const { date, updated, author, readingTime, class: className } = Astro.props;
 ---
 
-{variant === 'pills' ? (
-  <ul
-    class:list={['flex flex-wrap items-center gap-3 font-mono text-sm text-ink-faint', className]}
-  >
-    <li class={pill}>
-      <Icon name="calendar" class="size-4 text-accent" />
-      <time datetime={toIsoDate(date)}>{formatDate(date)}</time>
-    </li>
-    {updated && (
-      <li class={pill}>
-        <span>updated</span>
-        <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time>
-      </li>
-    )}
-    {author && (
-      <li class={pill}>
-        <Icon name="user" class="size-4 text-accent" />
-        <span>{author}</span>
-      </li>
-    )}
-    <li class={pill}>
-      <Icon name="clock" class="size-4 text-accent" />
-      <span>{readingTime}</span>
-    </li>
-  </ul>
-) : (
-  <p
-    class:list={[
-      'flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-sm text-ink-faint',
-      className,
-    ]}
-  >
-    <Icon name="calendar" class="size-4 text-accent" />
-    <time datetime={toIsoDate(date)}>{formatDate(date)}</time>
-    {author && (
-      <>
-        <span aria-hidden="true">•</span>
-        <span>{author}</span>
-      </>
-    )}
-    <span aria-hidden="true">•</span>
-    <span>{readingTime}</span>
-  </p>
-)}
+<p
+  class:list={[
+    'flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-sm text-ink-faint',
+    className,
+  ]}
+>
+  <Icon name="calendar" class="size-4 text-accent" />
+  <time datetime={toIsoDate(date)}>{formatDate(date)}</time>
+  {updated && (
+    <>
+      <span aria-hidden="true">•</span>
+      <span>
+        updated <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time>
+      </span>
+    </>
+  )}
+  {author && (
+    <>
+      <span aria-hidden="true">•</span>
+      <span>{author}</span>
+    </>
+  )}
+  <span aria-hidden="true">•</span>
+  <span>{readingTime}</span>
+</p>
