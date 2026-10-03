@@ -19,6 +19,27 @@ test('blog index lists posts and links through to a post page', async ({ page })
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(title ?? '');
 });
 
+test('the whole post card links to the post while its tags keep their own links', async ({
+  page,
+}) => {
+  await page.goto('/blog/');
+  const card = page.locator('main #posts article').first();
+  const title = (await card.locator('h3 a').textContent())?.trim();
+
+  // The bottom-right corner is card padding, away from the title and the tags.
+  const box = await card.boundingBox();
+  await card.click({ position: { x: (box?.width ?? 0) - 12, y: (box?.height ?? 0) - 12 } });
+  await expect(page).toHaveURL(/\/blog\/[a-z0-9-]+\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(title ?? '');
+
+  await page.goBack();
+  const tag = card.getByRole('list', { name: 'Tags' }).getByRole('link').first();
+  const tagLabel = (await tag.textContent())?.trim() ?? '';
+  await tag.click();
+  await expect(page).toHaveURL(/\/blog\/tags\/[a-z0-9-]+\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(tagLabel);
+});
+
 test('a post shows author, date, reading time and tags', async ({ page }) => {
   await page.goto('/blog/');
   await page.locator(firstPostLink).first().click();
