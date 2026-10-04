@@ -1,6 +1,6 @@
 ---
 title: Fast Development Cycles Made Simple
-description: Continuous delivery as Dave Farley describes it, shown on a real project. A deployment pipeline that judges every commit, TDD that leaves good design behind as a side effect, and pairing that reviews the code while it is being written.
+description: Continuous delivery as Dave Farley describes it, shown on a real project. A deployment pipeline that judges every commit, and TDD that leaves good design behind as a side effect.
 date: 2026-10-04
 tags: [ article, ci/cd, tdd, architecture, java ]
 draft: true
@@ -388,45 +388,6 @@ The pipeline and the architecture shape each other, and the consequences are pra
   new version run side by side during a rollout. Database migrations go expand, migrate, contract;
   APIs add before they remove.
 
-## Pairing: the pull request, reviewed in real time
-
-The tightest loop of all closes before the commit. Most teams review code through pull requests:
-write the change, open the request, wait for a reviewer to have time, answer the comments, wait
-again. Each round trip adds hours or days to a change the pipeline could judge in minutes, and it
-quietly pushes the team back towards long-lived branches. It doesn't even buy that much quality:
-ten changed lines get ten comments, five hundred get "looks good to me".
-
-Kent Beck took the idea of review to its logical end in the first edition of *Extreme Programming
-Explained*:
-
-> If code reviews are good, we'll review code all the time (pair programming).
-
-Pairing is the pull request review, happening while the code is written. One person drives, the
-other navigates, and they swap often. The navigator catches the misleading name, the missing test
-or the unhandled edge case while fixing it costs seconds, not another review round. By the time the
-commit reaches trunk, two people understand it and it has already been reviewed, so it can go
-straight into the pipeline. In his post on
-[continuous integration and feature branching](https://www.davefarley.net/?p=247), Farley answers
-the inevitable "but how do you do code reviews?" in two sentences: "Pair Programming is my
-preferred approach. You get better code reviews and much more."
-
-The pair doesn't have to be a person any more. An AI assistant makes a patient navigator: it reads
-every line as you write it, suggests the next test case, spots the null you didn't handle and
-explains code you haven't seen before. Swap roles and let it drive, and you become the reviewer,
-reading each small step as it lands instead of a 600-line diff at the end.
-
-TDD keeps the AI pair honest. You write the failing test that states what you want, the assistant
-proposes code to pass it, and the test decides whether the proposal is right, not the confidence of
-its explanation. Then the pipeline judges the result exactly as it judges your own code. Two rules
-keep it safe: you own every line that ships, so nothing goes in that you can't explain, and the
-AI's code meets the same bar as anybody else's. Tests first, small commits, through the pipeline,
-no exceptions.
-
-A colleague still brings what an assistant can't: knowledge of the business and its history, a
-stake in the outcome, and a team where knowledge spreads instead of staying in one head. Pair with
-a person when the problem is new or hard, and with an AI when you need a second pair of eyes on the
-everyday work. Either way, the review happens while the code is written.
-
 ## Cheat sheet
 
 | Loop             | Question it answers                 | Answer in       |
@@ -438,7 +399,8 @@ everyday work. Either way, the review happens while the code is written.
 | Production       | Did it help the users?              | days            |
 
 Each loop catches what the faster one can't, and every one of them depends on the change being
-small.
+small. The fastest, pairing, closes before the commit and has
+[a post of its own](/blog/pairing-the-pull-request-reviewed-in-real-time/).
 
 ## Small iterations
 
