@@ -186,6 +186,16 @@
   padding: 1rem 1.5rem;
 }
 
+/* On a phone a table's longest words can outgrow the card: smaller text, and anything still too
+   wide scrolls inside the table instead of widening the page. */
+@media (width < 40rem) {
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    font-size: 0.8rem;
+  }
+}
+
 /* Shiki blocks become a terminal window whose title bar names the language. */
 .prose .astro-code {
   position: relative;
@@ -197,6 +207,28 @@
 
 .prose .astro-code::before {
   content: '$ ' attr(data-language);
+}
+
+/* Diagrams: inline SVG in a post, `<figure class="diagram" data-title="…">`, framed like a code
+   block but titled `# …`. Shapes carry classes, not colours, so every diagram stays on the
+   palette: `box` is a panel (`dim` darker, `tint` faintly green), `box on` a green outline,
+   `core` the glowing centre, `wire` a connector (`on` green, `dash` async or over the network)
+   and `tip` its arrowhead. Text is white; `note` makes it small and grey, `on` green, `start` /
+   `end` re-anchor it. Keep every tag on one line: reading time only strips one-line tags. */
+.prose .diagram {
+  position: relative;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  padding: 3.25rem 0.75rem 1rem;
+}
+
+.prose .diagram::before {
+  content: '# ' attr(data-title);
+}
+
+.prose .astro-code::before,
+.prose .diagram::before {
   position: absolute;
   inset: 0 0 auto 0;
   padding: 0.5rem 1rem;
@@ -207,4 +239,91 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
   line-height: 1.4;
+}
+
+.prose .diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+  height: auto;
+  margin-inline: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.prose .diagram figcaption {
+  margin-top: 1rem;
+  font-size: 0.8em;
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+.prose .diagram .box {
+  fill: var(--color-surface-raised);
+  stroke: var(--color-line);
+  stroke-width: 1.5;
+}
+
+.prose .diagram .box.dim {
+  fill: var(--color-surface-muted);
+}
+
+.prose .diagram .box.tint {
+  fill: color-mix(in oklch, var(--color-accent) 8%, var(--color-surface));
+}
+
+.prose .diagram .box.on {
+  stroke: var(--color-accent);
+}
+
+.prose .diagram .core {
+  fill: color-mix(in oklch, var(--color-accent) 18%, var(--color-surface));
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px var(--color-glow));
+}
+
+.prose .diagram .wire {
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.5;
+}
+
+.prose .diagram .wire.on {
+  stroke: var(--color-accent);
+}
+
+.prose .diagram .wire.dash {
+  stroke-dasharray: 5 4;
+}
+
+.prose .diagram .tip {
+  fill: var(--color-ink-faint);
+}
+
+.prose .diagram .tip.on {
+  fill: var(--color-accent);
+}
+
+.prose .diagram text {
+  fill: var(--color-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.prose .diagram text.note {
+  fill: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.prose .diagram :is(text, tspan).on {
+  fill: var(--color-accent);
+}
+
+.prose .diagram text.start {
+  text-anchor: start;
+}
+
+.prose .diagram text.end {
+  text-anchor: end;
 }
