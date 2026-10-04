@@ -2,12 +2,13 @@
 title: Bringing a legacy order system under test
 description: A ten-year-old order management monolith that nobody dared to change became something the team could release every week.
 date: 2026-10-03
-tags: [case study, java, spring boot, tdd, ci/cd]
+tags: [case study, article]
 draft: true
 ---
 
 > This is an illustrative sample kept as a draft so it only shows up in `astro dev`.
 > Replace it with a real engagement and set `draft: false`.
+> Use either `case study` or `article tag.
 
 ## Context
 

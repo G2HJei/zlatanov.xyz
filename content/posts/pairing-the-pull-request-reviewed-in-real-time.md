@@ -2,7 +2,7 @@
 title: 'Pairing: The Pull Request, Reviewed in Real Time'
 description: Pull request reviews add days of waiting and catch less than they promise. Pair programming, with a colleague or an AI assistant, reviews the code while it is being written, so every commit can go straight to trunk.
 date: 2026-10-04
-tags: [ article, pair programming, tdd, ci/cd, ai ]
+tags: [ article ]
 draft: false
 ---
 
