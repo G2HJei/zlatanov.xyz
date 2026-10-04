@@ -2,29 +2,29 @@
 title: Architecture Styles and When Not to Use Them
 description: Monolith, modulith, microservices, event-driven, MVC, layered, hexagonal, clean and replicas. What each one buys you, what it costs, and the signs that it is the wrong choice.
 date: 2026-10-04
-tags: [article, architecture, ddd, java, spring boot]
+tags: [ article, architecture, ddd, java, spring boot ]
 draft: false
 ---
 
-Most architecture arguments I sit in go wrong in the first five minutes, because they compare
+Most architecture arguments I sit in go wrong in the first five minutes because they compare
 things that don't compete. "Should we go hexagonal or microservices?" is a question like "should we
-buy a bigger house or a dishwasher?". Both can be good purchases; they answer different questions.
+buy a bigger house or a dishwasher?" Both can be good purchases; they answer different questions.
 
 This post walks through the styles that come up most often: monolith, modular monolith,
-microservices, event-driven, MVC, layered, hexagonal, clean and replicas. For each one: what it
-buys you, what it costs, and the signs that it's the wrong choice. The "when not to" part matters
-more. Almost every style here is a good idea somewhere and an expensive one everywhere else.
+microservices, event-driven, MVC, layered, hexagonal, clean, and replicas. For each one: what it
+buys you, what it costs, and the signs that it's the wrong choice. But most importantly, when not to use them.
+Almost every style here is a good idea somewhere and an expensive one everywhere else.
 
-## Three questions, not one list
+## The three questions you need to answer first
 
 Nearly every name on that list answers one of three independent questions:
 
-1. **How many things do you deploy?** One artefact, one artefact with hard internal boundaries, or
-   many independently deployable services.
-2. **Which way do the dependencies point inside a deployable?** Do your business rules depend on
-   the web framework and the database, or the other way round?
-3. **How many copies run, and where does the data live?** One instance, several behind a load
-   balancer, a database with read replicas.
+1. **How many things do you deploy at the same time?** One artifact, one artifact with hard internal boundaries, or many
+   independently deployable services.
+2. **Which way do the dependencies point inside a deployable artifact?** In other words, do your business rules depend
+   on the web framework and the database, or the other way round?
+3. **How many copies run, and where does the data live?** One instance, several behind a load balancer, a database with
+   read replicas.
 
 <figure class="diagram" data-title="three questions">
 <svg viewBox="0 0 360 272" role="img" aria-label="Three rows of choices, simplest on the left. Deploy: monolith, modulith (highlighted), microservices. Code: MVC, layered, hexagonal (highlighted), clean. Run: one instance, replicas (highlighted), read replicas.">
@@ -55,22 +55,22 @@ Nearly every name on that list answers one of three independent questions:
 <text x="180" y="250">replicas</text>
 <text x="303" y="250">read replicas</text>
 </svg>
-<figcaption>Three independent choices, simplest on the left. Green marks where most business systems I work on end up.</figcaption>
+<figcaption>The answers to the questions boil down to three independent choices with the simplest ones on the left. Green marks where most business systems I work on end up.</figcaption>
 </figure>
 
 Because the questions are independent, the answers combine freely. A modular monolith with
-hexagonal modules, running as three replicas, is a perfectly ordinary system. So is a layered
+hexagonal modules running as three replicas is a perfectly ordinary system. So is a layered
 Spring Boot application on a single VM. The expensive mistake is answering one question with an
 answer to another: "we need to scale, so we need microservices".
 
-## How many deployables?
+## How many things do you deploy at the same time?
 
 ### Monolith
 
-One codebase, one build, one deployable, usually one database. "Monolith" has become an insult,
-which is unfair: most successful products started as one, and plenty still are. What people mean
-when they use the word as an insult is the big ball of mud, where every part reaches into every
-other part.
+A true classic – one codebase, one build, one deployable, usually one database. "Monolith" has become an insult, which
+is unfair: most successful products started as one, and plenty of them still are. What people mean when they use the
+word
+as an insult is the big ball of mud, where every part reaches into every other part.
 
 <figure class="diagram" data-title="monolith">
 <svg viewBox="0 0 360 224" role="img" aria-label="One deployable, shop.jar, containing web, orders, catalog, users, billing and reports, all wired to each other, on top of one database.">
@@ -94,12 +94,12 @@ other part.
 <ellipse class="box" cx="180" cy="182" rx="44" ry="6"/>
 <text x="180" y="199">database</text>
 </svg>
-<figcaption>One deployable, one database. The risk is the mesh: with nothing in the way, everything ends up calling everything.</figcaption>
+<figcaption>One deployable, one database. The risk is the mesh: with nothing in the way, eventually everything ends up calling everything.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
-- The product is new and the domain is still being discovered. The boundaries you would draw today
+- The product is new, and the domain is still being discovered. The boundaries you would draw today
   will be wrong in six months, and moving code around inside one repository is a refactoring, not
   a migration.
 - One team owns the whole thing.
@@ -107,12 +107,13 @@ other part.
   transactions that simply work.
 - The load fits on a few machines, which describes most business software.
 
-**Think twice when**
+**When to avoid?**
 
 - Several teams change the same codebase and start queuing behind each other: merge conflicts,
-  release trains, "who broke the build?".
+  release trains, "who broke the build?"
 - Parts of the system have very different runtime needs, such as a CPU-hungry pricing engine next
-  to a CRUD admin screen. Replicas or a separate worker process often fix that without a split.
+  to a CRUD admin screen. Replicas or a separate worker process often fix that without a split, but this is a clear sign
+  you need to move toward another architecture pattern.
 - Nothing stops one part from reaching into another. That is the real failure mode: after a few
   years `OrderService` calls `UserRepository` directly and every change touches everything. It's
   also why the next style exists.
@@ -121,7 +122,7 @@ other part.
 
 Still one deployable, but split inside along business capabilities, the bounded contexts of DDD.
 Each module exposes a small public API and hides everything else. Modules talk through those APIs
-or through in-process events, and each one owns its own tables.
+or through in-process events, and each one owns its own business logic, tables, and internal design patterns.
 
 <figure class="diagram" data-title="modular monolith">
 <svg viewBox="0 0 360 266" role="img" aria-label="One deployable, shop.jar, containing three modules: orders, billing and shipping. Each has a public api on top and hidden internals. The modules connect through an in-process events channel, and each has its own schema in one database.">
@@ -156,24 +157,27 @@ or through in-process events, and each one owns its own tables.
 <ellipse class="box" cx="292" cy="214" rx="30" ry="5"/>
 <text class="note" x="180" y="256">one database, a schema per module</text>
 </svg>
-<figcaption>Still one deployable, but each module shows a small API and keeps its internals and its tables to itself.</figcaption>
+<figcaption>Still one deployable, but each module shows a small API and keeps its internals to itself.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
 - You are starting something new or rewriting something old. For most teams this should be the
-  default: real boundaries without paying for the network.
+  default: real boundaries without paying for the network and deployment complexity.
 - You understand the domain well enough to name the contexts, but not well enough to bet on network
   contracts between them.
 - You want to keep the option of extracting a service later. A module with its own API and its own
   tables is most of the way to being a service already.
 
-**Think twice when**
+**When to avoid?**
 
 - Teams need to release on independent schedules or with different stacks. Modules still share one
   build and one deployment.
 - One module needs to scale or fail on its own, such as an import job that starves the web requests
   under load.
+
+**Be careful if...**
+
 - Nobody will enforce the boundaries. Unenforced modules decay into a monolith with more folders.
 
 Enforce them in the build rather than in a wiki page:
@@ -181,10 +185,10 @@ Enforce them in the build rather than in a wiki page:
 ```java
 class ModularityTests {
 
-    @Test
-    void modulesOnlyTalkThroughTheirPublicApi() {
-        ApplicationModules.of(ShopApplication.class).verify();
-    }
+  @Test
+  void modulesOnlyTalkThroughTheirPublicApi() {
+    ApplicationModules.of(ShopApplication.class).verify();
+  }
 }
 ```
 
@@ -195,8 +199,8 @@ into another module's internals. A boundary that fails the build stays a boundar
 ### Microservices
 
 Independently deployable services, each owning its data and owned by one team, talking over the
-network through HTTP, gRPC or messages. The defining property is independence: a team can change,
-test, deploy and scale its service without coordinating a release with anybody else.
+network through HTTP, gRPC, or messages. The defining property is independence: a team can change,
+test, deploy, and scale its service without coordinating a release with anybody else.
 
 <figure class="diagram" data-title="microservices">
 <svg viewBox="0 0 360 218" role="img" aria-label="An api gateway calls three services, orders, billing and shipping, over the network. Orders calls billing and billing calls shipping. Each service has its own database.">
@@ -223,32 +227,38 @@ test, deploy and scale its service without coordinating a release with anybody e
 <ellipse class="box" cx="294" cy="160" rx="28" ry="5"/>
 <text class="note" x="180" y="208">own code, own pipeline, own data, own team</text>
 </svg>
-<figcaption>Separate deployables with separate data. Every dashed arrow crosses the network, so it can be slow, fail or time out.</figcaption>
+<figcaption>Separate deployables with separate data. Dashed arrows cross the network, which can be slow, fail, or time out.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
 - You have several teams that need to release independently. Microservices are mostly an
-  organisational tool: Conway's law starts working with you instead of against you.
+  organizational tool: [Conway's law](https://martinfowler.com/bliki/ConwaysLaw.html) starts working with you instead of
+  against you.
 - The boundaries are proven, ideally because they have been stable as modules in a modulith for a
   while.
 - Parts have genuinely different needs: payments isolated for compliance, search scaled on its own,
   a machine-learning component in Python.
-- The platform is in place: a pipeline per service, containers and orchestration, centralised logs,
+- The platform is in place: a pipeline per service, containers and orchestration, centralized logs,
   tracing, contract tests.
 
-**Think twice when**
+**When to avoid?**
 
 - There is one team. You would pay the distributed-systems tax (partial failure, eventual
   consistency, versioned APIs, debugging across process boundaries) for benefits that only multiple
   teams collect.
-- The domain is young. A wrong boundary inside a monolith is a refactoring; between services it is
+- The domain is young. A wrong boundary inside a monolith is a refactoring; between services this becomes
   a migration with two deployments and a data move.
 - Services share a database or have to be deployed together. That is a distributed monolith, the
   worst of both worlds.
 - One user request turns into a chain of synchronous calls. Availability multiplies: five services
   at 99.9% each give you about 99.5%, three and a half hours of downtime a month instead of 43
   minutes.
+
+**Keep in mind**
+
+- Most companies don't need microservices. They scale software on an organizational level, not a technical one. Beware
+  the distributed monolith!
 
 ### Event-driven
 
@@ -281,36 +291,36 @@ broker such as Kafka or RabbitMQ.
 <figcaption>Orders states the fact once. The listeners react in their own time, and adding a fourth one doesn't touch orders.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
-- One fact has many interested parties and the publisher shouldn't have to know them all: an order
+- One fact has many interested parties, and the publisher shouldn't have to know them all: an order
   is placed, so invoice it, ship it, email the customer, update the reporting.
 - The work can happen later. The customer doesn't need to wait for the confirmation email.
 - You need to absorb load spikes or keep going while one consumer is down.
 - The history matters. A stream of events is a natural audit log.
 
-**Think twice when**
+**When to avoid?**
 
-- The caller needs an answer now, such as checking stock before confirming an order. Make a call.
+- The caller needs an answer now, such as checking stock before confirming an order.
 - The flow must be easy to follow. With pure choreography the business process lives nowhere; it's
   spread across listeners, and "why didn't this order ship?" means tracing messages through a
   broker.
-- You aren't ready for at-least-once delivery. Consumers must be idempotent, ordering is guaranteed
-  per partition at best, and publishing reliably alongside a database write needs a transactional
-  outbox.
+- You aren't ready for what a broker actually guarantees. Are your consumers idempotent? Can
+  they handle events arriving out of order? Does a transactional outbox make sure an event is
+  published if and only if its data is committed?
 
 ## Which way do the dependencies point?
 
-Inside any deployable, whether it's a monolith, a module or a service, you still decide how the code
-is organised. The four styles below are a progression of one idea: stop the business rules from
-depending on the delivery mechanism and the database, so they can be read, tested and changed on
+Inside any deployable, whether it's a monolith, a module, or a service, you still decide how the code
+is organized. The four styles below are a progression of one idea: stop the business rules from
+depending on the delivery mechanism and the database, so they can be read, tested, and changed on
 their own.
 
 ### MVC
 
 Model-View-Controller splits a user interface into three roles: the controller handles input, the
 model holds the state, the view renders it. In Spring that's a `@Controller`, a Thymeleaf template
-and the model attributes passed between them; in a REST API the view is the JSON serialiser.
+and the model attributes passed between them; in a REST API the view is the JSON serializer.
 
 <figure class="diagram" data-title="mvc">
 <svg viewBox="0 0 360 196" role="img" aria-label="A request reaches the controller. The controller updates the model and selects a view; the view reads the model and renders the response.">
@@ -338,12 +348,12 @@ and the model attributes passed between them; in a REST API the view is the JSON
 MVC is a presentation pattern, not an application architecture. It says nothing about where
 business rules or persistence belong, which is how controllers end up 400 lines long.
 
-**Use it when**
+**When it works?**
 
-- You are building a server-rendered web UI, an admin tool or a small CRUD application.
+- You are building a server-rendered web UI, an admin tool, or a small CRUD application.
 - You need the outermost layer of any of the styles below. MVC makes a perfectly good web adapter.
 
-**Think twice when**
+**When to avoid?**
 
 - It is the whole architecture of something with real business rules. The rules drift into the
   controllers, or into a "model" that every part of the code mutates.
@@ -382,30 +392,31 @@ projects grow out of habit, and the style most Java developers already know.
 <figcaption>Each layer calls only the one below. Simple and familiar, but the domain ends up depending on persistence.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
 - The application is mostly CRUD with modest rules, and the team wants a convention everybody
   already understands.
-- You need structure quickly and want new people productive on their first day.
+- You need a structure quickly and want new people productive on their first day.
 
-**Think twice when**
+**When to avoid?**
 
 - The domain logic is rich. The domain sits on top of persistence, so JPA entities become the
   domain model, transactions leak upwards, and testing a pricing rule needs a database or a pile of
   mocks.
 - Most requests sink straight through: a controller calls a service that calls a repository and
   adds nothing on the way.
-- The packages are cut by layer across a large codebase. A feature change touches every package,
+- Layer cuts the packages across a large codebase. A feature change touches every package,
   and nothing in the structure tells you what the system does. Layers inside modules age much
   better than layers across the whole application.
 
 ### Hexagonal (ports and adapters)
 
-Alistair Cockburn's idea: the application core, meaning the domain and its use cases, sits in the
+[Alistair Cockburn's idea](https://alistair.cockburn.us/hexagonal-architecture): the application core, meaning the
+domain and its use cases, sits in the
 middle and defines ports. Driving ports describe what the application offers ("place an order"),
 driven ports what it needs ("store an order", "charge a card"). Adapters on the outside plug into
-the ports: a REST controller or a Kafka listener drives the application, a JPA repository or a
-payment client is driven by it. The core depends on nothing technical, and every adapter depends on
+the ports: a REST controller or a Kafka listener drives the application, it drives a JPA repository or a
+payment client. The core depends on nothing technical, and every adapter depends on
 the core.
 
 <figure class="diagram" data-title="hexagonal">
@@ -442,23 +453,24 @@ In code the port is an interface shaped by the domain, and each adapter is a cla
 ```java
 // core: the port speaks the domain's language, not the vendor's
 public interface PaymentGateway {
-    PaymentResult charge(OrderId order, Money amount);
+  PaymentResult charge(OrderId order, Money amount);
 }
 
 // adapter: the only class that knows which payment provider you use
 @Component
-class StripePaymentGateway implements PaymentGateway { /* ... */ }
+class StripePaymentGateway implements PaymentGateway { /* ... */
+}
 
 // test: a fake adapter, so use-case tests need no Spring context and no network
 class ApprovingPaymentGateway implements PaymentGateway {
-    @Override
-    public PaymentResult charge(OrderId order, Money amount) {
-        return PaymentResult.approved();
-    }
+  @Override
+  public PaymentResult charge(OrderId order, Money amount) {
+    return PaymentResult.approved();
+  }
 }
 ```
 
-**Use it when**
+**When it works?**
 
 - There are business rules worth protecting: pricing, eligibility, scheduling, anything you want to
   read without a framework in the way.
@@ -468,10 +480,10 @@ class ApprovingPaymentGateway implements PaymentGateway {
   you run them all the time.
 - The system will outlive several framework versions, which the rules almost always do.
 
-**Think twice when**
+**When to avoid?**
 
-- It's CRUD with no rules. You'll write a port, an adapter and two mappers to move a form into a
-  table, and every one of them is ceremony.
+- It's CRUD with no rules. You'll write a port, an adapter, and two mappers to move a form into a
+  table, and every one of them is just a ceremony.
 - The service is small and short-lived, like a webhook relay. The whole thing is an adapter.
 - The team adopts the folder names without the rule: an interface with a single implementation in
   front of everything, mappers at every boundary, and the domain still importing
@@ -479,11 +491,12 @@ class ApprovingPaymentGateway implements PaymentGateway {
 
 ### Clean and onion
 
-Robert C. Martin's Clean Architecture and Jeffrey Palermo's onion architecture draw the same idea
-as concentric rings: entities in the middle, use cases around them, interface adapters next,
-frameworks and drivers outside. One rule holds it together: source code dependencies only point
-inwards. Clean adds more prescription on top, with a class per use case, input and output
-boundaries, presenters, and request and response models.
+[Robert C. Martin's Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+and [Jeffrey Palermo's onion architecture](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/) draw the
+same idea as concentric rings: entities in the middle, use cases around them, interface adapters next, frameworks and
+drivers outside. Plus one rule to rule them all: source code dependencies only point inwards. Clean adds more
+prescriptions
+on top, with a class per use case, input and output boundaries, presenters, and request and response models.
 
 <figure class="diagram" data-title="clean / onion">
 <svg viewBox="0 0 360 256" role="img" aria-label="Four concentric rings: frameworks and drivers on the outside, then interface adapters, then use cases, with entities at the centre. Arrows from both sides point inwards.">
@@ -501,20 +514,20 @@ boundaries, presenters, and request and response models.
 <path class="wire on" d="M4 128H144" marker-end="url(#clean-tip-on)"/>
 <path class="wire on" d="M356 128H216" marker-end="url(#clean-tip-on)"/>
 </svg>
-<figcaption>The hexagon drawn as rings. Source code dependencies only point inwards, towards the entities.</figcaption>
+<figcaption>The hexagon drawn as rings. Source code dependencies are inverted and only point inwards.</figcaption>
 </figure>
 
-**Use it when**
+**When it works?**
 
-- You would pick hexagonal, and the system is large enough, with enough contributors, that explicit
+- You would pick hexagonal, and the system is large enough, with enough contributors that explicit
   guidance on where each kind of class lives pays for itself.
 - You are building a long-lived, domain-heavy system where consistency across teams matters more
   than brevity.
 
-**Think twice when**
+**When to avoid?**
 
 - The service is small or medium-sized. The prescribed rings multiply the classes per feature, and
-  a one-field change that touches six files is a smell, not a sign of rigour.
+  a one-field change that touches six files is a smell, not a sign of rigor.
 - The book is followed to the letter instead of the dependency rule. In practice, hexagonal with a
   clear use-case layer delivers most of the value with fewer moving parts.
 
@@ -522,14 +535,15 @@ Whichever ring diagram you prefer, the dependency rule is cheap to enforce with
 [ArchUnit](https://www.archunit.org/):
 
 ```java
+
 @ArchTest
 static final ArchRule dependenciesPointInwards = onionArchitecture()
-        .domainModels("..domain.model..")
-        .domainServices("..domain.service..")
-        .applicationServices("..application..")
-        .adapter("web", "..adapter.web..")
-        .adapter("persistence", "..adapter.persistence..")
-        .adapter("payments", "..adapter.payments..");
+  .domainModels("..domain.model..")
+  .domainServices("..domain.service..")
+  .applicationServices("..application..")
+  .adapter("web", "..adapter.web..")
+  .adapter("persistence", "..adapter.persistence..")
+  .adapter("payments", "..adapter.payments..");
 ```
 
 ## How many copies run?
@@ -573,18 +587,18 @@ above can run as one instance or as many.
 ### Application replicas
 
 Several identical instances of the same artefact behind a load balancer. A monolith with three
-replicas is a normal, boring and robust setup, and usually the cheapest scaling step there is.
+replicas is a normal, boring, and robust setup, and usually the cheapest scaling step there is.
 
-**Use it when**
+**When it works?**
 
 - You need availability: a node can die, and a rolling deployment ships a new version without
   downtime.
 - Traffic outgrows one machine, and the application is stateless or can be made so.
 
-**Think twice when**
+**When to avoid?**
 
 - State lives in memory: HTTP sessions, local caches, uploads on local disk, in-memory rate limits.
-  Move it out, to the database, Redis or object storage, before you start the second instance.
+  Move it out, to the database, Redis, or object storage, before you start the second instance.
 - Database migrations aren't backwards compatible. During a rolling deployment two versions run
   side by side, so every schema change has to go expand, migrate, contract.
 - There are scheduled jobs. Every replica runs every `@Scheduled` method, so the nightly invoice
@@ -594,25 +608,26 @@ replicas is a normal, boring and robust setup, and usually the cheapest scaling 
 table:
 
 ```java
+
 @Scheduled(cron = "0 0 2 * * *")
 @SchedulerLock(name = "nightlyInvoiceRun", lockAtMostFor = "PT30M")
 void runNightlyInvoices() {
-    invoicing.closeDay(LocalDate.now(clock).minusDays(1));
+  invoicing.closeDay(LocalDate.now(clock).minusDays(1));
 }
 ```
 
 ### Database read replicas
 
-One primary takes every write and streams the changes to replicas that serve reads. CQRS is the
+One primary takes every write operation and streams the changes to replicas that serve reads. CQRS is the
 same split one level up, in the model rather than in the database.
 
-**Use it when**
+**When it works?**
 
-- Reads far outnumber writes, and reports, searches or exports compete with the transactions on
+- Reads far outnumber writes, and reports, searches, or exports compete with the transactions on
   the primary.
 - You want a warm standby to fail over to.
 
-**Think twice when**
+**When to avoid?**
 
 - Users must see their own writes straight away. Replication is usually asynchronous, so a replica
   can trail the primary; send those reads to the primary.
@@ -621,17 +636,17 @@ same split one level up, in the model rather than in the database.
 
 ## Cheat sheet
 
-| Style         | Reach for it when                        | Think twice when                      |
-| ------------- | ---------------------------------------- | ------------------------------------- |
-| Monolith      | one team, new domain                     | several teams queue for one release   |
-| Modulith      | most new systems and rewrites            | teams need independent releases       |
-| Microservices | many teams, proven boundaries, platform  | one team, young domain                |
-| Event-driven  | one fact, many reactions, work can wait  | the caller needs an answer now        |
-| MVC           | server-rendered UI, CRUD                 | it's the only architecture you have   |
-| Layered       | CRUD with modest rules                   | rich domain logic                     |
-| Hexagonal     | rules worth protecting, TDD              | plain CRUD                            |
-| Clean / onion | large, long-lived, many contributors     | small and medium services             |
-| Replicas      | availability, read-heavy load            | in-memory state, write-heavy load     |
+| Style         | When it works?                          | When to avoid?                      |
+|---------------|-----------------------------------------|-------------------------------------|
+| Monolith      | one team, new domain                    | several teams queue for one release |
+| Modulith      | most new systems and rewrites           | teams need independent releases     |
+| Microservices | many teams, proven boundaries, platform | one team, young domain              |
+| Event-driven  | one fact, many reactions, work can wait | the caller needs an answer now      |
+| MVC           | server-rendered UI, CRUD                | it's the only architecture you have |
+| Layered       | CRUD with modest rules                  | rich domain logic                   |
+| Hexagonal     | rules worth protecting, TDD             | plain CRUD                          |
+| Clean / onion | large, long-lived, many contributors    | small and medium services           |
+| Replicas      | availability, read-heavy load           | in-memory state, write-heavy load   |
 
 ## Where I usually land
 
@@ -672,8 +687,7 @@ tests in the pipeline rather than by a diagram on a wiki.
 </figure>
 
 A module becomes a service when it has a reason to: a separate team, a different scaling or
-availability profile, a compliance boundary. Not before. Moving right on any of the three rows is
-always possible later, and much cheaper when the boundaries were real from the start. Moving left
-after the fact is the expensive direction.
+availability profile, a compliance boundary. Extracting a service is always possible later and much cheaper when the
+boundaries were real from the start. Going back after the fact is the expensive direction.
 
 If you are weighing one of these decisions right now, [get in touch](/#contact).
