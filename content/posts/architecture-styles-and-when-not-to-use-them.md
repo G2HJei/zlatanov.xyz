@@ -1,7 +1,7 @@
 ---
 title: Architecture Styles and When Not to Use Them
 description: Monolith, modulith, microservices, event-driven, MVC, layered, hexagonal, clean and replicas. What each one buys you, what it costs, and the signs that it is the wrong choice.
-date: 2026-10-04
+date: 2026-09-06
 tags: [ article, architecture, ddd, java, spring boot ]
 draft: false
 ---

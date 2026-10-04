@@ -3,7 +3,7 @@ title: Fast Development Cycles Made Simple
 description: Continuous delivery as Dave Farley describes it, shown on a real project. A deployment pipeline that judges every commit, and TDD that leaves good design behind as a side effect.
 date: 2026-10-04
 tags: [ article, ci/cd, tdd, architecture, java ]
-draft: true
+draft: false
 ---
 
 What do the teams that ship well have in common? Not a framework, not a cloud provider, not a
