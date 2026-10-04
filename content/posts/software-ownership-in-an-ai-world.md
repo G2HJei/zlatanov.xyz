@@ -3,7 +3,7 @@ title: Software Ownership in an AI World
 date: 2026-09-03
 tags: [ article ]
 description: Who owns the code?
-draft: false
+draft: true
 ---
 
 ## Software Ownership in an AI World
