@@ -14,9 +14,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../lib/site';
 
 const socials = [
-  { href: SITE.social.github, label: 'GitHub', icon: 'github', external: true },
   { href: SITE.social.linkedin, label: 'LinkedIn', icon: 'linkedin', external: true },
   { href: `mailto:${SITE.email}`, label: 'Email', icon: 'mail', external: false },
+  { href: SITE.social.github, label: 'GitHub', icon: 'github', external: true },
   { href: '/rss.xml', label: 'RSS', icon: 'rss', external: false },
 ] as const;
 
@@ -121,9 +121,7 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
                 <ul class="mt-3 space-y-2 text-ink-muted">
                   {service.goodFitIf.map((reason) => (
                     <li class="flex gap-3">
-                      <span class="font-mono text-accent" aria-hidden="true">
-                        &gt;
-                      </span>
+                      <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
                       <span>{reason}</span>
                     </li>
                   ))}
@@ -141,7 +139,7 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
     <Card id="how-i-work" title="how I work">
       <dl class="grid gap-4 sm:grid-cols-2">
         {principles.map((principle) => (
-          <div class="rounded-xl border border-line bg-surface-raised p-5">
+          <div class="p-5">
             <dt class="font-mono font-semibold text-accent">{principle.title}</dt>
             <dd class="mt-2 text-ink-muted">{principle.text}</dd>
           </div>
@@ -176,8 +174,8 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
           LinkedIn
         </ButtonLink>
       </div>
-      <div class="mx-auto mt-10 max-w-2xl rounded-xl border border-line bg-surface-raised p-5 text-left">
-        <h3 class={subheading}>what helps me reply well</h3>
+      <div class="mx-auto mt-10 max-w-2xl p-5 text-left">
+        <h3 class="font-mono text-sm text-ink-faint">what helps me reply well</h3>
         <ul class="mt-3 space-y-2 text-ink-muted">
           {profile.contactTips.map((tip) => (
             <li class="flex gap-3">
