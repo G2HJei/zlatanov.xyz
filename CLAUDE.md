@@ -88,8 +88,8 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   with that filter applied); there are no tag pages. Keep tag spelling consistent across posts;
   the unit tests flag labels that collide on one slug.
 - Site-wide constants (name, domain, slogan, URL, email, social links): `src/lib/site.ts`. Home
-  page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the tagline, tool list
-  and contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
+  page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the tagline and
+  contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
 
 ## Deployment
 

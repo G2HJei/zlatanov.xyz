@@ -50,7 +50,7 @@ that filter, and the tests flag that.
 ## Site copy
 
 - Home page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/profile.ts`
-  (tagline, tool list, contact tips) and `src/data/testimonials.ts` (empty until real quotes exist).
+  (tagline, contact tips) and `src/data/testimonials.ts` (empty until real quotes exist).
   The bio paragraphs live in `src/pages/index.astro`.
 - Name, domain, slogan, URL, email and social links: `src/lib/site.ts`.
 - Colours: `src/styles/global.css`. After changing the green or the slogan, run

@@ -3,24 +3,6 @@ export const profile = {
   /** One line under the name in the profile card. */
   tagline: 'Independent Java & Spring consultant | TDD | DDD | CI/CD',
 
-  // TODO: prune to the tools you actually use.
-  tools: [
-    'Java 17 / 21',
-    'Spring Boot',
-    'JUnit 5',
-    'Mockito',
-    'Testcontainers',
-    'ArchUnit',
-    'Maven',
-    'Gradle',
-    'PostgreSQL',
-    'Kafka',
-    'Docker',
-    'Kubernetes',
-    'GitHub Actions',
-    'GitLab CI',
-  ],
-
   /** Shown in the contact card under "what helps me reply well". */
   contactTips: [
     'The size of the team and the stack you run',

@@ -19,8 +19,6 @@ const socials = [
   { href: SITE.social.github, label: 'GitHub', icon: 'github', external: true },
   { href: '/rss.xml', label: 'RSS', icon: 'rss', external: false },
 ] as const;
-
-const subheading = "font-mono text-sm text-ink-faint before:text-accent before:content-['>_']";
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -82,14 +80,6 @@ const subheading = "font-mono text-sm text-ink-faint before:text-accent before:c
           .
         </p>
       </div>
-      <h3 class:list={['mt-8', subheading]}>stack</h3>
-      <ul class="mt-3 flex flex-wrap gap-2" aria-label="Tools">
-        {profile.tools.map((tool) => (
-          <li class="rounded-full border border-line bg-surface-raised px-3 py-1 font-mono text-xs text-ink-muted">
-            {tool}
-          </li>
-        ))}
-      </ul>
     </Card>
 
     <Card id="services" title="services">
