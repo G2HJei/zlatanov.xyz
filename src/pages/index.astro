@@ -1,9 +1,9 @@
 ---
+import Portrait from '../assets/portrait.svg';
 import ButtonLink from '../components/ButtonLink.astro';
 import Card from '../components/Card.astro';
 import Hero from '../components/Hero.astro';
 import Icon from '../components/Icon.astro';
-import Logo from '../components/Logo.astro';
 import PillLink from '../components/PillLink.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { principles } from '../data/principles';
@@ -26,9 +26,8 @@ const socials = [
 
   <div class="space-y-8">
     <Card class="flex flex-col items-center gap-8 text-center md:flex-row md:gap-12 md:text-left">
-      <!-- TODO: replace the brand mark with a photo, e.g. <img src="/avatar.jpg" alt="" class="size-[150px] rounded-full object-cover ..."> -->
-      <div class="grid size-[150px] shrink-0 place-items-center rounded-full border-4 border-accent bg-surface-raised text-accent shadow-[0_0_30px_var(--color-glow)]">
-        <Logo class="size-16" />
+      <div class="size-[150px] shrink-0 overflow-hidden rounded-full border-4 border-accent bg-surface-raised text-accent shadow-[0_0_30px_var(--color-glow)]">
+        <Portrait class="size-full" aria-hidden="true" />
       </div>
       <div>
         <h2 class="text-gradient text-4xl font-bold sm:text-5xl">{SITE.name}</h2>
