@@ -62,6 +62,12 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   the wire is lit down to a signal line `--line` above the bottom of the viewport, and things
   build as they cross it. Rules: **the copy never fades, clips or moves more than a few pixels**;
   only what is around it assembles (an e2e test scrolls the page and checks every text node).
+  The one exception, which the owner asked for, is the hero subtitle: on load its `$` prompt
+  appears, then the text types itself out (a character per span, the whole text `sr-only` for
+  assistive tech) and the cursor blinks four times at the header logo's pace and goes. The
+  wire doesn't wait for the typing: it runs on past the prompt down the scroll shaft. Only the
+  pulse dropping down the shaft, the hint to scroll, waits for the run to end; any scroll
+  lights everything at once.
   Static styles are the final frames, so browsers without scroll timelines and reduced-motion
   visitors get the finished page. Use animation **longhands** only for scroll-driven animations:
   Lightning CSS folds `animation-timeline` into the `animation` shorthand, browsers drop it, and

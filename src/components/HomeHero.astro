@@ -6,15 +6,19 @@
  * the page and on down the left edge of every card (`Stage.astro`).
  *
  * On load the run plays: each node lights, its word turns from pending grey to green, its
- * trace runs out and its check draws. The words are readable throughout. All of the motion
+ * trace runs out and its check draws; the words are readable throughout. When the wire
+ * reaches the prompt the `$` appears, a block cursor waits beside it a moment, then the
+ * subtitle types itself out and the cursor blinks four times and goes. All of the motion
  * lives in `src/styles/home.css`; without it the run shows finished.
  */
 import { SITE } from '../lib/site';
 
 const stages = SITE.slogan.split(' ');
+/** The subtitle a character at a time, for typing it out; assistive tech reads it whole. */
+const typed = [...SITE.sloganSubtitle];
 ---
 
-<section class="home-hero">
+<section class="home-hero" style={`--chars: ${typed.length}`}>
   <h1 class="hero-stages font-bold tracking-tight">
     {stages.map((stage, index) => (
       <span class="hero-stage" style={`--stage: ${index}`}>
@@ -36,8 +40,12 @@ const stages = SITE.slogan.split(' ');
     ))}
   </h1>
   <p class="hero-prompt font-mono text-ink-muted before:text-accent before:content-['$_']">
-    {SITE.sloganSubtitle}
-    <span class="hero-cursor" aria-hidden="true"></span>
+    <span class="sr-only">{SITE.sloganSubtitle}</span>
+    <span class="hero-typed" aria-hidden="true">
+      {typed.map((char, index) => (
+        <span style={`--i: ${index}`}>{char}</span>
+      ))}
+    </span>
   </p>
   <div class="hero-shaft" aria-hidden="true">
     <span class="track">

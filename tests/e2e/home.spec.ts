@@ -60,7 +60,8 @@ const hiddenCopy = () => {
   const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const text = node.textContent?.trim();
-    if (!text) continue;
+    // Copy for assistive tech only (the typed subtitle's full text) is hidden by design.
+    if (!text || node.parentElement?.closest('.sr-only')) continue;
     for (let element = node.parentElement; element && element !== main;) {
       const style = getComputedStyle(element);
       if (
@@ -91,6 +92,17 @@ test('the page assembles around its copy, which stays fully visible at every scr
         .filter((animation) => animation.timeline?.constructor.name === 'ViewTimeline').length,
   );
   expect(scrollDriven).toBeGreaterThan(50);
+
+  // The hero's run plays once on load and types the subtitle out; from then on, nothing hides.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.timeline === document.timeline)
+        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished),
+    ).then(() => true),
+  );
 
   const bottom = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
   for (let top = 0; top <= bottom + 200; top += 200) {

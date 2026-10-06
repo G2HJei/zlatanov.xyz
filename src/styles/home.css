@@ -5,11 +5,13 @@
  * the left edge of every card (`Stage.astro`). The signal line sits `--line` above the bottom
  * of the viewport. The wire is lit down to it, and whatever crosses it gets built. The copy
  * never fades and never moves more than a few pixels; what assembles is everything around it.
+ * The one exception, at the owner's request, is the hero's subtitle, which types itself out.
  *
  *   hero       on load, a pipeline run: each node lights, its word turns from pending grey
- *              to green, its trace runs out and its check draws; the shaft below stays dark
- *              until the run reaches it or the reader scrolls, and a pulse keeps dropping
- *              down it until they do
+ *              to green, its trace runs out and its check draws; the wire runs on past the
+ *              `$` prompt and down the shaft to the signal line while the prompt appears,
+ *              the subtitle types itself out and the cursor blinks four times and goes;
+ *              then a pulse keeps dropping down the shaft until the reader scrolls
  *   wire       lit down to the signal line, with a light riding on its end
  *   node       each card's node lights as that light reaches it, and its top bar charges
  *   dig        the intro card is dug out as the reader descends, a light on either edge and
@@ -100,6 +102,18 @@
 .home-hero {
   /* As large as "Changeable." can be with its trace and check on a 375px phone. */
   --slogan-size: clamp(2rem, 0.5rem + 8.5vw, 7.25rem);
+  /* The run's clock. The `$` prompt appears when the wire reaches it, and the wire runs on
+     down the shaft, lit by `--shaft-at`. The cursor waits beside the prompt a moment, then the
+     subtitle is typed, one of its `--chars` (set on the section) every `--type-step`; the
+     cursor blinks `--blinks` times, at the header logo's pace (`--animate-blink` in
+     global.css: a second on, a second off), and at `--run-end` the run is over. */
+  --prompt-at: 2.75s;
+  --shaft-at: calc(var(--prompt-at) + 0.35s);
+  --type-at: calc(var(--prompt-at) + 0.4s);
+  --type-step: 0.035s;
+  --blink: 2s;
+  --blinks: 4;
+  --run-end: calc(var(--type-at) + var(--chars) * var(--type-step) + var(--blinks) * var(--blink));
   isolation: isolate;
   display: grid;
   grid-template-rows: 1fr auto auto minmax(5rem, 1.2fr);
@@ -213,10 +227,6 @@
 .hero-prompt::after {
   top: 0;
   bottom: 0;
-}
-
-.hero-cursor {
-  display: none;
 }
 
 /* The shaft: the wire's way down into the page. */
@@ -514,32 +524,64 @@
   }
 
   .hero-prompt::after {
-    animation: run-y 0.3s linear 2.45s both;
+    animation: run-y 0.3s linear calc(var(--prompt-at) - 0.3s) both;
   }
 
-  /* The prompt lights as the wire reaches it, and the cursor blinks four times. */
+  /* The `$` appears and lights as the wire reaches it (it holds its place till then, so the
+     line never shifts), and the cursor waits in the first cell for the typing to start... */
   .hero-prompt::before {
-    animation: prompt-on 0.9s ease-out 2.7s both;
+    visibility: hidden;
+    animation:
+      type-on 0s var(--prompt-at) forwards,
+      prompt-on 0.9s ease-out var(--prompt-at) both;
   }
 
-  .hero-cursor {
-    display: inline-block;
+  .hero-typed > :first-child::before {
+    left: 0;
+    animation: caret calc(var(--type-at) - var(--prompt-at)) step-end var(--prompt-at);
+  }
+
+  /* ...and the subtitle is typed: each character appears in turn, already in its place, so
+     a phone wraps the line where it will end up. A block cursor stands after the character
+     typed last; after the last one it blinks four times, like the logo's, and goes. */
+  .hero-typed > span {
+    --typed-at: calc(var(--type-at) + var(--i) * var(--type-step));
+    position: relative;
+    visibility: hidden;
+    animation: type-on 0s var(--typed-at) forwards;
+  }
+
+  .hero-typed > :first-child::before,
+  .hero-typed > span::after {
+    content: '';
+    position: absolute;
+    top: 50%;
     width: 0.6em;
-    height: 1.1em;
-    margin-left: 0.15em;
-    vertical-align: -0.2em;
+    height: 1.15em;
+    translate: 0 -50%;
     background-color: var(--color-accent);
-    opacity: 0;
-    animation: cursor-blink 0.5s step-end 2.8s 4;
+    visibility: hidden;
   }
 
-  /* The shaft stays dark until the run's wire reaches it, past the prompt. On a tall screen
-     its top can sit above the signal line, which would light it from the first frame. */
+  .hero-typed > span::after {
+    left: 100%;
+    animation: caret var(--type-step) step-end var(--typed-at);
+  }
+
+  .hero-typed > :last-child::after {
+    animation:
+      caret var(--type-step) step-end var(--typed-at),
+      caret-blink var(--blink) step-end calc(var(--typed-at) + var(--type-step)) var(--blinks);
+  }
+
+  /* Past the prompt the wire runs on down the shaft, as far as it is lit, without waiting for
+     the typing. (On a tall screen the shaft's top sits above the signal line, so part of it
+     is lit from the first frame; it stays dark until the wire gets there.) */
   .hero-shaft .fill {
-    animation: hold 2.75s;
+    animation: shaft-run calc(var(--shaft-at) - var(--prompt-at)) linear var(--prompt-at) both;
   }
 
-  /* A pulse keeps dropping down the shaft. */
+  /* When the run is over, a pulse keeps dropping down the shaft. */
   .hero-drop {
     position: absolute;
     inset: 0 auto 0 -1px;
@@ -552,7 +594,7 @@
     inset: 0;
     background: linear-gradient(transparent, var(--color-accent)) 0 0 / 100% 2rem no-repeat;
     filter: drop-shadow(0 0 4px var(--color-accent));
-    animation: drop 2.2s cubic-bezier(0.6, 0, 0.4, 1) 3.2s infinite both;
+    animation: drop 2.2s cubic-bezier(0.6, 0, 0.4, 1) calc(var(--run-end) + 0.2s) infinite both;
   }
 
   @keyframes node-on {
@@ -617,12 +659,34 @@
     }
   }
 
-  @keyframes cursor-blink {
+  @keyframes type-on {
+    to {
+      visibility: visible;
+    }
+  }
+
+  @keyframes caret {
+    from,
+    to {
+      visibility: visible;
+    }
+  }
+
+  @keyframes caret-blink {
     0% {
-      opacity: 1;
+      visibility: visible;
     }
     50% {
-      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes shaft-run {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0);
     }
   }
 
@@ -682,20 +746,25 @@
       animation-name: ride;
     }
 
-    /* The shaft waits for the run as above, unless the reader scrolls first: `release` comes
-       after `hold` and overrides it from the first pixel of scroll. */
+    /* In the shaft the fill runs down after the prompt as above, and the light rides on its end
+       once it is there, unless the reader scrolls first: `release` comes last and overrides
+       both from the first pixel of scroll. The fill's scale is the scroll's, the run only
+       uncovers it, so the two can't disagree about where the wire ends. */
     .hero-shaft .track > .fill {
-      animation-name: fill-y, hold, release;
+      animation-name: fill-y, shaft-run, release;
+      animation-duration: auto, calc(var(--shaft-at) - var(--prompt-at)), auto;
+      animation-delay: 0s, var(--prompt-at), 0s;
+      animation-fill-mode: both, both, forwards;
     }
 
     .hero-shaft .track > .head {
       animation-name: ride, hold, release;
+      animation-duration: auto, var(--shaft-at), auto;
+      animation-fill-mode: both, none, forwards;
     }
 
     .hero-shaft .track > .fill,
     .hero-shaft .track > .head {
-      animation-duration: auto, 2.75s, auto;
-      animation-fill-mode: both, none, forwards;
       animation-timeline: --track, auto, scroll();
       animation-range:
         cover var(--line) cover var(--line-end),
@@ -707,6 +776,7 @@
       from,
       to {
         visibility: visible;
+        clip-path: none;
       }
     }
 
