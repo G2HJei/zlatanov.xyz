@@ -1,0 +1,49 @@
+---
+/**
+ * The home page opener, a screen tall: the slogan as a CI pipeline. Each word is a stage,
+ * a node on the wire down the left with a trace out to its status ring on the right. Under
+ * the stages the wire passes the `$ ` subtitle and drops into the shaft, where it leads into
+ * the page and on down the left edge of every card (`Stage.astro`).
+ *
+ * On load the run plays: each node lights, its word turns from pending grey to green, its
+ * trace runs out and its check draws. The words are readable throughout. All of the motion
+ * lives in `src/styles/home.css`; without it the run shows finished.
+ */
+import { SITE } from '../lib/site';
+
+const stages = SITE.slogan.split(' ');
+---
+
+<section class="home-hero">
+  <h1 class="hero-stages font-bold tracking-tight">
+    {stages.map((stage, index) => (
+      <span class="hero-stage" style={`--stage: ${index}`}>
+        <span class="hero-word text-gradient">
+          {stage}
+          {index < stages.length - 1 && ' '}
+        </span>
+        <span class="hero-trace" aria-hidden="true"></span>
+        <svg class="hero-check" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="hero-slot" cx="12" cy="12" r="10.25" />
+          <path
+            class="hero-ring"
+            pathLength="1"
+            d="M12 1.75a10.25 10.25 0 1 1 0 20.5a10.25 10.25 0 1 1 0-20.5"
+          />
+          <path class="hero-tick" pathLength="1" d="m7.25 12.4 3.25 3.25 6.25-6.5" />
+        </svg>
+      </span>
+    ))}
+  </h1>
+  <p class="hero-prompt font-mono text-ink-muted before:text-accent before:content-['$_']">
+    {SITE.sloganSubtitle}
+    <span class="hero-cursor" aria-hidden="true"></span>
+  </p>
+  <div class="hero-shaft" aria-hidden="true">
+    <span class="track">
+      <span class="fill"></span>
+      <span class="head"></span>
+    </span>
+    <span class="hero-drop"></span>
+  </div>
+</section>

@@ -1,0 +1,1430 @@
+/*
+ * The home page as a pipeline, with the reader as the commit going through it.
+ *
+ * One wire runs down the page: from the hero's three stages through the shaft, then along
+ * the left edge of every card (`Stage.astro`). The signal line sits `--line` above the bottom
+ * of the viewport. The wire is lit down to it, and whatever crosses it gets built. The copy
+ * never fades and never moves more than a few pixels; what assembles is everything around it.
+ *
+ *   hero       on load, a pipeline run: each node lights, its word turns from pending grey
+ *              to green, its trace runs out and its check draws; the shaft below stays dark
+ *              until the run reaches it or the reader scrolls, and a pulse keeps dropping
+ *              down it until they do
+ *   wire       lit down to the signal line, with a light riding on its end
+ *   node       each card's node lights as that light reaches it, and its top bar charges
+ *   dig        the intro card is dug out as the reader descends, a light on either edge and
+ *              a faint beam between them at the floor of the dig
+ *   drums      each drum carves its step down and lands with a thud
+ *   lamps      the way through runs out of the wire and lights the three practices
+ *   branch     dividers grow out of the wire, with a pulse running along them
+ *   portrait   a ring charges around the portrait, then its tones develop under a beam
+ *   charge     button borders fill around like a progress ring
+ *   tests      each check is pending (a grey ring) until it crosses the line, then passes
+ *   contexts   one monolith, cut and drifted apart into four bounded contexts
+ *   panels     the other cards' panels grow out of the wire to the right, led by their top
+ *              bars (`kind="branch"` in `Stage.astro`)
+ *   crt        the contact card switches on behind its text like an old monitor
+ *
+ * The hero plays once on load. Everything else is a scroll-driven animation: its progress is
+ * an element's position in the viewport, so it builds as it scrolls in and rewinds when
+ * scrolled back, and whatever is on screen after a jump or a reload is already complete.
+ * Ranges count from the moment an element's top edge enters the viewport (`cover 0`): it
+ * reaches the signal line at `cover var(--line)`, and its bottom edge does at
+ * `cover var(--line-end)`. The contact card, last before the footer, finishes within reach of
+ * the end of the page.
+ *
+ * The static styles are the final frames: browsers without scroll-driven animations show
+ * the finished page, and visitors who prefer reduced motion get no motion at all.
+ */
+
+@property --sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 360deg;
+}
+
+/* ---------- The pipeline, static ---------- */
+
+.home {
+  /* The space between stages, which the wire bridges. */
+  --gap: 2rem;
+  /* The signal line, measured up from the bottom of the viewport; capped so that the contact
+     card can still reach it on tall screens. */
+  --line: min(40vh, 22rem);
+  --line-end: calc(100% - 100vh + var(--line));
+  /* The near-white core of a light. */
+  --glare: color-mix(in oklch, var(--color-accent), white 70%);
+}
+
+/* A length of wire: grey, `fill` its lit part, `head` the light riding on the fill's end. */
+.track {
+  position: absolute;
+  width: 2px;
+  background-color: var(--color-line);
+}
+
+.track > .fill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-accent-dim);
+  box-shadow: 0 0 8px var(--color-glow);
+  transform-origin: top;
+}
+
+.track > .head {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.track > .head::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  translate: -50% 50%;
+  background-image: radial-gradient(
+    circle,
+    var(--glare) 0 18%,
+    var(--color-accent) 42%,
+    transparent 72%
+  );
+  box-shadow: 0 0 18px 4px var(--color-glow);
+}
+
+/* ---------- Hero: the slogan as a pipeline ---------- */
+
+.home-hero {
+  /* As large as "Changeable." can be with its trace and check on a 375px phone. */
+  --slogan-size: clamp(2rem, 0.5rem + 8.5vw, 7.25rem);
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 1fr auto auto minmax(5rem, 1.2fr);
+  /* A screen tall under the header and the page's top padding: the shaft runs off the first
+     screen into the page. */
+  min-height: calc(100svh - 6.1rem);
+}
+
+.hero-stages {
+  grid-row: 2;
+  font-size: var(--slogan-size);
+  line-height: 1.05;
+}
+
+.hero-stage {
+  --node: 0.2em;
+  --stage-gap: 0.14em;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 0.5em;
+}
+
+.hero-stage + .hero-stage {
+  margin-top: var(--stage-gap);
+}
+
+/* The stage's node, centred on the wire. */
+.hero-stage::before {
+  content: '';
+  position: absolute;
+  top: calc(50% - var(--node) / 2);
+  left: calc(var(--node) / -2);
+  width: var(--node);
+  height: var(--node);
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  box-shadow: 0 0 0.25em var(--color-glow);
+}
+
+/* The wire down to the next node, from the last one down past the subtitle. */
+.hero-stage::after,
+.hero-prompt::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -1px;
+  width: 2px;
+  background-color: var(--color-accent-dim);
+}
+
+.hero-stage::after {
+  top: 50%;
+  height: calc(100% + var(--stage-gap));
+}
+
+.hero-stage:last-child::after {
+  height: 50%;
+}
+
+/* The gradient is clipped to the text but painted only inside the box, and at this line height
+   the descenders (g, p) reach below it: pad the box around them without moving the line. */
+.hero-word {
+  flex: none;
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+  white-space: nowrap;
+}
+
+/* The stage's trace out to its status ring. */
+.hero-trace {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0.5em;
+  height: max(2px, 0.02em);
+  margin-inline: 0.18em 0.14em;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-accent-deep),
+    var(--color-accent-dim) 80%,
+    var(--color-accent)
+  );
+}
+
+.hero-check {
+  flex: none;
+  width: 0.36em;
+  height: 0.36em;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 0.05em var(--color-glow));
+}
+
+/* The ring's slot, where a pending stage waits; the check's own ring covers it. */
+.hero-slot {
+  stroke: var(--color-line);
+}
+
+.hero-prompt {
+  grid-row: 3;
+  position: relative;
+  padding-top: clamp(1.5rem, 4vh, 2.75rem);
+  padding-left: calc(var(--slogan-size) * 0.5);
+  font-size: clamp(0.95rem, 0.75rem + 0.8vw, 1.35rem);
+}
+
+.hero-prompt::after {
+  top: 0;
+  bottom: 0;
+}
+
+.hero-cursor {
+  display: none;
+}
+
+/* The shaft: the wire's way down into the page. */
+.hero-shaft {
+  grid-row: 4;
+  position: relative;
+}
+
+.hero-shaft > .track {
+  top: 0;
+  bottom: 0;
+  left: -1px;
+}
+
+/* ---------- Stages: the cards on the wire ---------- */
+
+.stage {
+  /* Card's padding, which the wire and the branches reach across. */
+  --pad: 1.5rem;
+  isolation: isolate;
+  /* The face draws the panel; the card keeps its border's width for the layout. */
+  border-color: transparent;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+@media (width >= 40rem) {
+  .stage {
+    --pad: 2.5rem;
+  }
+}
+
+.rig {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rig-face {
+  position: absolute;
+  z-index: -1;
+  inset: -1px;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-muted);
+  box-shadow: var(--shadow-card);
+}
+
+/* From the gap above the card down its left edge, centred on the border. */
+.rig-wire {
+  z-index: 1;
+  top: calc(-1px - var(--gap));
+  bottom: -1px;
+  left: -2px;
+}
+
+/* On the last stage the wire lands at the node; the edge below it is a length of its own. */
+.stage-crt .rig-wire {
+  bottom: auto;
+  height: var(--gap);
+}
+
+.rig-edge {
+  z-index: 1;
+  top: -1px;
+  bottom: -1px;
+  left: -2px;
+}
+
+.rig-rail {
+  z-index: 1;
+  top: -1px;
+  right: -2px;
+  bottom: -1px;
+  background: none;
+}
+
+/* Only there while the dig is under way. */
+.rig-floor {
+  display: none;
+}
+
+/* Where the wire meets the top bar. */
+.rig-node {
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  left: -1px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background-color: var(--color-accent);
+  box-shadow:
+    0 0 0 3px var(--color-surface),
+    0 0 14px 2px var(--color-glow);
+}
+
+/* Horizontal rules grow out of the wire: from the card's left edge to the content's right. */
+.branch {
+  position: relative;
+}
+
+.branch::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: calc(-1 * var(--pad) - 1px);
+  height: 1px;
+  background-color: var(--color-line);
+}
+
+/* ---------- About: the mine ---------- */
+
+/* The drums descend a stair, each step hanging off the one above like `tree` output. */
+.drums {
+  --tread: 1.25rem;
+}
+
+@media (width >= 40rem) {
+  .drums {
+    --tread: 2.5rem;
+  }
+}
+
+.drum {
+  position: relative;
+  padding-left: calc(var(--step) * var(--tread));
+}
+
+/* From under the line above to the middle of this one's first line (a phone wraps them). */
+.drum + .drum::before {
+  content: '';
+  position: absolute;
+  top: calc(-0.5rem - 0.1em);
+  height: calc(0.5rem + 0.1em + 0.5lh);
+  left: calc((var(--step) - 1) * var(--tread) + 0.3em);
+  width: calc(var(--tread) - 0.75em);
+  border-bottom: 1px solid var(--color-accent-deep);
+  border-left: 1px solid var(--color-accent-deep);
+  border-bottom-left-radius: 0.2em;
+}
+
+/* The way through: a conduit out of the wire, across the tops of all the lamps. */
+.lamps {
+  position: relative;
+}
+
+.lamps::before {
+  content: '';
+  position: absolute;
+  top: -0.75rem;
+  left: calc(-1 * var(--pad) - 1px);
+  width: calc(var(--pad) + 3px);
+  height: 2px;
+  translate: 0 -50%;
+  background-image: linear-gradient(90deg, var(--color-accent-dim), var(--color-accent));
+}
+
+@media (width >= 40rem) {
+  .lamps::before {
+    width: calc(var(--pad) + 100% + 1px);
+  }
+}
+
+.lamp {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+/* The lamp: a lit rule hanging off the conduit... */
+.lamp::before {
+  content: '';
+  position: absolute;
+  top: -0.75rem;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background-color: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-glow);
+}
+
+/* ...stacked on a phone, off the lamp above. */
+@media (width < 40rem) {
+  .lamp + .lamp::before {
+    top: -1.5rem;
+  }
+}
+
+/* ...and its light on the wall. */
+.lamp::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -0.75rem -0.5rem -0.5rem 0;
+  background-image: radial-gradient(
+    ellipse 70% 60% at 0 35%,
+    color-mix(in oklch, var(--color-accent) 9%, transparent),
+    transparent
+  );
+}
+
+.portrait,
+.portrait-plate,
+.charge,
+.test,
+.contexts,
+.context {
+  position: relative;
+}
+
+/* ---------- How I work: bounded contexts ---------- */
+
+.context::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+
+/* ---------- Hero, motion: the run on load ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-stage {
+    --at: calc(0.3s + var(--stage) * 0.7s);
+  }
+
+  .hero-stage::before {
+    animation: node-on 0.5s ease-out var(--at) both;
+  }
+
+  /* Pending grey; a bright head sweeps through and leaves the word green. The image is 2.5
+     times the word, so the final window shows only the green part. */
+  .hero-word {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-accent),
+      var(--color-accent-dim) 40%,
+      var(--glare) 41% 42%,
+      color-mix(in oklch, var(--color-ink-muted) 55%, var(--color-ink-faint)) 43%
+    );
+    background-size: 250% 100%;
+    animation: word-pass 0.6s cubic-bezier(0.5, 0, 0.3, 1) calc(var(--at) + 0.05s) both;
+  }
+
+  .hero-trace {
+    background-image: none;
+    background-color: var(--color-line);
+  }
+
+  .hero-trace::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      90deg,
+      var(--color-accent-deep),
+      var(--color-accent-dim) 80%,
+      var(--color-accent)
+    );
+    transform-origin: left;
+    animation: run-x 0.45s cubic-bezier(0.6, 0, 0.3, 1) calc(var(--at) + 0.3s) both;
+  }
+
+  /* `1 2`: a dash as long as the path and a longer gap, so no round cap shows before. */
+  .hero-ring,
+  .hero-tick {
+    stroke-dasharray: 1 2;
+  }
+
+  .hero-ring {
+    animation: draw 0.4s ease-out calc(var(--at) + 0.65s) both;
+  }
+
+  .hero-tick {
+    animation: draw 0.3s ease-out calc(var(--at) + 0.95s) both;
+  }
+
+  .hero-check {
+    animation: check-flash 0.9s ease-out calc(var(--at) + 0.95s) both;
+  }
+
+  .hero-stage::after,
+  .hero-prompt::after {
+    background:
+      linear-gradient(var(--color-accent-dim), var(--color-accent-dim)) top / 100% 0% no-repeat,
+      var(--color-line);
+  }
+
+  .hero-stage::after {
+    animation: run-y 0.35s linear calc(var(--at) + 0.45s) both;
+  }
+
+  .hero-prompt::after {
+    animation: run-y 0.3s linear 2.45s both;
+  }
+
+  /* The prompt lights as the wire reaches it, and the cursor blinks four times. */
+  .hero-prompt::before {
+    animation: prompt-on 0.9s ease-out 2.7s both;
+  }
+
+  .hero-cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.1em;
+    margin-left: 0.15em;
+    vertical-align: -0.2em;
+    background-color: var(--color-accent);
+    opacity: 0;
+    animation: cursor-blink 0.5s step-end 2.8s 4;
+  }
+
+  /* The shaft stays dark until the run's wire reaches it, past the prompt. On a tall screen
+     its top can sit above the signal line, which would light it from the first frame. */
+  .hero-shaft .fill {
+    animation: hold 2.75s;
+  }
+
+  /* A pulse keeps dropping down the shaft. */
+  .hero-drop {
+    position: absolute;
+    inset: 0 auto 0 -1px;
+    width: 2px;
+  }
+
+  .hero-drop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent, var(--color-accent)) 0 0 / 100% 2rem no-repeat;
+    filter: drop-shadow(0 0 4px var(--color-accent));
+    animation: drop 2.2s cubic-bezier(0.6, 0, 0.4, 1) 3.2s infinite both;
+  }
+
+  @keyframes node-on {
+    from {
+      background-color: transparent;
+      box-shadow: inset 0 0 0 max(2px, 0.03em) var(--color-ink-faint);
+    }
+    45% {
+      background-color: var(--glare);
+      box-shadow: 0 0 0.5em var(--color-accent);
+      transform: scale(1.5);
+    }
+  }
+
+  @keyframes word-pass {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }
+
+  @keyframes run-x {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes run-y {
+    to {
+      background-size:
+        100% 100%,
+        auto;
+    }
+  }
+
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes check-flash {
+    from {
+      filter: drop-shadow(0 0 0.3em var(--color-accent));
+    }
+  }
+
+  @keyframes prompt-on {
+    from {
+      text-shadow: none;
+    }
+    30% {
+      text-shadow: 0 0 14px var(--color-accent);
+    }
+    to {
+      text-shadow: none;
+    }
+  }
+
+  @keyframes cursor-blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes hold {
+    from,
+    to {
+      visibility: hidden;
+    }
+  }
+
+  @keyframes drop {
+    0% {
+      background-position: 0 0%;
+      opacity: 0;
+    }
+    15%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      background-position: 0 100%;
+      opacity: 0;
+    }
+  }
+}
+
+/* ---------- Everything below the hero's run: scroll-driven ----------
+ *
+ * Longhands only, never the `animation` shorthand: the build minifies CSS with Lightning
+ * CSS, which folds `animation-timeline` into the shorthand. Browsers do not parse a timeline
+ * there yet, so they drop the whole declaration and nothing animates. The dev server does not
+ * minify, so only `npm run test:e2e` catches it (the home page smoke test counts the
+ * scroll-driven animations).
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* ----- The wire, lit down to the signal line ----- */
+
+    .track {
+      view-timeline-name: --track;
+    }
+
+    .track > .fill,
+    .track > .head {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --track;
+      animation-range: cover var(--line) cover var(--line-end);
+    }
+
+    .track > .fill {
+      animation-name: fill-y;
+    }
+
+    .track > .head {
+      animation-name: ride;
+    }
+
+    /* The shaft waits for the run as above, unless the reader scrolls first: `release` comes
+       after `hold` and overrides it from the first pixel of scroll. */
+    .hero-shaft .track > .fill {
+      animation-name: fill-y, hold, release;
+    }
+
+    .hero-shaft .track > .head {
+      animation-name: ride, hold, release;
+    }
+
+    .hero-shaft .track > .fill,
+    .hero-shaft .track > .head {
+      animation-duration: auto, 2.75s, auto;
+      animation-fill-mode: both, none, forwards;
+      animation-timeline: --track, auto, scroll();
+      animation-range:
+        cover var(--line) cover var(--line-end),
+        normal,
+        1px 2px;
+    }
+
+    @keyframes release {
+      from,
+      to {
+        visibility: visible;
+      }
+    }
+
+    /* The bottom of the page comes before the signal line reaches the bottom of the last card,
+       so its edge lights with the screen switching on instead (`crt` below). */
+    .rig-edge > .fill,
+    .rig-edge > .head {
+      animation-timeline: --stage;
+      animation-range: cover calc(var(--line) + min(4vh, 3rem)) cover
+        calc(var(--line) + min(24vh, 15rem));
+    }
+
+    /* The pulse in the shaft stops once the reader takes the hint. */
+    .hero-drop {
+      animation-name: fade-out;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: scroll();
+      animation-range: 0 20vh;
+    }
+
+    /* ----- Stages: node, top bar, face ----- */
+
+    .stage {
+      view-timeline-name: --stage;
+    }
+
+    .rig-node,
+    .stage::before,
+    .rig-face,
+    .hook {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --stage;
+    }
+
+    .rig-node {
+      animation-name: node-lit;
+      animation-range: cover calc(var(--line) - 1vh) cover calc(var(--line) + 6vh);
+    }
+
+    .stage::before {
+      transform-origin: left;
+      animation-name: charge-x;
+      animation-range: cover var(--line) cover calc(var(--line) + 18vh);
+    }
+
+    .stage-dig .rig-face {
+      animation-name: dig;
+      animation-range: cover var(--line) cover var(--line-end);
+    }
+
+    /* The floor of the dig rides down with the lights at either edge, brightest beside them. */
+    .stage-dig .rig-floor {
+      display: block;
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      animation-name: ride;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --stage;
+      animation-range: cover var(--line) cover var(--line-end);
+    }
+
+    .rig-floor::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      bottom: 0;
+      left: -1px;
+      height: 1px;
+      background-image: linear-gradient(
+        90deg,
+        var(--color-accent),
+        color-mix(in oklch, var(--color-accent) 25%, transparent) 15%,
+        transparent 35% 65%,
+        color-mix(in oklch, var(--color-accent) 25%, transparent) 85%,
+        var(--color-accent)
+      );
+    }
+
+    .stage-branch .rig-face {
+      animation-name: branch;
+      animation-range: cover var(--line) cover calc(var(--line) + 18vh);
+    }
+
+    .stage-crt .rig-face {
+      animation-name: crt;
+      animation-range: cover var(--line) cover calc(var(--line) + min(24vh, 15rem));
+    }
+
+    /* On the last stage the top bar is part of the screen switching on. */
+    .stage-crt::before {
+      animation-range: cover calc(var(--line) + min(10vh, 6rem)) cover
+        calc(var(--line) + min(24vh, 15rem));
+    }
+
+    /* A glint passes over the hook as the card opens. */
+    .hook {
+      background-image:
+        linear-gradient(100deg, transparent 40%, var(--glare) 50%, transparent 60%),
+        linear-gradient(135deg, var(--color-accent), var(--color-accent-dim));
+      background-repeat: no-repeat;
+      background-size:
+        300% 100%,
+        100% 100%;
+      animation-name: sheen;
+      animation-range: cover calc(var(--line) + 4vh) cover calc(var(--line) + 30vh);
+    }
+
+    /* ----- Dividers: a pulse runs out along each as it grows ----- */
+
+    .branch {
+      view-timeline-name: --branch;
+    }
+
+    .branch::before,
+    .branch::after {
+      transform-origin: left;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --branch;
+    }
+
+    .branch::before {
+      animation-name: charge-x;
+      animation-range: cover calc(var(--line) - 4vh) cover calc(var(--line) + 7vh);
+    }
+
+    .branch::after {
+      content: '';
+      position: absolute;
+      top: -0.5px;
+      right: 0;
+      left: calc(-1 * var(--pad) - 1px);
+      height: 2px;
+      background-image: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-accent-dim) 75%,
+        var(--glare)
+      );
+      animation-name: pulse-x;
+      animation-range: cover calc(var(--line) - 4vh) cover calc(var(--line) + 11vh);
+    }
+
+    /* ----- Drums: a step carved down, then a thud ----- */
+
+    .drum {
+      view-timeline-name: --drum;
+    }
+
+    .drum,
+    .drum::before {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --drum;
+    }
+
+    .drum + .drum::before {
+      animation-name: step-down;
+      animation-range: cover calc(var(--line) - 9vh) cover calc(var(--line) - 2vh);
+    }
+
+    .drum {
+      animation-name: thud;
+      animation-range: cover calc(var(--line) - 3vh) cover calc(var(--line) + 3vh);
+    }
+
+    /* ----- Lamps: the conduit runs out, each lamp drops and lights ----- */
+
+    .lamps {
+      view-timeline-name: --lamps;
+    }
+
+    .lamps::before {
+      transform-origin: left;
+      animation-name: charge-x;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --lamps;
+      animation-range: cover calc(var(--line) - 5vh) cover calc(var(--line) + 5vh);
+    }
+
+    /* Side by side, each lamp lights as the conduit reaches it (a third and two thirds of the
+       way along), all three within a short stretch at the line so that none is left dark
+       beside the others while being read; stacked on a phone, the scroll staggers them. */
+    .lamp {
+      --lit: 0vh;
+      view-timeline-name: --lamp;
+    }
+
+    @media (width >= 40rem) {
+      .lamp {
+        --lit: calc(var(--i) * 3.3vh - 4.6vh);
+      }
+    }
+
+    .lamp::before,
+    .lamp::after,
+    .lamp > h3 {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --lamp;
+    }
+
+    .lamp::before {
+      transform-origin: top;
+      animation-name: lamp-rule;
+      animation-range: cover calc(var(--line) + var(--lit)) cover
+        calc(var(--line) + var(--lit) + 5vh);
+    }
+
+    .lamp::after {
+      animation-name: lamp-light;
+      animation-range: cover calc(var(--line) + var(--lit) + 2vh) cover
+        calc(var(--line) + var(--lit) + 8vh);
+    }
+
+    .lamp > h3 {
+      animation-name: lamp-glow;
+      animation-range: cover calc(var(--line) + var(--lit) + 2vh) cover
+        calc(var(--line) + var(--lit) + 8vh);
+    }
+
+    /* ----- Portrait: ring, tones, beam ----- */
+
+    .portrait {
+      view-timeline-name: --portrait;
+    }
+
+    .portrait,
+    .portrait::before,
+    .portrait path,
+    .portrait-plate::after {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --portrait;
+    }
+
+    .portrait {
+      animation-name: portrait-on;
+      animation-range: cover calc(var(--line) - 6vh) cover calc(var(--line) + 4vh);
+    }
+
+    .portrait::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      padding: 3px;
+      border-radius: 50%;
+      background-image: conic-gradient(var(--color-accent) var(--sweep), transparent 0);
+      mask:
+        linear-gradient(#000 0 0) content-box exclude,
+        linear-gradient(#000 0 0);
+      animation-name: sweep;
+      animation-range: cover calc(var(--line) - 6vh) cover calc(var(--line) + 3vh);
+    }
+
+    .portrait path {
+      --layer: 0;
+      animation-name: develop;
+      animation-range: cover calc(var(--line) + var(--layer) * 2vh) cover
+        calc(var(--line) + 3vh + var(--layer) * 2vh);
+    }
+
+    .portrait path:nth-child(2) {
+      --layer: 1;
+    }
+    .portrait path:nth-child(3) {
+      --layer: 2;
+    }
+    .portrait path:nth-child(4) {
+      --layer: 3;
+    }
+    .portrait path:nth-child(5) {
+      --layer: 4;
+    }
+    .portrait path:nth-child(6) {
+      --layer: 5;
+    }
+
+    .portrait-plate::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      height: 3px;
+      background-color: var(--glare);
+      box-shadow: 0 0 10px 2px var(--color-accent);
+      animation-name: beam;
+      animation-range: cover var(--line) cover calc(var(--line) + 14vh);
+    }
+
+    .socials > li {
+      animation-name: slide-in;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: view();
+      animation-range: cover calc(var(--line) - 6vh) cover calc(var(--line) + 2vh);
+    }
+
+    /* ----- Buttons: the border charges around, in the button's own colour ----- */
+
+    .charge {
+      border-color: var(--color-line);
+      view-timeline-name: --charge;
+    }
+
+    .actions .charge + .charge {
+      --lag: 4vh;
+    }
+
+    .charge::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      padding: 2px;
+      border-radius: inherit;
+      background-image: conic-gradient(currentColor var(--sweep), transparent 0);
+      mask:
+        linear-gradient(#000 0 0) content-box exclude,
+        linear-gradient(#000 0 0);
+      pointer-events: none;
+      animation-name: sweep;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --charge;
+      animation-range: cover calc(var(--line) - 4vh + var(--lag, 0vh)) cover
+        calc(var(--line) + 6vh + var(--lag, 0vh));
+    }
+
+    /* ----- Tests: pending until they cross the line, then they pass ----- */
+
+    /* The contact tips sit just above the footer: their line is lower so they finish. */
+    .tips {
+      --line: min(20vh, 10rem);
+    }
+
+    .test {
+      view-timeline-name: --test;
+    }
+
+    .test::before,
+    .test > svg path {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --test;
+    }
+
+    .test::before {
+      content: '';
+      position: absolute;
+      top: 0.375rem;
+      left: 0;
+      width: 1rem;
+      height: 1rem;
+      border: 1.5px solid var(--color-ink-faint);
+      border-radius: 50%;
+      animation-name: pending;
+      animation-range: cover calc(var(--line) - 3vh) cover calc(var(--line) + 4vh);
+    }
+
+    /* The check is 23 units long; drawing it backwards puts the short arm down first. */
+    .test > svg path {
+      stroke-dasharray: 23;
+      animation-name: tick;
+      animation-range: cover calc(var(--line) - 1vh) cover calc(var(--line) + 4vh);
+    }
+
+    /* ----- Contexts: the monolith, cut, drifts apart ----- */
+
+    .contexts {
+      view-timeline-name: --contexts;
+    }
+
+    .contexts::before,
+    .context::before {
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: --contexts;
+      animation-range: cover calc(var(--line) - 14vh) cover calc(var(--line) + 18vh);
+    }
+
+    .contexts::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--color-accent);
+      border-radius: 0.5rem;
+      background-color: color-mix(in oklch, var(--color-accent) 6%, transparent);
+      box-shadow: 0 0 24px var(--color-glow);
+      pointer-events: none;
+      animation-name: monolith;
+    }
+
+    /* Each context starts out reaching halfway across the gap to its neighbours, so together
+       they tile the monolith; `--in` is the inset per side (top, right, bottom, left). */
+    .context::before {
+      animation-name: split;
+      animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+    }
+
+    .context:first-child {
+      --in: 0 0 -0.5rem 0;
+    }
+    .context:last-child {
+      --in: -0.5rem 0 0 0;
+    }
+    .context:not(:first-child, :last-child) {
+      --in: -0.5rem 0;
+    }
+
+    @media (width >= 40rem) {
+      .context:nth-child(1) {
+        --in: 0 -0.5rem -0.5rem 0;
+      }
+      .context:nth-child(2) {
+        --in: 0 0 -0.5rem -0.5rem;
+      }
+      .context:nth-child(3) {
+        --in: -0.5rem -0.5rem 0 0;
+      }
+      .context:nth-child(4) {
+        --in: -0.5rem 0 0 -0.5rem;
+      }
+    }
+
+    /* ----- Keyframes ----- */
+
+    @keyframes fill-y {
+      from {
+        transform: scaleY(0);
+      }
+    }
+
+    @keyframes ride {
+      0% {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      1%,
+      99% {
+        opacity: 1;
+      }
+      100% {
+        transform: none;
+        opacity: 0;
+      }
+    }
+
+    @keyframes fade-out {
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes node-lit {
+      0% {
+        background-color: var(--color-surface-raised);
+        box-shadow:
+          0 0 0 3px var(--color-surface),
+          inset 0 0 0 2px var(--color-ink-faint);
+      }
+      40% {
+        background-color: var(--glare);
+        transform: scale(1.7);
+        box-shadow:
+          0 0 0 3px var(--color-surface),
+          0 0 22px 6px var(--color-accent);
+      }
+    }
+
+    @keyframes charge-x {
+      from {
+        transform: scaleX(0);
+      }
+    }
+
+    @keyframes dig {
+      from {
+        clip-path: inset(-2rem -2rem 100% -2rem);
+      }
+      to {
+        clip-path: inset(-2rem -2rem 0 -2rem);
+      }
+    }
+
+    @keyframes branch {
+      from {
+        clip-path: inset(-2rem 100% -2rem -2rem);
+      }
+      to {
+        clip-path: inset(-2rem);
+      }
+    }
+
+    /* A dot of light, a line across, the screen rolls open with a flash, settles. The beam
+       is toned down from full green so that the text it passes behind stays readable. */
+    @keyframes crt {
+      0% {
+        opacity: 0;
+        transform: scale(0, 0.004);
+        border-color: var(--color-accent);
+        background-color: var(--glare);
+        box-shadow: 0 0 24px 6px var(--color-accent);
+      }
+      6% {
+        opacity: 1;
+      }
+      30% {
+        transform: scale(1, 0.004);
+        border-color: var(--color-accent);
+        background-color: color-mix(in oklch, var(--color-accent) 45%, var(--color-surface-muted));
+        box-shadow: 0 0 32px 8px var(--color-glow);
+      }
+      60% {
+        transform: scale(1, 1.02);
+        border-color: var(--color-accent-dim);
+        background-color: color-mix(in oklch, var(--color-accent) 14%, var(--color-surface-muted));
+      }
+      80% {
+        transform: scale(1, 0.996);
+      }
+    }
+
+    @keyframes sheen {
+      from {
+        background-position:
+          100% 0,
+          0 0;
+      }
+      to {
+        background-position:
+          0 0,
+          0 0;
+      }
+    }
+
+    @keyframes pulse-x {
+      0% {
+        transform: scaleX(0);
+        opacity: 1;
+      }
+      70% {
+        transform: none;
+        opacity: 1;
+      }
+      100% {
+        transform: none;
+        opacity: 0;
+      }
+    }
+
+    @keyframes step-down {
+      0% {
+        clip-path: inset(0 100% 100% 0);
+      }
+      50% {
+        clip-path: inset(0 calc(100% - 1px) 0 0);
+      }
+      100% {
+        clip-path: inset(0);
+      }
+    }
+
+    @keyframes thud {
+      0% {
+        transform: translateY(-0.3em);
+      }
+      40% {
+        transform: translateY(0.08em);
+      }
+      65% {
+        transform: translateY(-0.03em);
+      }
+      100% {
+        transform: none;
+      }
+    }
+
+    @keyframes lamp-rule {
+      from {
+        transform: scaleY(0);
+        box-shadow: none;
+      }
+      75% {
+        transform: none;
+        box-shadow: 0 0 22px 3px var(--color-accent);
+      }
+    }
+
+    /* A tube light: on, a flicker, on. */
+    @keyframes lamp-light {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      40% {
+        opacity: 0.3;
+      }
+      55%,
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes lamp-glow {
+      from {
+        text-shadow: none;
+      }
+      35% {
+        text-shadow: 0 0 14px var(--color-accent);
+      }
+      to {
+        text-shadow: none;
+      }
+    }
+
+    @keyframes portrait-on {
+      0%,
+      70% {
+        border-color: var(--color-line);
+        box-shadow: none;
+      }
+    }
+
+    @keyframes sweep {
+      from {
+        --sweep: 0deg;
+      }
+      to {
+        --sweep: 360deg;
+      }
+    }
+
+    @keyframes develop {
+      from {
+        opacity: 0;
+      }
+    }
+
+    @keyframes beam {
+      0% {
+        opacity: 0;
+        transform: none;
+      }
+      10%,
+      85% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(6rem);
+      }
+    }
+
+    @keyframes slide-in {
+      from {
+        transform: translateX(1rem);
+      }
+    }
+
+    @keyframes pending {
+      0%,
+      40% {
+        opacity: 1;
+        transform: scale(0.55);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.6);
+        border-color: var(--color-accent);
+      }
+    }
+
+    @keyframes tick {
+      from {
+        stroke-dashoffset: -23;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes monolith {
+      0% {
+        opacity: 0;
+      }
+      12%,
+      40% {
+        opacity: 1;
+      }
+      65%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes split {
+      0% {
+        inset: var(--in);
+        opacity: 0;
+        border-color: var(--color-accent);
+      }
+      25% {
+        opacity: 0;
+      }
+      38% {
+        opacity: 1;
+      }
+      45% {
+        inset: var(--in);
+        border-color: var(--color-accent);
+      }
+    }
+  }
+}

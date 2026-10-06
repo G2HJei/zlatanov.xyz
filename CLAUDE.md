@@ -47,12 +47,26 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   variable) for body copy; JetBrains Mono for the logo, nav, card titles, meta, buttons, tags and
   prompts. Every content block is a `Card.astro`: bordered panel, green gradient bar on top,
   optional `# title` heading. Pages open with `Hero.astro` under a pulsing rule: gradient h1 plus
-  a `$ ` subtitle (on the home page, `SITE.slogan` and `SITE.sloganSubtitle`). `ButtonLink.astro`
+  a `$ ` subtitle; the home page opens with `HomeHero.astro` instead (see below). `ButtonLink.astro`
   is the outlined green mono button, `SocialLink.astro` its quieter grey twin for the profile links under the portrait. The header logo is `> zlatanov` plus a
   blinking green block cursor, with `SITE.logoSubtitle` beside it from `sm` up. Prompt glyphs
   carry meaning: `>` before the logo and `> ` before sub-headings, `$ ` before slogans and
   subtitles, `# ` before card titles and tags. Post lists are stacked `PostCard.astro` panels that lift on hover; markdown
   code blocks get a `$ <language>` title bar. Keep motion to what exists and reduced-motion safe.
+- **The home page is a pipeline**, all of its motion CSS in `src/styles/home.css` (whose header
+  lists every effect). `HomeHero.astro` sets the slogan as three CI stages on a wire, each with a
+  trace out to a check, and plays the run once on load. The wire continues down the left edge of
+  every card: each is a `Stage.astro`, which wraps `Card` and adds a decorative rig (the panel as
+  a separate `face`, the wire, a node), with a `kind` (`dig`, `branch`, `crt`) for
+  how its panel assembles. Below the hero everything is scroll-driven (`animation-timeline`):
+  the wire is lit down to a signal line `--line` above the bottom of the viewport, and things
+  build as they cross it. Rules: **the copy never fades, clips or moves more than a few pixels**;
+  only what is around it assembles (an e2e test scrolls the page and checks every text node).
+  Static styles are the final frames, so browsers without scroll timelines and reduced-motion
+  visitors get the finished page. Use animation **longhands** only for scroll-driven animations:
+  Lightning CSS folds `animation-timeline` into the `animation` shorthand, browsers drop it, and
+  the dev server (unminified) won't show it; the e2e test counts the view timelines in the build.
+  Anything in the contact card must finish within reach of the bottom of the page.
 - **Brand values are duplicated on purpose** in `scripts/og-image.mjs` and the `theme-color` in
   `Head.astro`; change them together with the tokens and run `npm run og:image`.
 - **Fonts load through Astro's Fonts API**: the `fonts` block in `astro.config.ts` points the

@@ -1,10 +1,12 @@
 ---
+import '../styles/home.css';
+
 import Portrait from '../assets/portrait.svg';
 import ButtonLink from '../components/ButtonLink.astro';
-import Card from '../components/Card.astro';
-import Hero from '../components/Hero.astro';
+import HomeHero from '../components/HomeHero.astro';
 import Icon from '../components/Icon.astro';
 import SocialLink from '../components/SocialLink.astro';
+import Stage from '../components/Stage.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { principles } from '../data/principles';
 import { profile } from '../data/profile';
@@ -22,21 +24,18 @@ const socials = [
   { href: '/rss.xml', label: 'RSS', icon: 'rss', external: false },
 ] as const;
 
-/** The drums descend into the mine: each a step deeper and a shade darker, the last still
-    above 4.5:1 on the card. */
-const drumDepths = [
-  'text-ink-muted',
-  'pl-4 text-ink-muted/85 sm:pl-10',
-  'pl-8 text-ink-muted/70 sm:pl-20',
-];
+/** The drums descend into the mine: each a step deeper (`home.css`) and a shade darker, the
+    last still above 4.5:1 on the card. */
+const drumShades = ['text-ink-muted', 'text-ink-muted/85', 'text-ink-muted/70'];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
-  <Hero title={SITE.slogan} subtitle={SITE.sloganSubtitle} />
+  <!-- The page is a pipeline: the hero's wire runs on down the left edge of every stage. -->
+  <div class="home flex flex-col gap-(--gap)">
+    <HomeHero />
 
-  <div class="space-y-8">
-    <Card id="about">
-      <h2 class="text-gradient text-3xl leading-tight font-bold sm:text-4xl">
+    <Stage id="about" kind="dig">
+      <h2 class="hook text-gradient text-3xl leading-tight font-bold sm:text-4xl">
         <span class="sm:block">{intro.hook[0]}</span> <span class="sm:block">{intro.hook[1]}</span>
       </h2>
       <p class="mt-4 font-mono text-[1.1rem] text-ink-muted before:text-accent before:content-['$_']">
@@ -48,16 +47,18 @@ const drumDepths = [
         <br />
         {intro.drumsLead}
       </p>
-      <ul class="mt-5 space-y-2 font-mono text-[0.95rem]">
+      <ul class="drums mt-5 space-y-2 font-mono text-[0.95rem]">
         {intro.drums.map((drum, index) => (
-          <li class={drumDepths[index]}>{drum}</li>
+          <li class:list={['drum', drumShades[index]]} style={`--step: ${index}`}>
+            {drum}
+          </li>
         ))}
       </ul>
 
       <p class="mt-10 text-[1.1rem] font-semibold text-ink">{intro.wayThrough}</p>
-      <ul class="mt-6 grid gap-6 sm:grid-cols-3 sm:gap-8">
-        {intro.practices.map((practice) => (
-          <li class="border-l-2 border-accent pl-5 shadow-[-10px_0_18px_-14px_var(--color-accent)]">
+      <ul class="lamps mt-6 grid gap-6 sm:grid-cols-3 sm:gap-8">
+        {intro.practices.map((practice, index) => (
+          <li class="lamp" style={`--i: ${index}`}>
             <h3 class="font-mono text-lg font-semibold text-ink before:text-accent before:content-['>_']">
               {practice.name}
             </h3>
@@ -66,7 +67,7 @@ const drumDepths = [
         ))}
       </ul>
 
-      <div class="mt-12 flex flex-col-reverse gap-6 border-t border-line pt-10 sm:flex-row sm:items-start sm:gap-8">
+      <div class="branch mt-12 flex flex-col-reverse gap-6 pt-10 sm:flex-row sm:items-start sm:gap-8">
         <div class="flex-1">
           <div class="space-y-4 leading-[1.7] text-ink-muted">
             {intro.introduction.map((paragraph) => (
@@ -75,17 +76,19 @@ const drumDepths = [
           </div>
           <p class="mt-6 font-semibold text-ink">{intro.cta}</p>
           <div class="mt-4">
-            <ButtonLink href={`mailto:${SITE.email}`}>
+            <ButtonLink href={`mailto:${SITE.email}`} class="charge">
               <Icon name="mail" class="size-5" />
               {SITE.email}
             </ButtonLink>
           </div>
         </div>
         <div class="flex shrink-0 items-center gap-6 sm:flex-col">
-          <div class="size-24 shrink-0 overflow-hidden rounded-full border-[3px] border-accent bg-surface-raised text-accent shadow-[0_0_24px_var(--color-glow)]">
-            <Portrait class="size-full" aria-hidden="true" />
+          <div class="portrait size-24 shrink-0 rounded-full border-[3px] border-accent shadow-[0_0_24px_var(--color-glow)]">
+            <div class="portrait-plate size-full overflow-hidden rounded-full bg-surface-raised text-accent">
+              <Portrait class="size-full" aria-hidden="true" />
+            </div>
           </div>
-          <ul class="flex flex-col gap-3" aria-label="Elsewhere">
+          <ul class="socials flex flex-col gap-3" aria-label="Elsewhere">
             {socials.map((social) => (
               <li>
                 <SocialLink href={social.href} external={social.external} class="w-full">
@@ -97,16 +100,19 @@ const drumDepths = [
           </ul>
         </div>
       </div>
-    </Card>
+    </Stage>
 
-    <Card id="services" title="services">
+    <Stage id="services" title="services" kind="branch">
       <p class="text-ink-muted">
         Three ways teams bring me in. Every engagement starts with a short conversation about what
         is slowing you down, and ends with your team owning the result.
       </p>
-      <div class="mt-8 divide-y divide-line">
-        {services.map((service) => (
-          <article id={service.slug} class="scroll-mt-28 py-8 first:pt-0 last:pb-0">
+      <div class="mt-8">
+        {services.map((service, index) => (
+          <article
+            id={service.slug}
+            class:list={['scroll-mt-28 py-8 first:pt-0 last:pb-0', index > 0 && 'branch']}
+          >
             <h3 class="font-mono text-xl font-semibold text-ink before:text-accent before:content-['>_']">
               {service.title}
             </h3>
@@ -116,7 +122,7 @@ const drumDepths = [
                 <h4 class="font-mono text-sm text-ink-faint">you get</h4>
                 <ul class="mt-3 space-y-2 text-ink-muted">
                   {service.outcomes.map((outcome) => (
-                    <li class="flex gap-3">
+                    <li class="test flex gap-3">
                       <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
                       <span>{outcome}</span>
                     </li>
@@ -127,7 +133,7 @@ const drumDepths = [
                 <h4 class="font-mono text-sm text-ink-faint">a good fit if</h4>
                 <ul class="mt-3 space-y-2 text-ink-muted">
                   {service.goodFitIf.map((reason) => (
-                    <li class="flex gap-3">
+                    <li class="test flex gap-3">
                       <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
                       <span>{reason}</span>
                     </li>
@@ -141,21 +147,21 @@ const drumDepths = [
           </article>
         ))}
       </div>
-    </Card>
+    </Stage>
 
-    <Card id="how-i-work" title="how I work">
-      <dl class="grid gap-4 sm:grid-cols-2">
+    <Stage id="how-i-work" title="how I work" kind="branch">
+      <dl class="contexts grid gap-4 sm:grid-cols-2">
         {principles.map((principle) => (
-          <div class="p-5">
+          <div class="context p-5">
             <dt class="font-mono font-semibold text-accent">{principle.title}</dt>
             <dd class="mt-2 text-ink-muted">{principle.text}</dd>
           </div>
         ))}
       </dl>
-    </Card>
+    </Stage>
 
     {testimonials.length > 0 && (
-      <Card id="testimonials" title="what clients say">
+      <Stage id="testimonials" title="what clients say" kind="branch">
         <ul class="grid gap-6 md:grid-cols-2">
           {testimonials.map((testimonial) => (
             <li>
@@ -163,35 +169,35 @@ const drumDepths = [
             </li>
           ))}
         </ul>
-      </Card>
+      </Stage>
     )}
 
-    <Card id="contact" title="contact" class="text-center">
+    <Stage id="contact" title="contact" kind="crt" class="text-center">
       <p class="mx-auto max-w-2xl text-[1.1rem] text-ink-muted">
         The quickest way to reach me is email. Tell me a little about your team and what you are
         trying to change, and I will get back to you.
       </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <ButtonLink href={`mailto:${SITE.email}`}>
+      <div class="actions mt-8 flex flex-wrap justify-center gap-4">
+        <ButtonLink href={`mailto:${SITE.email}`} class="charge">
           <Icon name="mail" class="size-5" />
           {SITE.email}
         </ButtonLink>
-        <ButtonLink href={SITE.social.linkedin} variant="dim" external>
+        <ButtonLink href={SITE.social.linkedin} variant="dim" external class="charge">
           <Icon name="linkedin" class="size-5" />
           LinkedIn
         </ButtonLink>
       </div>
-      <div class="mx-auto mt-10 max-w-2xl p-5 text-left">
+      <div class="tips mx-auto mt-10 max-w-2xl p-5 text-left">
         <h3 class="font-mono text-sm text-ink-faint">what helps me reply well</h3>
         <ul class="mt-3 space-y-2 text-ink-muted">
           {profile.contactTips.map((tip) => (
-            <li class="flex gap-3">
+            <li class="test flex gap-3">
               <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
               <span>{tip}</span>
             </li>
           ))}
         </ul>
       </div>
-    </Card>
+    </Stage>
   </div>
 </BaseLayout>

@@ -1,0 +1,55 @@
+---
+/**
+ * A card on the home page's pipeline. `Card` lays out the content; `Stage` adds the rig
+ * around it, all of it decoration hidden from assistive tech:
+ *
+ *   face  the card's panel (border, surface, shadow), drawn behind the content so it can
+ *         assemble without ever covering or fading the text
+ *   wire  the pipeline down the card's left edge, from the gap above it; it lights up to
+ *         the reader's position
+ *   rail  for `dig` only: a light down the right edge, level with the one on the wire
+ *   floor for `dig` only: a faint beam between those two lights, the edge of the dig
+ *   edge  for `crt` only: the wire down the last card's left edge, which lights with the
+ *         screen because the signal line never gets that far down the page
+ *   node  where the wire meets the card's top bar
+ *
+ * `kind` picks how the face assembles when it reaches the signal line (see
+ * `src/styles/home.css`): `dig` is excavated top to bottom as the reader descends,
+ * `branch` grows out of the wire to the right, `crt` switches on like an old monitor.
+ */
+import type { ComponentProps } from 'astro/types';
+
+import Card from './Card.astro';
+
+type Props = Omit<ComponentProps<typeof Card>, 'as' | 'hover'> & {
+  kind: 'dig' | 'branch' | 'crt';
+};
+
+const { kind, class: className, ...props } = Astro.props;
+---
+
+<Card {...props} class:list={['stage', `stage-${kind}`, className]}>
+  <span class="rig" aria-hidden="true">
+    <span class="rig-face"></span>
+    <span class="rig-wire track">
+      <span class="fill"></span>
+      <span class="head"></span>
+    </span>
+    {kind === 'dig' && (
+      <>
+        <span class="rig-rail track">
+          <span class="head"></span>
+        </span>
+        <span class="rig-floor"></span>
+      </>
+    )}
+    {kind === 'crt' && (
+      <span class="rig-edge track">
+        <span class="fill"></span>
+        <span class="head"></span>
+      </span>
+    )}
+    <span class="rig-node"></span>
+  </span>
+  <slot />
+</Card>
