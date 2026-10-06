@@ -1,7 +1,7 @@
 # zlatanov.xyz
 
 Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
-(profile, about, services, how I work, contact) and `blog` (tag filter under the title, posts with
+(intro, services, how I work, contact) and `blog` (tag filter under the title, posts with
 the RSS link), plus the markdown posts behind them. Fully static Astro site, self-hosted in Docker
 behind the owner's nginx.
 
@@ -88,8 +88,8 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   with that filter applied); there are no tag pages. Keep tag spelling consistent across posts;
   the unit tests flag labels that collide on one slug.
 - Site-wide constants (name, domain, slogan, URL, email, social links): `src/lib/site.ts`. Home
-  page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the tagline and
-  contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
+  page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the intro card
+  and contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
 
 ## Deployment
 

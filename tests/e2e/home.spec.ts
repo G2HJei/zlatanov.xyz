@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import { SITE } from '../../src/lib/site';
 
-test('home page renders the profile, the navigation and the three cards', async ({ page }) => {
+test('home page renders the slogan, the navigation and the three cards', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {
@@ -33,9 +33,14 @@ test('home page renders the profile, the navigation and the three cards', async 
   expect(errors).toEqual([]);
 });
 
-test('profile pills link to GitHub, LinkedIn, email and the feed', async ({ page }) => {
+test('intro card links to email, GitHub, LinkedIn and the feed', async ({ page }) => {
   await page.goto('/');
-  const elsewhere = page.getByRole('list', { name: 'Elsewhere' });
+  const intro = page.locator('main section#about');
+  await expect(intro.getByRole('link', { name: SITE.email })).toHaveAttribute(
+    'href',
+    `mailto:${SITE.email}`,
+  );
+  const elsewhere = intro.getByRole('list', { name: 'Elsewhere' });
   await expect(elsewhere.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
     'href',
     SITE.social.github,
@@ -43,10 +48,6 @@ test('profile pills link to GitHub, LinkedIn, email and the feed', async ({ page
   await expect(elsewhere.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
     'href',
     SITE.social.linkedin,
-  );
-  await expect(elsewhere.getByRole('link', { name: 'Email' })).toHaveAttribute(
-    'href',
-    `mailto:${SITE.email}`,
   );
   await expect(elsewhere.getByRole('link', { name: 'RSS' })).toHaveAttribute('href', '/rss.xml');
 });
