@@ -4,7 +4,7 @@ import ButtonLink from '../components/ButtonLink.astro';
 import Card from '../components/Card.astro';
 import Hero from '../components/Hero.astro';
 import Icon from '../components/Icon.astro';
-import PillLink from '../components/PillLink.astro';
+import SocialLink from '../components/SocialLink.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { principles } from '../data/principles';
 import { profile } from '../data/profile';
@@ -15,7 +15,7 @@ import { SITE } from '../lib/site';
 
 const { intro } = profile;
 
-/** Email has its own button beside these. */
+/** Listed under the portrait; email keeps its own button beside the call to action. */
 const socials = [
   { href: SITE.social.linkedin, label: 'LinkedIn', icon: 'linkedin', external: true },
   { href: SITE.social.github, label: 'GitHub', icon: 'github', external: true },
@@ -74,25 +74,27 @@ const drumDepths = [
             ))}
           </div>
           <p class="mt-6 font-semibold text-ink">{intro.cta}</p>
-          <div class="mt-4 flex flex-wrap items-center gap-4">
+          <div class="mt-4">
             <ButtonLink href={`mailto:${SITE.email}`}>
               <Icon name="mail" class="size-5" />
               {SITE.email}
             </ButtonLink>
-            <ul class="flex flex-wrap gap-3" aria-label="Elsewhere">
-              {socials.map((social) => (
-                <li>
-                  <PillLink href={social.href} external={social.external}>
-                    <Icon name={social.icon} class="size-4" />
-                    {social.label}
-                  </PillLink>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
-        <div class="size-24 shrink-0 overflow-hidden rounded-full border-[3px] border-accent bg-surface-raised text-accent shadow-[0_0_24px_var(--color-glow)]">
-          <Portrait class="size-full" aria-hidden="true" />
+        <div class="flex shrink-0 items-center gap-6 sm:flex-col">
+          <div class="size-24 shrink-0 overflow-hidden rounded-full border-[3px] border-accent bg-surface-raised text-accent shadow-[0_0_24px_var(--color-glow)]">
+            <Portrait class="size-full" aria-hidden="true" />
+          </div>
+          <ul class="flex flex-col gap-3" aria-label="Elsewhere">
+            {socials.map((social) => (
+              <li>
+                <SocialLink href={social.href} external={social.external} class="w-full">
+                  <Icon name={social.icon} class="size-4" />
+                  {social.label}
+                </SocialLink>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </Card>

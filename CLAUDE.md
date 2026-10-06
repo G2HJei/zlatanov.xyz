@@ -48,7 +48,7 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   prompts. Every content block is a `Card.astro`: bordered panel, green gradient bar on top,
   optional `# title` heading. Pages open with `Hero.astro` under a pulsing rule: gradient h1 plus
   a `$ ` subtitle (on the home page, `SITE.slogan` and `SITE.sloganSubtitle`). `ButtonLink.astro`
-  is the outlined green mono button, `PillLink.astro` the rounded social pill. The header logo is `> zlatanov` plus a
+  is the outlined green mono button, `SocialLink.astro` its quieter grey twin for the profile links under the portrait. The header logo is `> zlatanov` plus a
   blinking green block cursor, with `SITE.logoSubtitle` beside it from `sm` up. Prompt glyphs
   carry meaning: `>` before the logo and `> ` before sub-headings, `$ ` before slogans and
   subtitles, `# ` before card titles and tags. Post lists are stacked `PostCard.astro` panels that lift on hover; markdown
