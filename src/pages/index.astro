@@ -201,3 +201,95 @@ const drumShades = ['text-ink-muted', 'text-ink-muted/85', 'text-ink-muted/70'];
     </Stage>
   </div>
 </BaseLayout>
+
+<script>
+  /*
+   * The pipeline never runs backwards. Its scroll-driven animations (`home.css`) follow the
+   * scroll both ways; this holds them at the furthest point the reader has reached, so what
+   * has been built stays built while they scroll back up, and the run picks up where it
+   * stopped once they come back down past that point. At the bottom of the page the run is
+   * over: every animation stops on its last frame for good, the page is static, and `done`
+   * takes the wire away.
+   */
+  const home = document.querySelector<HTMLElement>('.home');
+
+  if (home) {
+    /** On a scroll or view timeline rather than the clock, which runs the hero on load. */
+    const scrollDriven = () =>
+      document.getAnimations().filter((animation) => animation.timeline !== document.timeline);
+
+    /** Setting the time completes the pause at once; a bare `pause()` lands a frame later,
+        wherever the scroll has moved the animation by then. */
+    const pauseAt = (animation: Animation, time: CSSNumberish | null | undefined) => {
+      if (time === null || time === undefined) return;
+      animation.pause();
+      animation.currentTime = time;
+    };
+
+    let furthest = scrollY;
+    let state: 'running' | 'holding' | 'done' = 'running';
+
+    const hold = () => {
+      state = 'holding';
+      for (const animation of scrollDriven()) {
+        if (animation.playState === 'paused') continue;
+        if (animation.startTime === null) {
+          // Resumed but not yet caught up with the scroll, it would hold its old place: let
+          // it arrive first.
+          animation.ready.then(
+            () => {
+              if (state === 'holding') pauseAt(animation, animation.currentTime);
+            },
+            () => {},
+          );
+        } else {
+          pauseAt(animation, animation.currentTime);
+        }
+      }
+    };
+
+    const resume = () => {
+      state = 'running';
+      for (const animation of scrollDriven()) {
+        if (animation.playState === 'paused') animation.play();
+      }
+    };
+
+    // In a scroll event the animations still show the last frame drawn, from before the
+    // scroll moved: turning back holds them exactly there.
+    const onScroll = () => {
+      if (scrollY < furthest) {
+        if (state === 'running') hold();
+        return;
+      }
+      furthest = scrollY;
+      if (scrollY >= document.documentElement.scrollHeight - innerHeight - 1) finish();
+      else if (state === 'holding') resume();
+    };
+
+    // Hold whenever the scroll comes to rest too, a frame later, once everything has caught
+    // up with it: turning back from a standstill then can't show a frame of it running
+    // backwards, which the compositor would draw before the scroll event arrived.
+    const onScrollEnd = () => {
+      const stoppedAt = scrollY;
+      requestAnimationFrame(() => {
+        if (state === 'running' && scrollY === stoppedAt) hold();
+      });
+    };
+
+    /** At the bottom of the page everything has been built; it ends on the last frames. */
+    const finish = () => {
+      state = 'done';
+      removeEventListener('scroll', onScroll);
+      removeEventListener('scrollend', onScrollEnd);
+      for (const animation of scrollDriven()) {
+        pauseAt(animation, animation.effect?.getComputedTiming().endTime);
+      }
+      home.classList.add('done');
+    };
+
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('scrollend', onScrollEnd);
+    onScroll();
+  }
+</script>

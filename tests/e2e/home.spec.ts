@@ -126,6 +126,105 @@ test('the page assembles around its copy, which stays fully visible at every scr
   expect(unfinished).toEqual([]);
 });
 
+/**
+ * Smooth-scrolls down, turns back halfway without stopping, then comes down again short of the
+ * turn, checking on every frame that no scroll-driven animation has fallen back from the
+ * furthest it got. Resolves with the ones that did.
+ */
+const rewoundOnTheWayBack = () =>
+  new Promise<string[]>((resolve) => {
+    const animations = document
+      .getAnimations()
+      .filter((animation) => animation.timeline !== document.timeline);
+    const furthest = animations.map(() => 0);
+    const rewound = new Set<string>();
+    let still = 0;
+    let lastY = -1;
+    const legs = [
+      { top: 2400, ready: () => true },
+      { top: 600, ready: () => scrollY > 1400 },
+      { top: 1200, ready: () => still > 10 },
+    ];
+    let leg = 0;
+
+    const frame = () => {
+      animations.forEach((animation, index) => {
+        const effect = animation.effect as KeyframeEffect;
+        const progress = effect.getComputedTiming().progress ?? 0;
+        if (progress < (furthest[index] ?? 0) - 1e-4) {
+          const target = effect.target as Element | null;
+          rewound.add(
+            `${(animation as CSSAnimation).animationName} on ${target?.getAttribute('class')} ${effect.pseudoElement ?? ''}`,
+          );
+        }
+        furthest[index] = Math.max(furthest[index] ?? 0, progress);
+      });
+      still = scrollY === lastY ? still + 1 : 0;
+      lastY = scrollY;
+
+      const next = legs[leg];
+      if (next?.ready()) {
+        window.scrollTo({ top: next.top, behavior: 'smooth' });
+        leg += 1;
+        still = 0;
+      } else if (!next && still > 10) {
+        resolve([...rewound]);
+        return;
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  });
+
+test('nothing rewinds when the reader scrolls back up', async ({ page }) => {
+  await page.goto('/');
+  expect(await page.evaluate(rewoundOnTheWayBack)).toEqual([]);
+});
+
+test('at the end of the page the wire goes and everything stays built', async ({ page }) => {
+  await page.goto('/');
+  const scrollTo = async (top: number) => {
+    await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top);
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+  };
+
+  const bottom = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+  await scrollTo(bottom);
+  await expect(page.locator('.home')).toHaveClass(/\bdone\b/);
+  for (const wire of await page.locator('.home :is(.track, .rig-node)').all()) {
+    await expect(wire).toHaveCSS('opacity', '0');
+  }
+  // In the hero the nodes and the wire between them are pseudo-elements.
+  const heroWire = () =>
+    page.evaluate(() =>
+      [
+        ...[...document.querySelectorAll('.hero-stage')].flatMap((stage) => [
+          getComputedStyle(stage, '::before').opacity,
+          getComputedStyle(stage, '::after').opacity,
+        ]),
+        ...[...document.querySelectorAll('.hero-prompt')].map(
+          (prompt) => getComputedStyle(prompt, '::after').opacity,
+        ),
+      ].filter((opacity) => opacity !== '0'),
+    );
+  await expect.poll(heroWire).toEqual([]);
+
+  // Back at the top the page is as it was at the bottom: finished, and no longer animating.
+  await scrollTo(0);
+  const unfinished = await page.evaluate(() =>
+    document
+      .getAnimations()
+      .filter((animation) => animation.timeline !== document.timeline)
+      .filter(
+        (animation) =>
+          animation.playState !== 'paused' ||
+          (animation.effect?.getComputedTiming().progress ?? 1) < 0.999,
+      )
+      .map((animation) => (animation as CSSAnimation).animationName),
+  );
+  expect(unfinished).toEqual([]);
+});
+
 test.describe('with reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 

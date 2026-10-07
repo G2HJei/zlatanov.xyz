@@ -11,8 +11,10 @@
  *              to green, its trace runs out and its check draws; the wire runs on past the
  *              `$` prompt and down the shaft to the signal line while the prompt appears,
  *              the subtitle types itself out and the cursor blinks four times and goes;
- *              then a pulse keeps dropping down the shaft until the reader scrolls
- *   wire       lit down to the signal line, with a light riding on its end
+ *              from the last character typed, a pulse keeps dropping down the shaft until
+ *              the reader scrolls
+ *   wire       lit down to the signal line, with a light riding on its end; gone once the
+ *              reader reaches the end of the page
  *   node       each card's node lights as that light reaches it, and its top bar charges
  *   dig        the intro card is dug out as the reader descends, a light on either edge and
  *              a faint beam between them at the floor of the dig
@@ -28,8 +30,11 @@
  *   crt        the contact card switches on behind its text like an old monitor
  *
  * The hero plays once on load. Everything else is a scroll-driven animation: its progress is
- * an element's position in the viewport, so it builds as it scrolls in and rewinds when
- * scrolled back, and whatever is on screen after a jump or a reload is already complete.
+ * an element's position in the viewport, so it builds as it scrolls in, and whatever is on
+ * screen after a jump or a reload is already complete. Nothing rewinds: the script in
+ * `index.astro` holds every one of them at the furthest point the reader has reached, and at
+ * the bottom of the page, where everything is built, stops them on their last frames for good
+ * and marks the run `done`, which takes the wire away (see "The end of the run").
  * Ranges count from the moment an element's top edge enters the viewport (`cover 0`): it
  * reaches the signal line at `cover var(--line)`, and its bottom edge does at
  * `cover var(--line-end)`. The contact card, last before the footer, finishes within reach of
@@ -104,16 +109,16 @@
   --slogan-size: clamp(2rem, 0.5rem + 8.5vw, 7.25rem);
   /* The run's clock. The `$` prompt appears when the wire reaches it, and the wire runs on
      down the shaft, lit by `--shaft-at`. The cursor waits beside the prompt a moment, then the
-     subtitle is typed, one of its `--chars` (set on the section) every `--type-step`; the
-     cursor blinks `--blinks` times, at the header logo's pace (`--animate-blink` in
-     global.css: a second on, a second off), and at `--run-end` the run is over. */
+     subtitle is typed, one of its `--chars` (set on the section) every `--type-step`, until
+     `--typing-end`; then the cursor blinks `--blinks` times, at the header logo's pace
+     (`--animate-blink` in global.css: a second on, a second off), and goes. */
   --prompt-at: 2.75s;
   --shaft-at: calc(var(--prompt-at) + 0.35s);
   --type-at: calc(var(--prompt-at) + 0.4s);
   --type-step: 0.035s;
+  --typing-end: calc(var(--type-at) + var(--chars) * var(--type-step));
   --blink: 2s;
   --blinks: 4;
-  --run-end: calc(var(--type-at) + var(--chars) * var(--type-step) + var(--blinks) * var(--blink));
   isolation: isolate;
   display: grid;
   grid-template-rows: 1fr auto auto minmax(5rem, 1.2fr);
@@ -450,6 +455,27 @@
   pointer-events: none;
 }
 
+/* ---------- The end of the run ---------- */
+
+/* At the bottom of the page the script in `index.astro` marks the run `done`. The wire has
+   done its job and goes, all of it, nodes and all: from the hero's first stage down to the
+   contact card. The hero's words, traces and checks stay, and so do the cards. */
+.done :is(.track, .rig-node),
+.done .hero-stage::before,
+.done .hero-stage::after,
+.done .hero-prompt::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .done :is(.track, .rig-node),
+  .done .hero-stage::before,
+  .done .hero-stage::after,
+  .done .hero-prompt::after {
+    transition: opacity 1.2s ease-in 0.4s;
+  }
+}
+
 /* ---------- Hero, motion: the run on load ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -581,7 +607,8 @@
     animation: shaft-run calc(var(--shaft-at) - var(--prompt-at)) linear var(--prompt-at) both;
   }
 
-  /* When the run is over, a pulse keeps dropping down the shaft. */
+  /* As soon as the subtitle is typed, while the cursor still blinks, a pulse keeps dropping
+     down the shaft. */
   .hero-drop {
     position: absolute;
     inset: 0 auto 0 -1px;
@@ -594,7 +621,7 @@
     inset: 0;
     background: linear-gradient(transparent, var(--color-accent)) 0 0 / 100% 2rem no-repeat;
     filter: drop-shadow(0 0 4px var(--color-accent));
-    animation: drop 2.2s cubic-bezier(0.6, 0, 0.4, 1) calc(var(--run-end) + 0.2s) infinite both;
+    animation: drop 2.2s cubic-bezier(0.6, 0, 0.4, 1) var(--typing-end) infinite both;
   }
 
   @keyframes node-on {

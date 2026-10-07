@@ -27,12 +27,14 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
   except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`, `/site.webmanifest`).
-- **No UI framework, one client script.** Plain `.astro` components only; every effect (blinking
-  cursor, pulsing rule, hover glows, scanlines) is CSS. The single exception is the particle
+- **No UI framework, two client scripts.** Plain `.astro` components only; every effect (blinking
+  cursor, pulsing rule, hover glows, scanlines) is CSS. The first exception is the particle
   background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
   non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
   `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
-  canvas `opacity` in the component. Add no other client JavaScript. The blog's tag filter is CSS
+  canvas `opacity` in the component. The second is the home page's hold, at the bottom of
+  `src/pages/index.astro` (see the pipeline below), which only pauses the CSS animations and sets
+  a class. Add no other client JavaScript. The blog's tag filter is CSS
   too (`TagFilter.astro`): each pill links to an empty marker beside it (`#tag-java`), and while
   it is `:target`, a rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose
   `data-tags` lack the slug. The markers are `position: fixed` at the top of the viewport so that
@@ -60,13 +62,18 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   a separate `face`, the wire, a node), with a `kind` (`dig`, `branch`, `crt`) for
   how its panel assembles. Below the hero everything is scroll-driven (`animation-timeline`):
   the wire is lit down to a signal line `--line` above the bottom of the viewport, and things
-  build as they cross it. Rules: **the copy never fades, clips or moves more than a few pixels**;
+  build as they cross it. Nothing runs backwards: the script in `index.astro` pauses every
+  scroll-driven animation at the furthest point the reader has reached and resumes them once
+  they scroll past it. At the bottom of the page it stops them all on their last frames for
+  good and adds `done` to `.home`, which fades out the whole wire, every node on it included,
+  from the hero's first stage down; the page is static from then on. Rules: **the copy never fades, clips or
+  moves more than a few pixels**;
   only what is around it assembles (an e2e test scrolls the page and checks every text node).
   The one exception, which the owner asked for, is the hero subtitle: on load its `$` prompt
   appears, then the text types itself out (a character per span, the whole text `sr-only` for
   assistive tech) and the cursor blinks four times at the header logo's pace and goes. The
   wire doesn't wait for the typing: it runs on past the prompt down the scroll shaft. Only the
-  pulse dropping down the shaft, the hint to scroll, waits for the run to end; any scroll
+  pulse dropping down the shaft, the hint to scroll, waits for the typing to end; any scroll
   lights everything at once.
   Static styles are the final frames, so browsers without scroll timelines and reduced-motion
   visitors get the finished page. Use animation **longhands** only for scroll-driven animations:
