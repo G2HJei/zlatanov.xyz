@@ -26,7 +26,7 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
 ## Stack and hard rules
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
-  except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`, `/site.webmanifest`).
+  except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`).
 - **No UI framework, two client scripts.** Plain `.astro` components only; every effect (blinking
   cursor, pulsing rule, hover glows, scanlines) is CSS. The first exception is the particle
   background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
@@ -89,9 +89,8 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   CSS directly: without preloads and adjusted fallbacks, text renders small and then jumps on every
   page load.
 - **Favicons come from the owner's brand kit** and sit in `public/` as-is: `favicon.ico`,
-  `favicon.svg`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`,
-  `android-chrome-*.png`, `maskable-icon-512x512.png` and `site.webmanifest`. Replace them as a set
-  and don't generate them. `Logo.astro` inlines the same mark without its tile.
+  `favicon.svg`, `favicon-16x16.png`, `favicon-32x32.png` and `apple-touch-icon.png`. Replace them
+  as a set and don't generate them. `Logo.astro` inlines the same mark without its tile.
 - **TypeScript stays on `~6.0`**: `@astrojs/check` does not support TS 7 yet.
 - Zod comes from `astro/zod`, never from `astro:content` (deprecated) or a separate `zod` package.
 - Astro 7 gotchas: `compressHTML` defaults to `'jsx'`, so a newline between inline elements renders
