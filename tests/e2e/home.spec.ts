@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { testimonials } from '../../src/data/testimonials';
 import { SITE } from '../../src/lib/site';
 
 test('home page renders the slogan, the navigation and the three cards', async ({ page }) => {
@@ -62,6 +63,9 @@ const hiddenCopy = () => {
     const text = node.textContent?.trim();
     // Copy for assistive tech only (the typed subtitle's full text) is hidden by design.
     if (!text || node.parentElement?.closest('.sr-only')) continue;
+    // So are the testimonials waiting their turn.
+    const slide = node.parentElement?.closest('.slide');
+    if (slide && getComputedStyle(slide).visibility === 'hidden') continue;
     for (let element = node.parentElement; element && element !== main;) {
       const style = getComputedStyle(element);
       if (
@@ -252,4 +256,26 @@ test('contact card offers email and LinkedIn', async ({ page }) => {
     'href',
     SITE.social.linkedin,
   );
+});
+
+test('testimonials show one at a time, the arrow cycling through them in place', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('main section#testimonials + section#contact')).toHaveCount(1);
+  const card = page.locator('main section#testimonials');
+  await card.scrollIntoViewIfNeeded();
+  const scrolled = await page.evaluate(() => scrollY);
+  const height = (await card.boundingBox())?.height;
+
+  // Round the whole list and back to the first: the card neither scrolls nor changes height.
+  for (const { quote, name, url } of [...testimonials, ...testimonials.slice(0, 1)]) {
+    const shown = card.getByRole('figure');
+    await expect(shown).toHaveCount(1);
+    await expect(shown).toContainText(quote.split('\n')[0]?.trim() ?? '');
+    if (url) await expect(shown.getByRole('link', { name })).toHaveAttribute('href', url);
+    expect((await card.boundingBox())?.height).toBe(height);
+    expect(await page.evaluate(() => scrollY)).toBe(scrolled);
+    await card.getByRole('link', { name: 'Next testimonial' }).click();
+  }
 });

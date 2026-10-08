@@ -5,7 +5,8 @@ Personal site and blog of Boyan Zlatanov: Java and Spring consulting, TDD, DDD a
 A static [Astro](https://astro.build) site styled with Tailwind CSS v4 in a dark, terminal-inspired
 look (phosphor green on near-black, no client JavaScript), shipped as an nginx Docker image and
 served behind the owner's reverse proxy. Two pages: `/` (profile, about, services, how I work,
-contact) and `/blog/` (subscribe with a tag filter, posts), plus the post pages behind them.
+testimonials, contact) and `/blog/` (subscribe with a tag filter, posts), plus the post pages
+behind them.
 
 ## Develop
 
@@ -50,8 +51,8 @@ that filter, and the tests flag that.
 ## Site copy
 
 - Home page data: `src/data/services.ts`, `src/data/principles.ts`, `src/data/profile.ts`
-  (tagline, contact tips) and `src/data/testimonials.ts` (empty until real quotes exist).
-  The bio paragraphs live in `src/pages/index.astro`.
+  (tagline, contact tips) and `src/data/testimonials.ts` (real quotes only, shown before
+  the contact card). The bio paragraphs live in `src/pages/index.astro`.
 - Name, domain, slogan, URL, email and social links: `src/lib/site.ts`.
 - Colours: `src/styles/global.css`. After changing the green or the slogan, run
   `npm run og:image` so the social preview and favicons match.

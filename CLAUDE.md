@@ -1,9 +1,9 @@
 # zlatanov.xyz
 
 Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
-(intro, services, how I work, contact) and `blog` (tag filter under the title, posts with
-the RSS link), plus the markdown posts behind them. Fully static Astro site, self-hosted in Docker
-behind the owner's nginx.
+(intro, services, how I work, testimonials, contact) and `blog` (tag filter under the title,
+posts with the RSS link), plus the markdown posts behind them. Fully static Astro site,
+self-hosted in Docker behind the owner's nginx.
 
 ## Commands
 
@@ -38,7 +38,10 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   too (`TagFilter.astro`): each pill links to an empty marker beside it (`#tag-java`), and while
   it is `:target`, a rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose
   `data-tags` lack the slug. The markers are `position: fixed` at the top of the viewport so that
-  following a filter never scrolls the page; don't move the ids back onto the pills.
+  following a filter never scrolls the page; don't move the ids back onto the pills. The home
+  page's testimonials work the same way (`Testimonials.astro`): one at a time, stacked in one
+  grid cell so the card keeps the longest one's height, each arrow linking to the next one's
+  marker (`#testimonial-2`).
 - **Tailwind v4** via `@tailwindcss/vite`; tokens live in `src/styles/global.css` (`@theme`). Use
   the semantic colours `surface`, `surface-muted`, `surface-raised`, `ink`, `ink-muted`,
   `ink-faint`, `line`, `accent`, `accent-dim`, `accent-deep`, `glow`, never raw palette classes.
@@ -115,7 +118,8 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   the unit tests flag labels that collide on one slug.
 - Site-wide constants (name, domain, slogan, URL, email, social links): `src/lib/site.ts`. Home
   page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the intro card
-  and contact tips, `testimonials.ts`, empty until real quotes exist). Navigation: `src/data/nav.ts`.
+  and contact tips, `testimonials.ts`, real quotes only, shown before the contact card).
+  Navigation: `src/data/nav.ts`.
 
 ## Deployment
 

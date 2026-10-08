@@ -5,16 +5,30 @@ interface Props {
   testimonial: Testimonial;
 }
 
-const { quote, name, role, company } = Astro.props.testimonial;
+const { quote, name, role, company, url } = Astro.props.testimonial;
 const attribution = [role, company].filter(Boolean).join(', ');
+const paragraphs = quote.split(/\s*\n\s*/).filter(Boolean);
+const last = paragraphs.length - 1;
 ---
 
-<figure class="flex h-full flex-col rounded-r-lg border-l-4 border-accent bg-surface-raised px-6 py-5">
-  <blockquote class="flex-1 text-lg leading-relaxed text-ink-muted italic">
-    <p>“{quote}”</p>
+<figure class="flex h-full flex-col justify-center rounded-r-lg border-l-4 border-accent bg-surface-raised px-6 py-5">
+  <blockquote class="space-y-4 text-lg leading-relaxed text-ink-muted italic">
+    {paragraphs.map((paragraph, index) => (
+      <p>
+        {index === 0 && '“'}
+        {paragraph}
+        {index === last && '”'}
+      </p>
+    ))}
   </blockquote>
   <figcaption class="mt-4 font-mono text-sm text-ink-faint">
-    <span class="text-ink">{name}</span>
+    {url ? (
+      <a href={url} rel="noopener" class="text-link">
+        {name}
+      </a>
+    ) : (
+      <span class="text-ink">{name}</span>
+    )}
     {attribution && `, ${attribution}`}
   </figcaption>
 </figure>

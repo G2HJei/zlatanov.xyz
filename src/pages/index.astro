@@ -7,7 +7,7 @@ import HomeHero from '../components/HomeHero.astro';
 import Icon from '../components/Icon.astro';
 import SocialLink from '../components/SocialLink.astro';
 import Stage from '../components/Stage.astro';
-import Testimonial from '../components/Testimonial.astro';
+import Testimonials from '../components/Testimonials.astro';
 import { principles } from '../data/principles';
 import { profile } from '../data/profile';
 import { services } from '../data/services';
@@ -162,13 +162,7 @@ const drumShades = ['text-ink-muted', 'text-ink-muted/85', 'text-ink-muted/70'];
 
     {testimonials.length > 0 && (
       <Stage id="testimonials" title="what clients say" kind="branch">
-        <ul class="grid gap-6 md:grid-cols-2">
-          {testimonials.map((testimonial) => (
-            <li>
-              <Testimonial testimonial={testimonial} />
-            </li>
-          ))}
-        </ul>
+        <Testimonials testimonials={testimonials} />
       </Stage>
     )}
 
