@@ -1,0 +1,49 @@
+---
+/**
+ * The testimonials one at a time, in CSS only. They all share one grid cell, so the list is as
+ * tall as the longest and keeps its height whichever one is showing. Each one's arrow links to
+ * the next one's marker (`#testimonial-2`), the last one's back to the first, and while a marker
+ * is the URL fragment only the testimonial holding it shows; with none targeted, the first does.
+ * As in `TagFilter.astro`, the markers are pinned to the top of the viewport, already in view,
+ * so following the arrow never scrolls the page. Each marker sits just before its testimonial's
+ * arrow: after following one, a single Tab reaches the next.
+ */
+import type { Testimonial as TestimonialData } from '../data/testimonials';
+
+import ButtonLink from './ButtonLink.astro';
+import Icon from './Icon.astro';
+import Testimonial from './Testimonial.astro';
+
+interface Props {
+  testimonials: TestimonialData[];
+}
+
+const { testimonials } = Astro.props;
+const count = testimonials.length;
+const markerId = (index: number) => `testimonial-${index + 1}`;
+---
+
+<ul class="slides grid">
+  {testimonials.map((testimonial, index) => (
+    <li class="slide col-start-1 row-start-1 grid grid-rows-[1fr_auto] gap-4">
+      <Testimonial testimonial={testimonial} />
+      {count > 1 && (
+        <div class="flex items-center justify-end gap-4">
+          <span class="font-mono text-sm text-ink-faint">{`${index + 1}/${count}`}</span>
+          <span id={markerId(index)} class="marker fixed top-0 left-0"></span>
+          <ButtonLink href={`#${markerId((index + 1) % count)}`} variant="dim" size="compact">
+            <span class="sr-only">Next testimonial</span>
+            <Icon name="arrow-right" class="size-5" />
+          </ButtonLink>
+        </div>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .slides:has(.marker:target) > .slide:not(:has(.marker:target)),
+  .slides:not(:has(.marker:target)) > .slide:not(:first-child) {
+    visibility: hidden;
+  }
+</style>
