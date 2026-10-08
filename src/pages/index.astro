@@ -166,31 +166,36 @@ const drumShades = ['text-ink-muted', 'text-ink-muted/85', 'text-ink-muted/70'];
       </Stage>
     )}
 
-    <Stage id="contact" title="contact" kind="crt" class="text-center">
-      <p class="mx-auto max-w-2xl text-[1.1rem] text-ink-muted">
-        The quickest way to reach me is email. Tell me a little about your team and what you are
-        trying to change, and I will get back to you.
-      </p>
-      <div class="actions mt-8 flex flex-wrap justify-center gap-4">
-        <ButtonLink href={`mailto:${SITE.email}`} class="charge">
-          <Icon name="mail" class="size-5" />
-          {SITE.email}
-        </ButtonLink>
-        <ButtonLink href={SITE.social.linkedin} variant="dim" external class="charge">
-          <Icon name="linkedin" class="size-5" />
-          LinkedIn
-        </ButtonLink>
-      </div>
-      <div class="tips mx-auto mt-10 max-w-2xl p-5 text-left">
-        <h3 class="font-mono text-sm text-ink-faint">what helps me reply well</h3>
-        <ul class="mt-3 space-y-2 text-ink-muted">
-          {profile.contactTips.map((tip) => (
-            <li class="test flex gap-3">
-              <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
-              <span>{tip}</span>
-            </li>
-          ))}
-        </ul>
+    <Stage id="contact" title="contact" kind="crt">
+      <!-- The copy and buttons on the left, the tips beside them on the right from `lg` up. -->
+      <div class="grid gap-10 lg:grid-cols-2 lg:gap-12">
+        <div>
+          <p class="text-[1.1rem] text-ink-muted">
+            The quickest way to reach me is email. Tell me a little about your team and what you are
+            trying to change, and I will get back to you.
+          </p>
+          <div class="actions mt-8 flex flex-wrap gap-4">
+            <ButtonLink href={`mailto:${SITE.email}`} class="charge">
+              <Icon name="mail" class="size-5" />
+              {SITE.email}
+            </ButtonLink>
+            <ButtonLink href={SITE.social.linkedin} variant="dim" external class="charge">
+              <Icon name="linkedin" class="size-5" />
+              LinkedIn
+            </ButtonLink>
+          </div>
+        </div>
+        <div class="tips lg:justify-self-end">
+          <h3 class="font-mono text-sm text-ink-faint">what helps me reply well</h3>
+          <ul class="mt-3 space-y-2 text-pretty text-ink-muted">
+            {profile.contactTips.map((tip) => (
+              <li class="test flex gap-3">
+                <Icon name="check" class="mt-1.5 size-4 shrink-0 text-accent" />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Stage>
   </div>
