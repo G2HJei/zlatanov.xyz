@@ -5,9 +5,9 @@ export const SITE = {
   name: 'Boyan Zlatanov',
   logo: 'zlatanov',
   /** Shown beside the logo in the header. */
-  logoSubtitle: 'CI/CD·TDD·Clean Code',
+  logoSubtitle: 'CI/CD · TDD · Clean Code',
   domain: 'zlatanov.xyz',
-  title: 'Boyan Zlatanov · Java consultant for TDD, DDD and CI/CD',
+  title: 'Zlatanov · CI/CD · TDD · Clean Code',
   description:
     'Independent Java and Spring consultant helping teams ship faster with test-driven development, domain-driven design and reliable CI/CD pipelines.',
   /** The home page title and the social preview image. */
