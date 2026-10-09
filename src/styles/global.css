@@ -130,7 +130,7 @@
    lines are light enough that text stays crisp. Deliberately no radial vignette: on a
    near-black surface it bands into visible concentric rings. */
 .scanlines {
-  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.14) 2px 3px);
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.05) 2px 3px);
 }
 
 /* Rendered markdown. Headings and links take the green; code sits on the darkest surface. */
