@@ -28,5 +28,12 @@ export const testimonials: Testimonial[] = [
     role: 'Founder',
     company: 'Conservative.bg',
     url: 'https://www.linkedin.com/in/oblakoff',
+  },
+  {
+    quote:
+      'I\'ve had the pleasure of working with Boyan on several software projects over the years. He is both a great team player and someone you can trust to deliver tasks and entire projects independently. He brings many years of experience across different technology stacks and has a strong understanding of what makes software projects successful. He pays attention to the things that really matter, from choosing the right architecture to building reliable, maintainable software and following good development practices. I would gladly recommend Boyan to any team looking for an experienced software developer and project lead.',
+    name: 'Todor Ivanov',
+    role: 'Technical Lead / DevOps',
+    url: 'https://www.linkedin.com/in/todor-ivanov-9147123b',
   }
 ];

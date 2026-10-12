@@ -3,7 +3,7 @@ title: Fast Development Cycles Made Simple
 description: Continuous delivery as Dave Farley describes it, shown on a real project. A deployment pipeline that judges every commit, and TDD that leaves good design behind as a side effect.
 date: 2026-10-04
 tags: [ case study ]
-draft: false
+draft: true
 ---
 
 What do the teams that ship well have in common? Not a framework, not a cloud provider, not a
@@ -17,7 +17,8 @@ a change is any good, and how little it costs them to act on the answer.
 Jez Humble and Dave Farley open the first chapter of *Continuous Delivery*, the 2010 book that put
 the practice on the map, with the question underneath all of this:
 
-> The most important problem that we face as software professionals is this: If somebody thinks of a good idea, how do we deliver it to users as quickly as possible?
+> The most important problem that we face as software professionals is this: If somebody thinks of a good idea, how do
+> we deliver it to users as quickly as possible?
 
 This post walks through Farley's answer: the deployment pipeline, the tests that make it
 trustworthy, and the design that falls out of writing those tests first. They look like three
@@ -32,7 +33,8 @@ to work on a small scale.
 
 Farley's later book, *Modern Software Engineering*, starts from a definition:
 
-> Software engineering is the application of an empirical, scientific approach to finding efficient, economic solutions to practical problems in software.
+> Software engineering is the application of an empirical, scientific approach to finding efficient, economic solutions
+> to practical problems in software.
 
 The word that matters is *empirical*. Nobody knows in advance whether a change works, whether users
 want it, or whether it breaks something three modules away. We find out by trying it and looking at
@@ -81,7 +83,8 @@ That build is the deployment pipeline.
 
 *Continuous Delivery* defines it like this:
 
-> At an abstract level, a deployment pipeline is an automated manifestation of your process for getting software from version control into the hands of your users.
+> At an abstract level, a deployment pipeline is an automated manifestation of your process for getting software from
+> version control into the hands of your users.
 
 Every step between a commit and production lives in it: compiling, testing, packaging, deploying,
 checking. Farley frames it as an experiment. Every commit gives birth to a release candidate, and
@@ -239,6 +242,7 @@ builds them in four layers:
 Subsbuddy's acceptance tests for its command-line app have the same layers in miniature:
 
 ```java
+
 @Test
 void shouldTranslateSingleFile() {
   setupInputFile();
@@ -283,6 +287,7 @@ sentences, translate those, and spread the result back over the original time sl
 live in the tests as named cases, one per situation the translator has to handle:
 
 ```java
+
 @ParameterizedTest
 @MethodSource("subsEntriesArgs")
 void shouldTranslate(List<SubtitleEntry> givenEntries, List<SubtitleEntry> expectedEntries) {
@@ -292,21 +297,21 @@ void shouldTranslate(List<SubtitleEntry> givenEntries, List<SubtitleEntry> expec
 
 static Stream<Arguments> subsEntriesArgs() {
   return Stream.of(
-      // ...
-      argumentSet("Two-entry sentence",
-          entries("0 -> 1 To be the man you've got to",
-              "1 -> 2 beat the man. If you smell..."),
-          entries("0 -> 1 TO BE THE MAN YOU'VE GOT TO",
-              "1 -> 2 BEAT THE MAN. IF YOU SMELL...")),
+    // ...
+    argumentSet("Two-entry sentence",
+      entries("0 -> 1 To be the man you've got to",
+        "1 -> 2 beat the man. If you smell..."),
+      entries("0 -> 1 TO BE THE MAN YOU'VE GOT TO",
+        "1 -> 2 BEAT THE MAN. IF YOU SMELL...")),
 
-      argumentSet("Tri-line sentence",
-          entries("0 -> 1 To be the man",
-              "1 -> 2 you've got to",
-              "2 -> 3 beat the man."),
-          entries("0 -> 1 TO BE THE MAN YOU'VE",
-              "1 -> 2 GOT TO BEAT THE",
-              "2 -> 3 MAN.")),
-      // ...
+    argumentSet("Tri-line sentence",
+      entries("0 -> 1 To be the man",
+        "1 -> 2 you've got to",
+        "2 -> 3 beat the man."),
+      entries("0 -> 1 TO BE THE MAN YOU'VE",
+        "1 -> 2 GOT TO BEAT THE",
+        "2 -> 3 MAN.")),
+    // ...
   );
 }
 ```
@@ -407,7 +412,8 @@ small. The fastest, pairing, closes before the commit and has
 Speed and quality are usually sold as a trade-off. In *Modern Software Engineering*, discussing the
 research behind *Accelerate*, Farley calls that belief simply not true and sums up why:
 
-> The route to speed is high-quality software, the route to high-quality software is speed of feedback, and the route to both is great engineering.
+> The route to speed is high-quality software, the route to high-quality software is speed of feedback, and the route to
+> both is great engineering.
 
 Strip it down and fast development cycles come from one formula:
 
