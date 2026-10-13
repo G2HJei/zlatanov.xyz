@@ -45,4 +45,4 @@ YAML files you can read and back up like any other folder. A job search is perso
 names of the people you talk to, notes on the interview that went badly. None of that should need a
 sign-up form.
 
-Jedediah is open source under GPL-3.0.
+Jedediah is open source under GPL-3.0. Check the latest release over at [Github](https://github.com/G2HJei/jedediah).
