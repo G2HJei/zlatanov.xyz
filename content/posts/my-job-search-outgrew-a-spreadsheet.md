@@ -2,7 +2,7 @@
 title: 'My Job Search Outgrew a Spreadsheet...'
 description: A small, free tool I built with the help of Claude to keep a job search in order. Applications, contacts, interviews and next steps in your browser, with your data on your own machine.
 date: 2026-10-13
-tags: [ article ]
+tags: [ app ]
 draft: false
 ---
 
