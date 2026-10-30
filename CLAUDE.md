@@ -2,8 +2,9 @@
 
 Personal consulting site for Boyan Zlatanov (Java/Spring, TDD, DDD, CI/CD). Two pages, `home`
 (intro, services, how I work, testimonials, contact) and `blog` (tag filter under the title,
-posts with the RSS link), plus the markdown posts behind them. Fully static Astro site,
-self-hosted in Docker behind the owner's nginx.
+posts with the RSS link), plus the markdown posts behind them, and unlinked talk pages
+(`/talks/<slug>/`, slides to present from). Fully static Astro site, self-hosted in Docker
+behind the owner's nginx.
 
 ## Commands
 
@@ -18,6 +19,7 @@ self-hosted in Docker behind the owner's nginx.
 | `npm test`         | Vitest unit tests in `tests/unit/`                                  |
 | `npm run test:e2e` | Builds, serves `dist/`, runs Playwright smoke tests in `tests/e2e/` |
 | `npm run og:image` | Re-renders `public/og-default.png` (the social preview)             |
+| `npm run talk`     | `-- content/talks/<slug>.odp`: regenerates that talk's slides       |
 
 CI runs only on pushes to `master`: lint → check → test → build → e2e → docker build → deploy.
 Nothing runs for branches or pull requests, so run the checks locally before merging. When port
@@ -27,15 +29,16 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
 
 - **Astro 7**, `output: 'static'`, `trailingSlash: 'always'`. Every internal `href` ends with `/`
   except file endpoints (`/rss.xml`, `/robots.txt`, `/sitemap-index.xml`).
-- **No UI framework, two client scripts.** Plain `.astro` components only; every effect (blinking
+- **No UI framework, three client scripts.** Plain `.astro` components only; every effect (blinking
   cursor, pulsing rule, hover glows, scanlines) is CSS. The first exception is the particle
   background: `Particles.astro` runs `canvasparticles-js` on a fixed canvas behind the page,
   non-interactive (`mouse.interactionType` NONE, `pointer-events: none`) and off under
   `prefers-reduced-motion`. Tune it in `src/lib/particles.ts` (density, reach, speed) and the
   canvas `opacity` in the component. The second is the home page's hold, at the bottom of
   `src/pages/index.astro` (see the pipeline below), which only pauses the CSS animations and sets
-  a class. Add no other client JavaScript. The blog's tag filter is CSS
-  too (`TagFilter.astro`): each pill links to an empty marker beside it (`#tag-java`), and while
+  a class. The third is the talk pages' key stepping, at the bottom of
+  `src/pages/talks/[slug].astro` (see Talks below). Add no other client JavaScript. The blog's
+  tag filter is CSS too (`TagFilter.astro`): each pill links to an empty marker beside it (`#tag-java`), and while
   it is `:target`, a rule from `tagFilterCss()` in `src/lib/tags.ts` hides the posts whose
   `data-tags` lack the slug. The markers are `position: fixed` at the top of the viewport so that
   following a filter never scrolls the page; don't move the ids back onto the pills. The home
@@ -120,6 +123,36 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   page copy: `src/data/` (`services.ts`, `principles.ts`, `profile.ts` for the intro card
   and contact tips, `testimonials.ts`, real quotes only, shown before the contact card).
   Navigation: `src/data/nav.ts`.
+
+## Talks
+
+- The owner presents from the site: `/talks/<slug>/` shows a talk's slides one per screen under
+  the sticky header, with the site's particles as their background. In full screen (F11,
+  `@media (display-mode: fullscreen)`) the header hides and a slide takes the whole screen.
+  The pages are reached by link only: nothing links to them, they carry `noindex`
+  (`Head.astro`'s `noindex` prop) and the sitemap filter in `astro.config.ts` leaves `/talks/`
+  out. Don't add a `robots.txt` rule, it would advertise them.
+- The source is the Impress deck, `content/talks/<slug>.odp`. `scripts/talk.mjs` (run as
+  `npm run talk -- content/talks/<slug>.odp`) converts it into `src/data/talks/<slug>.json`
+  and copies its pictures to `public/talks/<slug>/`; both are generated, so edit the deck and
+  rerun. The converter keeps every shape, text, line and picture and the master's footer,
+  drops slide backgrounds, placeholders and speaker notes, and stops on anything it does not
+  understand. `content/talks/<slug>.overrides.json` replaces whole slides by hand: the TDD
+  deck's first slide is a flattened picture with the background baked in, redrawn there.
+- The model and its CSS live in `src/lib/talk.ts` (unit-tested), rendered by
+  `src/components/talk/`. A slide is a 960 × 540 pt stage and a size container; `--pt` is one
+  point at its current size, so everything scales together and text stays real text in the
+  site's fonts. The decks were laid out in LibreOffice with fallback fonts, which explains two
+  deliberate adjustments: mono text is tracked in where JetBrains Mono (wider) would otherwise
+  wrap a line, and every run uses Inter's line spacing.
+- `src/pages/talks/[slug].astro` snaps the page to each slide (`scroll-snap-type: y mandatory`
+  on `html`), and its script moves exactly one slide per PageDown/PageUp, Space, arrow key or
+  clicker press (Home/End: first/last). Snapping alone did that in a plain browser, but the
+  owner's SmoothScroll extension replays a key as many small scroll steps and snapping turned
+  each into a slide, running to the end. The script listens on `document`, ahead of such
+  extensions on `window`, and `preventDefault()`s the keys it handles; keep it that way (an
+  e2e test simulates the extension). `--header-height` there mirrors `Header.astro` (0 in full
+  screen), and e2e tests check slides line up under the header and fill the screen without it.
 
 ## Deployment
 

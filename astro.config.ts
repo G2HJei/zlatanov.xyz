@@ -7,7 +7,8 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap()],
+  // Talks are reached by a shared link only: noindex, and not listed here.
+  integrations: [sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/talks/') })],
   // Astro's Fonts API, fed with the fontsource files from node_modules (no network at build
   // time). <Font> in Head.astro preloads the upright faces and Astro writes metric-matched
   // Arial / Courier New fallbacks, so text keeps its size when the web font swaps in.

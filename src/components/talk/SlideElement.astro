@@ -1,0 +1,95 @@
+---
+/**
+ * One element of a slide, placed on the stage in points (see `src/lib/talk.ts`): its shape
+ * as SVG (stroke centred on the outline, as in the deck), a picture, and its text as HTML
+ * in the site's fonts. Titles render as `<h2>`; paragraphs are block spans so they are
+ * valid inside it.
+ */
+import {
+  boxStyle,
+  css,
+  type Element,
+  paragraphStyle,
+  runStyle,
+  textAreaStyle,
+} from '../../lib/talk';
+
+interface Props {
+  element: Element;
+}
+
+const { element } = Astro.props;
+const { geometry, stroke, text } = element;
+const w = Math.max(element.w, 0.01);
+const h = Math.max(element.h, 0.01);
+const paint = {
+  fill: element.fill ?? 'none',
+  'fill-opacity': element.fillOpacity,
+  stroke: stroke?.color,
+  'stroke-width': stroke?.width,
+  'stroke-dasharray': stroke?.dash?.join(' '),
+  'stroke-linecap': stroke?.cap,
+};
+const drawn = geometry && geometry.type !== 'image' && (element.fill || stroke);
+const Text = text?.heading ? 'h2' : 'div';
+---
+
+<div class="element" style={css(boxStyle(element))}>
+  {geometry?.type === 'image' && (
+    <img
+      src={geometry.src}
+      alt={geometry.alt}
+      class="absolute inset-0 size-full"
+      loading="lazy"
+      decoding="async"
+    />
+  )}
+  {drawn && (
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      class="absolute inset-0 size-full overflow-visible"
+    >
+      {geometry.type === 'rect' && <rect width={w} height={h} rx={geometry.radius} {...paint} />}
+      {geometry.type === 'ellipse' && (
+        <ellipse cx={w / 2} cy={h / 2} rx={w / 2} ry={h / 2} {...paint} />
+      )}
+      {geometry.type === 'path' && <path d={geometry.d} {...paint} />}
+      {element.arrows?.map((d) => (
+        <path d={d} fill={stroke?.color} />
+      ))}
+    </svg>
+  )}
+  {text && (
+    <Text class="text" style={css(textAreaStyle(text))}>
+      {text.paragraphs.map((paragraph) => (
+        <span class="block" style={css(paragraphStyle(paragraph))}>
+          {paragraph.runs.length === 0 ? (
+            <br />
+          ) : (
+            paragraph.runs.map((run) => (
+              <span style={css(runStyle(run, paragraph))}>{run.text}</span>
+            ))
+          )}
+        </span>
+      ))}
+    </Text>
+  )}
+</div>
+
+<style>
+  .element {
+    position: absolute;
+  }
+
+  .text {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    /* LibreOffice's default tab stops: every 2.54 cm. */
+    tab-size: calc(72 * var(--pt));
+    text-wrap: wrap;
+  }
+</style>

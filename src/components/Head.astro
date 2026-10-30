@@ -14,6 +14,8 @@ export interface Props {
   modifiedTime?: Date;
   tags?: string[];
   author?: string;
+  /** Keeps the page out of search results; for pages reached only by a shared link. */
+  noindex?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   modifiedTime,
   tags = [],
   author,
+  noindex = false,
 } = Astro.props;
 
 const fullTitle = pageTitle(title, SITE.name);
@@ -37,6 +40,7 @@ const imageUrl = new URL(image, Astro.site).href;
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 {author && <meta name="author" content={author} />}
+{noindex && <meta name="robots" content="noindex, nofollow" />}
 <link rel="canonical" href={canonical} />
 <meta name="generator" content={Astro.generator} />
 

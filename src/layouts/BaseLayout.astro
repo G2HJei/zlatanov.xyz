@@ -9,9 +9,12 @@ import Header from '../components/Header.astro';
 import Particles from '../components/Particles.astro';
 import { SITE } from '../lib/site';
 
-type Props = ComponentProps<typeof Head>;
+type Props = ComponentProps<typeof Head> & {
+  /** Main spans the whole width with no padding (the talk slides). */
+  fullBleed?: boolean;
+};
 
-const props = Astro.props;
+const { fullBleed = false, ...props } = Astro.props;
 ---
 
 <!doctype html>
@@ -31,7 +34,10 @@ const props = Astro.props;
     <Particles />
     <div class="scanlines pointer-events-none fixed inset-0 z-50" aria-hidden="true"></div>
     <Header />
-    <main id="main" class="mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-8">
+    <main
+      id="main"
+      class:list={['w-full flex-1', !fullBleed && 'mx-auto max-w-[1200px] px-4 py-8 sm:px-8']}
+    >
       <slot />
     </main>
     <Footer />

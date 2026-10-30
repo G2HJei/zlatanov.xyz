@@ -1,0 +1,353 @@
+{
+  "$comment": "Slide 1 of the deck is one flattened picture with the particle background baked in. These elements redraw it (measured from that picture) so the background can go. Pictures are the deck's own icons.",
+  "slides": {
+    "1": {
+      "title": "Test-Driven Development: Design Through Testing",
+      "elements": [
+        {
+          "x": 85,
+          "y": 57.5,
+          "w": 820,
+          "h": 112,
+          "geometry": { "type": "rect" },
+          "text": {
+            "heading": true,
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "left",
+                "lineHeight": { "pt": 56 },
+                "font": "sans",
+                "size": 50,
+                "runs": [
+                  {
+                    "text": "Test-Driven Development:",
+                    "font": "sans",
+                    "size": 50,
+                    "weight": 700,
+                    "color": "#20c20e",
+                    "glow": { "radius": 12, "color": "rgb(32 194 14 / 0.3)" }
+                  }
+                ]
+              },
+              {
+                "align": "left",
+                "lineHeight": { "pt": 56 },
+                "font": "sans",
+                "size": 50,
+                "runs": [
+                  {
+                    "text": "Design Through Testing",
+                    "font": "sans",
+                    "size": 50,
+                    "weight": 700,
+                    "color": "#20c20e",
+                    "glow": { "radius": 12, "color": "rgb(32 194 14 / 0.3)" }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 85,
+          "y": 194.4,
+          "w": 700,
+          "h": 24,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "left",
+                "lineHeight": { "pt": 24 },
+                "font": "mono",
+                "size": 19,
+                "runs": [
+                  { "text": "$ ", "font": "mono", "size": 19, "weight": 400, "color": "#20c20e" },
+                  {
+                    "text": "The test comes first. The design follows.",
+                    "font": "mono",
+                    "size": 19,
+                    "weight": 400,
+                    "color": "#b0b0b0"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 960,
+          "h": 540,
+          "geometry": {
+            "type": "path",
+            "d": "M514 475H876A24 24 0 0 0 900 451V399A24 24 0 0 0 876 375M84 375A24 24 0 0 0 60 399V451A24 24 0 0 0 84 475H449.5"
+          },
+          "stroke": { "color": "#0f6b07", "width": 1.5, "dash": [5, 4.5] }
+        },
+        {
+          "x": 430,
+          "y": 466.6,
+          "w": 100,
+          "h": 16,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 16 },
+                "font": "mono",
+                "size": 12,
+                "runs": [
+                  { "text": "repeat", "font": "mono", "size": 12, "weight": 400, "color": "#666666" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 960,
+          "h": 540,
+          "geometry": {
+            "type": "path",
+            "d": "M85 375H875"
+          },
+          "stroke": { "color": "#20c20e", "width": 1.25 },
+          "arrows": [
+            "M100 369.75L109 375L100 380.25Z",
+            "M355.5 369.75L364.5 375L355.5 380.25Z",
+            "M595.5 369.75L604.5 375L595.5 380.25Z"
+          ]
+        },
+        {
+          "x": 222,
+          "y": 298,
+          "w": 36,
+          "h": 36,
+          "geometry": { "type": "ellipse" },
+          "stroke": { "color": "#20c20e", "width": 2.5 },
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 227.6,
+          "y": 303.6,
+          "w": 24.75,
+          "h": 24.75,
+          "geometry": { "type": "image", "src": "Pictures/100000010000010000000100D27ED7FA.png", "alt": "" }
+        },
+        {
+          "x": 233.5,
+          "y": 368.5,
+          "w": 13,
+          "h": 13,
+          "geometry": { "type": "ellipse" },
+          "fill": "#20c20e",
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 140,
+          "y": 392.96,
+          "w": 200,
+          "h": 30,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 30 },
+                "font": "mono",
+                "size": 24,
+                "runs": [
+                  { "text": "# ", "font": "mono", "size": 24, "weight": 700, "color": "#666666" },
+                  { "text": "red", "font": "mono", "size": 24, "weight": 700, "color": "#20c20e" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 120,
+          "y": 427.85,
+          "w": 240,
+          "h": 20,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 20 },
+                "font": "sans",
+                "size": 15,
+                "runs": [
+                  { "text": "Write a test that fails.", "font": "sans", "size": 15, "weight": 400, "color": "#b0b0b0" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 462,
+          "y": 298,
+          "w": 36,
+          "h": 36,
+          "geometry": { "type": "ellipse" },
+          "stroke": { "color": "#20c20e", "width": 2.5 },
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 467,
+          "y": 304.3,
+          "w": 26,
+          "h": 26,
+          "geometry": { "type": "image", "src": "Pictures/10000001000001000000010064B98198.png", "alt": "" }
+        },
+        {
+          "x": 473.5,
+          "y": 368.5,
+          "w": 13,
+          "h": 13,
+          "geometry": { "type": "ellipse" },
+          "fill": "#20c20e",
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 380,
+          "y": 392.96,
+          "w": 200,
+          "h": 30,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 30 },
+                "font": "mono",
+                "size": 24,
+                "runs": [
+                  { "text": "# ", "font": "mono", "size": 24, "weight": 700, "color": "#666666" },
+                  { "text": "green", "font": "mono", "size": 24, "weight": 700, "color": "#20c20e" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 360,
+          "y": 427.85,
+          "w": 240,
+          "h": 20,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 20 },
+                "font": "sans",
+                "size": 15,
+                "runs": [
+                  { "text": "Make it pass, simply.", "font": "sans", "size": 15, "weight": 400, "color": "#b0b0b0" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 702,
+          "y": 298,
+          "w": 36,
+          "h": 36,
+          "geometry": { "type": "ellipse" },
+          "stroke": { "color": "#20c20e", "width": 2.5 },
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 709.25,
+          "y": 305.25,
+          "w": 21.5,
+          "h": 21.5,
+          "geometry": { "type": "image", "src": "Pictures/1000000100000100000001008D59757B.png", "alt": "" }
+        },
+        {
+          "x": 713.5,
+          "y": 368.5,
+          "w": 13,
+          "h": 13,
+          "geometry": { "type": "ellipse" },
+          "fill": "#20c20e",
+          "glow": { "radius": 3, "color": "rgb(32 194 14 / 0.5)" }
+        },
+        {
+          "x": 620,
+          "y": 392.96,
+          "w": 200,
+          "h": 30,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 30 },
+                "font": "mono",
+                "size": 24,
+                "runs": [
+                  { "text": "# ", "font": "mono", "size": 24, "weight": 700, "color": "#666666" },
+                  { "text": "refactor", "font": "mono", "size": 24, "weight": 700, "color": "#20c20e" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "x": 600,
+          "y": 427.85,
+          "w": 240,
+          "h": 20,
+          "geometry": { "type": "rect" },
+          "text": {
+            "inset": [0, 0, 0, 0],
+            "valign": "top",
+            "wrap": false,
+            "paragraphs": [
+              {
+                "align": "center",
+                "lineHeight": { "pt": 20 },
+                "font": "sans",
+                "size": 15,
+                "runs": [
+                  { "text": "Improve the design.", "font": "sans", "size": 15, "weight": 400, "color": "#b0b0b0" }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

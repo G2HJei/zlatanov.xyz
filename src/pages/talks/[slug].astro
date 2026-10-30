@@ -1,0 +1,143 @@
+---
+/**
+ * A talk's slides, one per screen under the sticky header, for presenting from the site.
+ * In full screen (F11) the header goes and a slide gets the whole screen.
+ * Each talk is `src/data/talks/<slug>.json`, generated from `content/talks/<slug>.odp` by
+ * `npm run talk`. The pages are unlinked: noindex, and left out of the sitemap.
+ *
+ * The page snaps to each slide (CSS), and the script at the bottom moves exactly one slide
+ * per key: PageDown/PageUp, Space, the arrow keys, Home/End and presenter clickers.
+ */
+import Slide from '../../components/talk/Slide.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { slideLabel, type Talk } from '../../lib/talk';
+
+export function getStaticPaths() {
+  const talks = import.meta.glob<Talk>('../../data/talks/*.json', {
+    eager: true,
+    import: 'default',
+  });
+  return Object.entries(talks).map(([file, talk]) => ({
+    params: { slug: file.replace(/^.*\/(.+)\.json$/, '$1') },
+    props: { talk },
+  }));
+}
+
+interface Props {
+  talk: Talk;
+}
+
+const { talk } = Astro.props;
+---
+
+<BaseLayout
+  title={talk.title}
+  description={`Slides for the talk “${talk.title}”.`}
+  noindex
+  fullBleed
+>
+  <div class="talk">
+    <h1 class="sr-only">{talk.title}</h1>
+    {talk.slides.map((slide, index) => (
+      <section
+        id={`slide-${index + 1}`}
+        class="slide"
+        aria-label={slideLabel(index, talk.slides.length, slide.title)}
+      >
+        <Slide slide={slide} class="slide-stage" />
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* The sticky header's height (Header.astro: py-4 around a 2.6rem nav link, plus its
+     1px border). A slide fills the rest of the screen; an e2e test checks they line up. */
+  html:has(.talk) {
+    --header-height: calc(4.6rem + 1px);
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: var(--header-height);
+  }
+
+  /* In full screen (F11) the header goes and a slide gets the whole screen. */
+  @media (display-mode: fullscreen) {
+    html:has(.talk) {
+      --header-height: 0px;
+    }
+
+    html:has(.talk) body > header {
+      display: none;
+    }
+  }
+
+  /* The footer is a stop of its own after the last slide, or it could not be reached. */
+  html:has(.talk) body > footer {
+    scroll-snap-align: end;
+  }
+</style>
+
+<style>
+  .slide {
+    display: grid;
+    place-items: center;
+    height: calc(100dvh - var(--header-height));
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .slide :global(.slide-stage) {
+    width: min(100% - 2rem, (100dvh - var(--header-height) - 2rem) * 16 / 9);
+  }
+</style>
+
+<script>
+  /*
+   * One slide per key. Snapping alone handles the keys in a plain browser, but extensions
+   * that animate scrolling themselves (SmoothScroll) replay a key as dozens of small scroll
+   * steps, and snapping turns every step into a whole slide: one PageDown ran to the end.
+   * This listens on the document, which hears a key before such extensions do on the
+   * window, moves to the slide itself and marks the key handled so they leave it alone.
+   * The motion follows the page's `scroll-behavior` (instant under reduced motion).
+   */
+  const slides = [...document.querySelectorAll<HTMLElement>('.talk .slide')];
+  const header = document.querySelector('body > header');
+
+  const NEXT = new Set(['PageDown', 'ArrowDown', 'ArrowRight']);
+  const PREVIOUS = new Set(['PageUp', 'ArrowUp', 'ArrowLeft']);
+
+  /** The slide a key sent the page to, until the scrolling settles. */
+  let heading: number | undefined;
+  let settle: ReturnType<typeof setTimeout> | undefined;
+  addEventListener('scroll', () => {
+    clearTimeout(settle);
+    settle = setTimeout(() => (heading = undefined), 200);
+  });
+
+  /** The slide whose top is nearest the header's bottom (the screen's top in full screen). */
+  const current = () => {
+    const edge = header?.getBoundingClientRect().bottom ?? 0;
+    const distances = slides.map((slide) => Math.abs(slide.getBoundingClientRect().top - edge));
+    return distances.indexOf(Math.min(...distances));
+  };
+
+  document.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return;
+    if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select'))
+      return;
+
+    const from = heading ?? current();
+    const space = event.key === ' ';
+    let to: number | undefined;
+    if (NEXT.has(event.key) || (space && !event.shiftKey)) to = from + 1;
+    else if (PREVIOUS.has(event.key) || (space && event.shiftKey)) to = from - 1;
+    else if (event.key === 'Home') to = 0;
+    else if (event.key === 'End') to = slides.length - 1;
+
+    // Past either end the key keeps its usual meaning (the footer is below the last slide).
+    const slide = to === undefined ? undefined : slides[to];
+    if (to === undefined || !slide) return;
+    event.preventDefault();
+    heading = to;
+    slide.scrollIntoView({ block: 'start' });
+  });
+</script>

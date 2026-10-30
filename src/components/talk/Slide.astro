@@ -1,0 +1,31 @@
+---
+/**
+ * One slide of a talk: a 16:9 stage that scales as one piece. It is a size container, and
+ * `--pt` is one point of the 960 × 540 pt slide at its current width; every element is
+ * placed and sized in it. No background: the page's particles show through.
+ */
+import type { Slide } from '../../lib/talk';
+import SlideElement from './SlideElement.astro';
+
+interface Props {
+  slide: Slide;
+  class?: string;
+}
+
+const { slide, class: className } = Astro.props;
+---
+
+<div class:list={['stage', className]}>
+  {slide.elements.map((element) => (
+    <SlideElement element={element} />
+  ))}
+</div>
+
+<style>
+  .stage {
+    --pt: calc(100cqw / 960);
+    position: relative;
+    aspect-ratio: 16 / 9;
+    container-type: inline-size;
+  }
+</style>
