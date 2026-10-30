@@ -1,5 +1,5 @@
 {
-  "$comment": "Slide 1 of the deck is one flattened picture with the particle background baked in. These elements redraw it (measured from that picture) so the background can go. Pictures are the deck's own icons.",
+  "$comment": "Slide 1 of the deck is one flattened picture with the particle background baked in. These elements redraw it (measured from that picture) so the background can go. Its icons came from the deck, which no longer uses them; they live in tdd/ beside this file.",
   "slides": {
     "1": {
       "title": "Test-Driven Development: Design Through Testing",
@@ -145,7 +145,7 @@
           "y": 303.6,
           "w": 24.75,
           "h": 24.75,
-          "geometry": { "type": "image", "src": "Pictures/100000010000010000000100D27ED7FA.png", "alt": "" }
+          "geometry": { "type": "image", "src": "tdd/cross.png", "alt": "" }
         },
         {
           "x": 233.5,
@@ -217,7 +217,7 @@
           "y": 304.3,
           "w": 26,
           "h": 26,
-          "geometry": { "type": "image", "src": "Pictures/10000001000001000000010064B98198.png", "alt": "" }
+          "geometry": { "type": "image", "src": "tdd/check.png", "alt": "" }
         },
         {
           "x": 473.5,
@@ -289,7 +289,7 @@
           "y": 305.25,
           "w": 21.5,
           "h": 21.5,
-          "geometry": { "type": "image", "src": "Pictures/1000000100000100000001008D59757B.png", "alt": "" }
+          "geometry": { "type": "image", "src": "tdd/refresh.png", "alt": "" }
         },
         {
           "x": 713.5,

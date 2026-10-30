@@ -16,7 +16,8 @@
  * `content/talks/<slug>.overrides.json`, if present, replaces whole slides with
  * hand-written elements in the same model (`{ "slides": { "1": { title, elements } } }`).
  * Pictures from the deck are referenced there by their path in the archive
- * (`Pictures/….png`).
+ * (`Pictures/….png`); pictures the deck no longer has, by their path from the overrides
+ * file (`<slug>/….png`).
  */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -688,7 +689,12 @@ const pictureDir = path.join(root, 'public', 'talks', slug);
 rmSync(pictureDir, { recursive: true, force: true });
 mkdirSync(pictureDir, { recursive: true });
 for (const href of pictures) {
-  const data = archive.get(href);
+  const file = path.join(path.dirname(source), href);
+  const data = href.startsWith('Pictures/')
+    ? archive.get(href)
+    : existsSync(file)
+      ? readFileSync(file)
+      : undefined;
   if (!data) throw new Error(`Missing picture: ${href}`);
   writeFileSync(path.join(pictureDir, path.basename(href)), data);
 }

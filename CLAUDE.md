@@ -139,6 +139,9 @@ Nothing runs for branches or pull requests, so run the checks locally before mer
   drops slide backgrounds, placeholders and speaker notes, and stops on anything it does not
   understand. `content/talks/<slug>.overrides.json` replaces whole slides by hand: the TDD
   deck's first slide is a flattened picture with the background baked in, redrawn there.
+  An override takes pictures from the deck (`Pictures/….png`) or, once the deck no longer
+  has them (LibreOffice drops unused pictures on save), from `content/talks/<slug>/`
+  (`tdd/cross.png`): the TDD redraw's three icons live there.
 - The model and its CSS live in `src/lib/talk.ts` (unit-tested), rendered by
   `src/components/talk/`. A slide is a 960 × 540 pt stage and a size container; `--pt` is one
   point at its current size, so everything scales together and text stays real text in the
