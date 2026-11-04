@@ -475,7 +475,7 @@ showed:
   strings against a mocked JDBC template. They're fast, and they can't catch a query that doesn't
   match the schema; only the end-to-end acceptance suite runs against a real database. A thin layer
   of adapter tests on Testcontainers is what I'd add first, as in
-  [architecture that keeps the pipeline fast](/blog/fast-development-cycles-made-simple/#architecture-that-keeps-the-pipeline-fast).
+  [tests that keep the loops fast](/blog/fast-development-cycles-made-simple/#tests-that-keep-the-loops-fast).
 
 None of these is a reason to go back to an ORM. They're the price of making persistence explicit,
 and each has a cheap fix that is visible in the code, which is more than you can say for a lazy
