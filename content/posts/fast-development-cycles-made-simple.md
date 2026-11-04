@@ -13,8 +13,8 @@ of the sprint, the next release train, after the change advisory board meets.
 
 The difference is rarely talent, and never typing speed. It's how quickly a team finds out whether
 a change is any good. The fastest answers come from two loops that start at the developer's desk:
-test-driven development (TDD), which answers in minutes, and acceptance test-driven development
-(ATDD), which says when a feature is done. This post walks through both, and how the deployment
+test-driven development (TDD), which answers in minutes, and acceptance test-driven development (ATDD), which says when
+a feature is done. This post walks through both, and how the deployment
 pipeline closes them on every commit.
 
 ## Engineering is learning, so shorten the loop
@@ -24,12 +24,11 @@ Dave Farley's *Modern Software Engineering* starts from a definition:
 > Software engineering is the application of an empirical, scientific approach to finding efficient, economic solutions
 > to practical problems in software.
 
-The word that matters is *empirical*. Nobody knows in advance whether a change works, or whether it
-breaks something three modules away. We find out by trying it and looking at the result, so a team
-learns exactly as fast as its feedback loops allow, and no faster.
+Nobody knows in advance whether a change works, or whether it breaks something three modules away. We find out by trying
+it and looking at the result, so a team learns exactly as fast as its feedback loops allow, and no faster.
 
-Farley splits the job into two halves: **learning**, in small steps guided by fast feedback, and
-**managing complexity**, through modularity, cohesion, separation of concerns, abstraction and
+Farley splits the job into two halves: **learning**, in small steps guided by fast feedback, and **managing
+complexity**, through modularity, cohesion, separation of concerns, abstraction and
 loose coupling. TDD serves both. It tells you within minutes whether the code does what you meant,
 and it pushes the design towards those five properties on every cycle.
 
@@ -59,11 +58,12 @@ and watch it fail, which proves that it can fail, and for the reason you expect.
 10% off orders above €100:
 
 ```java
+
 @Test
 void shouldApplyTenPercentDiscountAbove100() {
-    var basket = new ShoppingBasket();
-    basket.add(item("TDD", eur(120)));
-    assertEquals(eur(108), basket.total());
+  var basket = new ShoppingBasket();
+  basket.add(item("TDD", eur(120)));
+  assertEquals(eur(108), basket.total());
 }
 ```
 
@@ -78,13 +78,13 @@ price, to force the real logic, then write the obvious code:
 
 ```java
 public Money total() {
-    var sum = items.stream()
-            .map(Item::price)
-            .reduce(Money.ZERO, Money::plus);
-    if (sum.isGreaterThan(eur(100))) {
-        return sum.percentage(90);
-    }
-    return sum;
+  var sum = items.stream()
+    .map(Item::price)
+    .reduce(Money.ZERO, Money::plus);
+  if (sum.isGreaterThan(eur(100))) {
+    return sum.percentage(90);
+  }
+  return sum;
 }
 ```
 
@@ -103,17 +103,17 @@ you are never more than a few minutes from working code, and you know which chan
 Every cycle answers two questions. Red or green tells you whether the code does what you meant. How
 hard the test was to write tells you whether the design is any good:
 
-| When the test...                   | the design is telling you...                     |
-|------------------------------------|--------------------------------------------------|
-| is hard to write                   | the responsibility or the contract is unclear    |
-| needs many mocks                   | the unit has too many collaborators              |
-| asserts interactions, not outcomes | it tests the implementation, not the behaviour   |
-| needs private state                | encapsulation is broken                          |
-| breaks with every new feature      | the parts are tightly coupled                    |
+| When the test...                   | the design is telling you...                       |
+|------------------------------------|----------------------------------------------------|
+| is hard to write                   | the responsibility or the contract is unclear      |
+| needs many mocks                   | the unit has too many collaborators                |
+| asserts interactions, not outcomes | it tests the implementation, not the behaviour     |
+| needs private state                | encapsulation is broken                            |
+| breaks with every new feature      | the parts are tightly coupled                      |
 | has a long setup                   | coupling is high, or a parameter object is missing |
 
-Fix the design, not the test. In the post quoted above, Farley lists what makes code testable
-(modular, loosely coupled, cohesive, with good separation of concerns and information hiding) and
+Fix the design, not the test. In the post quoted above, Farley lists what makes code testable (modular, loosely coupled,
+cohesive, with good separation of concerns and information hiding) and
 adds: "Precisely the same properties as those of high quality code."
 
 The same discipline keeps the tests fast. Test doubles belong at the edges of the system: the UI,
@@ -176,13 +176,13 @@ Here is the discount again, this time from the customer's side:
 
 ```java
 class DiscountAcceptanceTest extends DslTestCase {
-    @Test
-    void shouldChargeDiscountedPriceForLargeOrders() {
-        store.addProduct("name: TDD", "price: 120.00");
-        customer.addToBasket("name: TDD");
-        customer.checkOut();
-        customer.assertCharged("amount: 108.00");
-    }
+  @Test
+  void shouldChargeDiscountedPriceForLargeOrders() {
+    store.addProduct("name: TDD", "price: 120.00");
+    customer.addToBasket("name: TDD");
+    customer.checkOut();
+    customer.assertCharged("amount: 108.00");
+  }
 }
 ```
 
@@ -247,9 +247,6 @@ small:
 | Commit stage     | Did this change break anything?     | under 5 minutes |
 | Acceptance stage | Does the system do what users need? | under an hour   |
 | Production       | Did it help the users?              | days            |
-
-The fastest, pairing, closes before the commit and has
-[a post of its own](/blog/pairing-the-pull-request-reviewed-in-real-time/).
 
 ## Small steps, fast feedback
 
